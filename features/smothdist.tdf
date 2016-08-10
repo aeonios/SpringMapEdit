@@ -1,0 +1,18 @@
+[smothdist]
+	{
+	world=allworld;
+	description=Fuel distiller;
+	category=beer;
+	object=smothdist.s3o;
+	footprintx=6;
+	footprintz=5;
+	height=20;
+	blocking=1;
+	hitdensity=5;
+	metal=150;
+	energy=500;
+	damage=4000;
+	flammable=0;
+	reclaimable=1;
+	autoreclaimable=1;
+	}

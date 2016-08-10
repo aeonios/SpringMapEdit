@@ -1,0 +1,15 @@
+-Models consist of several parts.
+-Each part consists of an xyz-offset, a number of vertices, normals, texCoords.
+-With this info we can easily create displaylists of those objects
+-texture-file is given too, so we just have to use the given texture, since texCoords are already there
+
+Should be quite simple, but looking good :)
+
+Es wird noch ein LOD für Objekte geben. 
+Objekte bekommen jeweils eine tile-position zugewiesen.
+Jeder Block führt eine ArrayList der beinhalteten Objekte in Form einer:
+ObjektStruktur (x/y/z Pos + FeatureID)
+Wobei die FeatureID aufgelöst wird zu: (DisplayListID + TexID), welche anschliessend gerendert wird
+
+LOD: Wird der Block mit einem LOD <= X gezeichnet, wird auch die Objektliste des Blocks gezeichnet.
+Das X ist hier einstellbar ;)

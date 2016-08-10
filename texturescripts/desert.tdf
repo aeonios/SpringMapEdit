@@ -1,0 +1,28 @@
+[TEXTUREGENERATORSETUP]
+{
+	Levels=2;
+	[FLAT]
+	{
+		Texture1=beach2.png;
+		Texture2=grass2.png;
+	}
+	[STEEP]
+	{
+		Texture1=sandstone.png;
+		Texture2=sandstone.png;
+	}
+	[HEIGHTTRANSITIONS]
+	{
+		End1=0.6;
+
+		Start2=0.8;
+	}
+	[STEEPTRANSITIONS]
+	{
+		Flat1=0.005;
+		Steep1=0.02;
+
+		Flat2=0.005;
+		Steep2=0.02;
+	}
+}

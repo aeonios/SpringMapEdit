@@ -1,0 +1,131 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head>
+    <title>
+      Create First Map – SpringMapEdit
+    </title>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <!--[if IE]><script type="text/javascript">
+      if (/^#__msie303:/.test(window.location.hash))
+        window.location.replace(window.location.hash.replace(/^#__msie303:/, '#'));
+    </script><![endif]-->
+  </head>
+  <body>
+    <div id="content" class="wiki">
+      <div class="wikipage searchable">
+          <div id="wikipage" class="trac-content"><h1 id="Creatingyourfirstmap">Creating your first map<a title="Link to this section" href="#Creatingyourfirstmap" class="anchor"></a></h1>
+<h2 id="Stepsrequired">Steps required<a title="Link to this section" href="#Stepsrequired" class="anchor"></a></h2><ul>
+<li><a class="wiki" href="#Requirements">Requirements</a></li>
+<li><a class="wiki" href="#StartSpringMapEdit">Start SpringMapEdit</a></li>
+<li><a class="wiki" href="#Generatingaheightmap">Generating a heightmap</a></li>
+<li><a class="wiki" href="#Texturingyourheightmap">Texturing your heightmap</a></li>
+<li><a class="wiki" href="#AddingFeaturestoyourmap">Adding Features to your map</a></li>
+<li><a class="wiki" href="#Savingyourmap">Saving your map</a></li>
+<li><a class="wiki" href="#Openingothermaps">Opening other maps</a></li>
+<li><a class="wiki" href="#Exportingyourmaptospring">Exporting your map to spring</a></li></ul>
+<h3 id="Requirements">Requirements<a title="Link to this section" href="#Requirements" class="anchor"></a></h3>
+<p>
+ Supported Platforms:
+all which support Java, SWT, and JOGL, this includes, but is not limited to:
+<ul>
+    <li>Windows</li>
+    <li>Linux</li>
+    <li>OSX (needs testing. someone could supply some startup script?)</li>
+</ul>
+Hardware:
+<ul>
+    <li>OpenGL 2.0 capable Graphics Card (Geforce5 and up)</li>
+    <li>Plenty of RAM (depending on mapsize)</li>
+</ul>
+Software:
+<ul>
+    Java (I recommend JRE 1.7 OpenJDK - ​http://www.java.com)
+    SWT 4.5 library (included in this package - ​http://www.eclipse.org/swt/ )
+    JOGL 1.1.1 library (included in this package - ​https://jogl.dev.java.net/ ) 
+</ul></p>
+<h3 id="StartSpringMapEdit">Start SpringMapEdit<a title="Link to this section" href="#StartSpringMapEdit" class="anchor"></a></h3>
+<p>
+
+Installation
+
+Just extract contents of this archive into any directory. Then start the appropriate script.
+
+    Windows: one of the "start_win32/64.bat" files.
+    Linux: one of the "start_linux_x86/64.sh" files.
+    OSX: someone needs to supply me those files. (Basically it should be the same commandline as for windows/linux) 
+
+If you get crashes when editing large maps, or it does not start at all, try editing the startup file.
+There is a variable which reads like:
+maxmem=1024m
+The 1024m is the maximum amount of RAM(in megabytes, note the m) which Java is allowed to use. Set it to your needs, but make it a multiple of 128. If Java can not find a batch of RAM as large as given number, it won't start, so just set it a little lower than your real RAM.
+
+If it does not startup properly, you may need to get the correct libraries for your platform, and check some dependencies SWT and JOGL have. (Especially on OSX)</br>
+</p>
+<h3 id="Generatingaheightmap">Generating a random heightmap<a title="Link to this section" href="#Generatingaheightmap" class="anchor"></a></h3>
+<p>
+Click on <b>Edit-&gt;Randomize Terrain</b> it will randomize the heightmap, if <b>Random Seed</b> is left at <b>-1.</b><br>
+If you specify some other <b>Random Seed</b> it will create the same terrain over and over again when the setting is not changed.</br>
+Height and area granularity can be set with the respective controlbars.
+</p>
+<p>
+For manual editing select <b>Height</b> from the brush modes and paint on the map.<br>
+This dialog lets you choose a brush to edit with <b>Select Brush</b> from the editing mode dialog.
+</p>
+<p>
+If you want another brush, click <b>Brushmode-&gt;Select Brush</b> and choose the one you want. Size is changeable by setting <b>Brush Size</b>
+</p>
+<p>
+Heightmodes explained:
+</p>
+<table class="wiki">
+<tbody><tr><td><b>Mode</b></td><td><b>Description</b></td></tr>
+<tr><td>Raise</td><td>Uses selected brush to raise (lower with RMB) the heightmap. <b>Brush Strength</b> determines the Speed.</td></tr>
+<tr><td>Smooth</td><td>Smoothes heightmap inside brush area, ignoring selected brush. <b>Brush Strength</b> determines the maximum height which will be smoothed. Low values preserve cliffs.</td></tr>
+<tr><td>Set</td><td>Sets heightmap to <b>Brush Strength</b> value.</td></tr>
+<tr><td>Erode</td><td>LMB applies Wet Erosion <b>Brush Strength</b> times to brush area, ignoring selected brush. RMB applies Dry Erosion.</td></tr>
+<tr><td>Randomize</td><td>Randomly adds/subtracts <b>Brush Strength</b> from heightmap inside brush area, ignoring selected brush.</td></tr>
+</tbody></table>
+<h3 id="Texturingyourheightmap">Texturing your heightmap<a title="Link to this section" href="#Texturingyourheightmap" class="anchor"></a></h3>
+<p>
+To automatically paint your map click <b>TexGen-&gt;TexGen Whole map</b> this takes its time, but produces a fairly good start. </br>
+</p>
+<p>
+For manual editing you select <b>Texture</b> from the brush modes and click <b>Texturemode-&gt;Select Texture</b>.<br>
+This dialog lets you choose a texture to paint with.</br>
+</p>
+<p>
+<b>Texturemode-&gt;Select Color</b> lets you pick a single-colored texture. This is useful for darkening/brightening/coloring the map if used with <b>Texturemode-&gt;Blend</b> with low <b>Brush Strength</b>
+</p>
+<p>
+Texturemodes explained:
+</p>
+<table class="wiki">
+<tbody><tr><td><b>Mode</b></td><td><b>Description</b></td></tr>
+<tr><td>Set</td><td>This mode just fills the whole brush area with selected texture, ignoring the brush. <b>Brush Strength</b> determines the Brightness.
+</td></tr><tr><td>Add</td><td>No idea how this could be useful :)
+</td></tr><tr><td>Blend</td><td>Default mode. Just does what you would expect. <b>Brush Strength</b> determines the Opaqueness.
+</td></tr><tr><td>Stamp</td><td>Stamps selected texture onto map. Respects alpha channel of texture and ignores brush. Useful for splatting metalpatches.
+</td></tr><tr><td>TexGen</td><td>Uses TexGen-settings to paint inside brush area. Useful for repairing small parts of the map, while preserving the rest.
+</td></tr></tbody></table>
+<h3 id="AddingFeaturestoyourmap">Adding Features to your map<a title="Link to this section" href="#AddingFeaturestoyourmap" class="anchor"></a></h3>
+Select <b>Feature</b> From the brush editing modes.</br>
+Pick a feature from the <b>Select Feature</b> Button in the editing mode dialog and place it where you like on the map.</br>
+</li></ul><h3 id="Savingyourmap">Saving your map<a title="Link to this section" href="#Savingyourmap" class="anchor"></a></h3>
+<p>
+Click on <b>File-&gt;Save</b> If you have made a new map it will prompt you where to save the first time, after that it will overwrite that file with each subsequent save.</br>
+If you want to save your current map as another file click <b>Save As</b> and specify where to save it, all subsequent <b>Save</b> commands will use that file.</br>
+</p>
+</li></ul><h3 id="Openingothermaps">Opening other maps<a title="Link to this section" href="#Openingothermaps" class="anchor"></a></h3>
+<p>
+It is not advised to open maps by that were not made with spring map edit as they may reference features that are not available to it.</br>
+However if you wish to do so anyway you can simply open the sdz or sd7 with a program such as p7z or similar and open the smf file like a regular map you made yourself.</br>
+Not that features the map has that sme does not will not be usable or maybe even lost when saving again, you can try to import those features manually but it is not advised to do so.</br>
+</p>
+</li></ul><h3 id="Exportingyourmaptospring">Exporting your map to spring<a title="Link to this section" href="#Exportingyourmaptospring" class="anchor"></a></h3>
+<p>
+To export your map, first copy the included folder called <b>template_map.sdd</b> into your spring maps folder.</br>
+Save your map as 'map' in that folder and edit mapinfo.lua with a generic text editor, change the name and author fields (make sure they are surrounded by <b>"</b> on both sides and have a <b>,</b> after that).</br>
+Your map should then be visible under that name in (spring)lobby, make sure to update your cache if you import it while the lobby is running (Tools->Reload Games/Maps in springlobby).</br>
+To share your map with others simply zip or 7z compress the contents inside the template folder (not the folder itself) and upload it to <a href="http://springfiles.com/">Springfiles<a>.</br>
+</p></div>
+</body></html>

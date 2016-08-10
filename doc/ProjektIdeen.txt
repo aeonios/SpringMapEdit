@@ -1,0 +1,268 @@
+---next release TODO Liste
+
+
+---generelle TODO Liste
+
+-use diamond square noise for variation in erosion breakHeight/dropletSize
+-add external dds usage for sm2 export (texturemap and minimap)
+
+
+-fix compressed TGA loading (need own tga loading code :/ maybe just add rle?)
+
+-autotexturing: verschiedene texturgenerator-zonen definierbar machen. ähnlich typemap. 
+  je zone wird ein bestimmtes setup verwendet. (blending zwischen zonen?)
+-autotexturing: (mehrere überlagerte) bumpmaps oder noisefunktionen nutzen und damit pseudo schatten/detail erzeugen
+-autotexturing: gelände-schattenwurf in textur integrieren
+
+-laden von 3DO modellen (optional...)
+
+-Projektdaten speicherbar machen. (heightmap+texturemap, auto-texture-settings?) (partially done)
+-keysettings GUI
+
+-Skybox rendering einbauen
+
+UI Verbesserungen:
+-Features selektierbar machen, rotation über mousedrag (siehe objektselektion unten)
+-Shortcuts mit der GUI verbinden
+-Shortcuts im GUI Menü anzeigen
+-Alle Bearbeitungsoptionen in die GUI packen (Erode/smooth...)
+
+-Möglicherweise Objektselektion/besseres mauszeigen mittels "gluUnProject", und auslesen der Z-Komponente aus dem depth buffer.
+  Das könnte man ermögliche mittels 2 Messungen. Einmal Nur Terrain, danach mit objekten.
+  Wenn sich der Punkt unterscheidet->Objekttreffer.
+  Dann nurnoch in der Umgebung nach einem Objekt suchen.
+  
+  Variante 1: Terrain zeichnen. Z auslesen. Alle Objekte Zeichnen. Z auslesen. objekt mitteln.
+  Variante 2: Terrain zeichnen. Z auslesen. Nach jedem Objektzeichnen Z auslesen, und auf änderung überwachen. Z anders->das objekt wars.
+		-Performance von Variante 2 prüfen!!!
+
+
+-Brush patterns eine modulo-option geben. (entspricht dem texture-stamp),
+  allerdings generell für jede funktion einbauen.
+  
+
+-refactor SME methods: Do not give brushes inside those methods, rather give arrays directly. (Or some other structure)
+
+
+
+-custom minimap for exporting
+-minimap zwar nicht importieren, aber "save minimap from sm2" option, für späteres einbinden
+
+-fix terrain being rendered one quadSize to far in +x and +z (and brush...)
+-feature aligning etwas anpassen (eins nach oben links?, bzw doch genau auf vertex?)
+-feature x/z rotation based on face normal (respect tdf->upright)
+
+-GUI aufräumen/strukturieren
+
+-GUI für auto-texturing (Texturen laden, übergänge einstellen)
+--Laden und anzeigen der verschiedenen Texturen.
+--eine art grafik, in der rechtecke gezogen werden:
+   siehe guidesign.png
+
+   
+
+---DONE:
+DONE...-fix missing feature in FolsomDamFinal:
+  it gets loaded&saved, just not displayed... (was: wrong rounding in featureAdd function...)
+DONE...-autotexturing brush (rewrite autotexturing to accept a brush)
+DONE...-externalize autotexturing (make loadable AT skripts)
+DONE...-LOD-Distanzen einstellbar machen (Terrain+Feature)
+DONE...-Tastenbelegung frei definierbar machen
+DONE...-Mausinvertierung einstellbar machen
+DONE...-Metalmap/slope/etc etwas aufhellen, damit man die struktur noch erkennt (umschaltbar) gelöst als: blend texturemap on any map
+DONE...-BUG: Feature Texture von feature "smothdist" schwarz?? (war PNG wird premultiplied geladen bug...)
+DONE...-laden von SM2 files
+DONE...-Feature-ID's case-insensitiv machen? (generell: toLowerCase auf die namen?)
+DONE...-Anleitung/Tutorial schreiben (Readme/Howto/Lizenz?)
+DONE...-Programmeinstellungen speicherbar machen. (Rendersettings objekt)
+DONE...-keysettings änderbar machen (config/keys.ini)
+DONE...-Anzeigen, welche Texturmap (Texture/Slope/Metal/Veg/Type) gerade sichtbar ist
+DONE...-Aufteilen der "Brush Strength" funktionen auf verschiedene menüelemente...
+  FeatureID (done)
+  feature Rotationspeed (vielleicht einfach festlegen?) + setRotation funktion?
+  Typemap Type
+DONE...-Brush patterns ladbar machen (=beliebig geformte pinsel. skaliert jeweils mit der brush größe)
+  Hierzu erstellt man die brushes am besten in 100x100. || ähm, 100*tileSizeInPixels = 800. || ähm, 1 pixel brush ist nur ein tile
+  Für kleinere Pinsel wird dann runtergerechnet.
+  Eine GUI ähnlich der FeatureSelector GUI, welche die Pinselformen anzeigt.
+DONE...-give a "no water" switch, which disables water rendering, and offsets min and max height by 50 on SM2 export.
+DONE...-load-all sollte extension entfernen
+DONE...-Lightmaps für Features mit einbinden (Licht beim rendern deaktivieren---prüfen, glaub das war nur additiv...)
+  es gibt scheinbar mehrere renderpfade. leider keine einfache sache.
+  das das simple rendering in spring deaktiviert einfach die beleuchtung, das machen wir jetzt auch
+DONE...-featuremap (display/edit/import/export)
+  Wird nicht als Bitmap, sondern im gleichen Format wie in SM2 exportiert.
+  Dadurch können wir die Rotation mitspeichern.
+DONE...-Feature GUI, mit vorgerenderten bildern der features.
+DONE...-geovents (sind geovents features -> ja! einfach "geovent" als featureID, dann passts.)
+DONE...-slopemap (display/export)
+DONE...-vegetationmap (import/export/display/edit)
+DONE...-typemap (import/export/display/edit)
+DONE...-metalmap (import/export/display/edit)
+DONE...-LOD für Features (nur bis einstellbares LODLevel rendern)
+DONE...-heightmap 16bit export prüfen...(dateiformat? nur daten? oder wenigstens breite+daten?)
+DONE...-terrain-höhe in gui einstellbar machen
+DONE-gui verbessern ;) (SWT, falls das mal läuft...)
+DONE...-direktes exportieren/importieren in das SMF (SM2) Mapformat,
+       --ohne umweg über mapconv
+       --allerdings lademöglichkeit für heightmaps/metalmaps etc beibehalten
+DONE...-optimieren der Hintergrundstruktur der Featuremap (meist eher wenige features)
+DONE...-Geschwindigkeiterhöhen/anforderungen runterschrauben
+DONE...-alphamasking anstelle von alphablending nutzen
+  --keine Sortierung mehr nötig! 
+  (die extra liste bleibt trotzdem, da wir den ständigen blendstate wechsel sparen wollen.
+   das wird allerdings nochmal geprüft...)
+DONE...-Genaueres/Schnelleres Thread parken mit LockSupport.parkNanos(nanoSecs)
+DONE...-CPU Last reduzieren wenn idle (sleep, wenn nix los ist. nur rendern, wenn sich was ändert)
+DONE...-TESTEN: GL.glHint(GL.GL_PERSPECTIVE_CORRECTION_HINT, GL.GL_NICEST); //GL.GL_FASTEST  or GL.GL_DONT_CARE (kein unterschied)
+DONE...-optimieren der Normalen-berechnungsgeschwindigkeit (ein dreieck langt.... 3ms gespart pro block)
+DONE...-center LOD calculations (not upper left)
+DONE...-center isBlockVisible calculations + make it respect blocksize
+DONE...-optimieren der Texturerzeugung (geschwindigkeit verdoppelt)
+(abschalten der texturkompression verzehnfacht die geschwindigkeit...)
+DONE...-triangleStrip und interleavedArray für VBO (rendergeschwindigkeit verdreifacht)
+DONE...-LOD für VBO implementieren
+DONE...-VBO mit LOD benchmarken
+DONE... -face selektion per maus (approximation über camerablickwinkel...)
+DONE...-erosions-algorithmus einbauen
+DONE...-texturgrenzen miterodieren.
+     zusatzlevel, für ebene flächen, und für steile flächen.
+    je nach steilheit zwischen diesen leveln blenden...
+
+
+
+
+
+
+---Spring map daten
+Alles Bitmaps!
+-Featuremap:	512 x 512
+-Heightmap:		513 x 513	//Ein Pixel mehr...
+-Metalmap:		513 x 513	//Ein Pixel mehr...
+-Textur:		4096 x 4096
+
+
+
+---Performance
+DONE... -aufspalten der map in mehrere kleine vertexbuffer,
+		statt einen riesigen.
+DONE... -rendern nur der sichtbaren blöcke
+		(radius um aktuelle x/z koordinaten)
+DONE... -blockgröße sollte der texturgröße angepasst sein,
+         da pro block nur eine textur benutzt werden kann.
+
+-rendern nur der wirklich sichtbaren blöcke: frustrum culling
+
+DONE...-low-detail blöcke nutzen. (tatsächliche implementation: Performance.txt)
+
+-Textur braucht zvuiel VRAM: (32*64*8)^2 * 3 == 768 MB
+  (Hier MUSS optimiert werden. siehe unten (doppelte tile verwendung))
+
+
+-Freigeben von nicht benötigten Blöcken, falls gewisse Grenzen überschritten werden.
+  Da wir die Größe der Daten nur abschätzen können, ist das alles nicht exakt, aber nuja.
+  Freigabestrategie:
+  Sobald zuviele Daten im VRAM sind, wird bei jedem zeichneBlock(index, LOD) das am weitesten entfernteLOD,
+  welches geladen ist gesucht, und gelöscht. simpel, und effektiv.
+  
+  Kommentar: Hier bei den Vertices bringt das nicht die Welt. interessanter ist das ganze schon auf texturseite...
+  
+
+---Malen direkt auf der Map.
+-Für dieses Feature müssen wir heightmapgröße und texturgröße
+sinnvoll aneinander anpassen
+-Malen auf der map kann man nur mit vorgefertigten tile-texturen.
+Im Hintergrund ist ein Ergebnisbitmap der Zielgröße geladen.
+Malen wir auf der map passiert folgendes:
+ map<->bitmap zuordnung
+ je nach pinsel wird mit der gewählten textur auf diese stelle gemalt. (ecken transparent, etc)
+ (kA wie schnell das wird...)
+ wenn man die maus loslässt, (oder sofort, je nach speed),
+ werden die korrespondierenden texturen neu erstellt.
+
+Zum Teil implementiert.
+Damit das einigermaßen sinnvoll wird müssen wir die Methodik ändern:
+
+-keine komplette Textur im hauptspeicher mehr.
+-texturen werden bei bedarf generiert aus Blendmaps (Alpha) und den Tile-Texturen der jeweiligen Level.
+-hashwert dieser textur wird generiert:
+-falls eine zweite textur genauso aussieht, wird diese nicht auf die graka geladen,
+sondern nutzt die schon geladene. reference-counter auf eine textur zählt mit, ob diese noch genutzt wird.
+
+bei schlecht "tile"nden maps bringt das sogut wie nichts.(VRAM mässig. Knapp 750 MB RAM sparen wir schon ;) )
+Wichtig wäre hier auch das alle verwendeten tiles gleich groß sind. (keine interferenzmuster)
+
+-Alternative Idee:
+-TextureLOD: berechnung (evtl über FBO auf graka) von niedriger aufgelösten texturen.
+  fbo bringt nix...beste textur noch im vram
+  cpumässig skippen wie beim terrain....
+-freigeben von nicht benötigten texturblöckenLOD
+Texturen werden später eh dynamisch auf der Grafikkarte erstellt (Blendmaps+tiletexturen)
+überlegen...
+
+
+DONE...-autotexturierung möglich: definition in welcher höhe eine bestimmte textur gemalt werden soll.
+       (ebene 1 wasser. ebene 2 sand, ebene 3 grün, 4 berge, 5 schnee etc)
+
+---Geländebearbeitung
+
+-undo-funktion (kopie der heightmap) (speicherfresser... weglassen. user kann selbst speichern+laden)
+DONE... -verschiedene größen pinseltools:
+DONE... -anheben
+DONE... -absenken
+DONE... -angleichen(smoothing)
+DONE... -höhe setzen(und auslesen)
+
+--idee aus battlefield:
+-strassentools von A nach B: ebnet einen weg unter berücksichtigung des geländes,
+-malt gleichzeitig strassentextur(falls gewünscht)
+
+
+
+---Metalmap(geovent) bearbeitung
+-siehe malen direkt auf map
+
+
+
+---Feature bearbeitung
+-Waldgenerator (automatisches setzen von bäumchen / steinen, etc)
+
+
+DONE...-Darstellung von Features (werden Displaylists)
+DONE...-Laden von .3DO/spring features... (displaylist erstellen, textur laden)
+
+-Lademöglichkeit für Features:
+1. Basis Ordner in dem alle .tdf Dateien eingelesen werden
+2. Hinzufügen von .tdf Dateien
+3. Aus diesen werden jeweils die Features geladen (ohne .tdf, kein Feature)
+4. Beim Export wird ein neues .tdf erzeugt, das alle benutzten Features beinhaltet.
+weiterhin werden alle benötigten Resourcen mitkopiert: (modelle + texture)
+
+Ziel ist es am ende eine fertige Ordnerstruktur zu haben, die nurnoch mit 7zip gepackt werden muss.
+
+
+---Typemap bearbeitung
+-definitionsmöglichkeit von terraintypen
+-malmöglichkeit auf der map
+-darstellung auf der map
+-integration mit texturgeneration (basis nicht höhe, sondern der typ) 
+  (könnte ok aussehen, da typemap gouraud geblendet wird.)
+
+D.h.: Strassentextur wo Strassentype gesetzt ist.
+Dies kann mit den normalen Stufen kombiniert werden.
+->je nach höhe/steilheit und Type wird die Textur gesetzt
+
+Das Beispiel mit straßen ist eher unschön. aber man könnte zwischen steinig und sandig unterscheiden.
+(strassen krümmen sich, was die textur nicht kann)
+Dies wird mit dem Straßentool ermöglicht
+
+
+
+---Export der smd Textdaten
+-sonnenposition/richtung
+-wasser farben/textur?
+-himmel?
+
+
+
+

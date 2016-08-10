@@ -1,0 +1,21 @@
+[geovent] 
+   { 
+   world=allworld; 
+   description=Geovent; 
+   category=none; 
+   object=buds.s3o; 
+   footprintx=1; 
+   footprintz=1; 
+   height=8; 
+   blocking=0;
+   upright=0; 
+   hitdensity=0; 
+   energy=50;
+   metal=0; 
+   damage=50; 
+   flammable=0; 
+   reclaimable=1; 
+   autoreclaimable=1; 
+   featurereclamate=smudge01; 
+   seqnamereclamate=tree1reclamate; 
+   } 

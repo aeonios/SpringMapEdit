@@ -1,0 +1,20 @@
+[cluster1_dead]
+	{
+	world=allworld;
+	description=Palm tree;
+	category=arm_corpses;
+	object=cluster1_dead.s3o;
+	footprintx=4;
+	footprintz=4;
+	height=20;
+	blocking=1;
+	hitdensity=50;
+	energy=500;
+	damage=4000;
+	flammable=0;
+	reclaimable=1;
+	indestructable=1;
+	autoreclaimable=1;
+	featurereclamate=smudge01;
+	seqnamereclamate=tree1reclamate;
+	}

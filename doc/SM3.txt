@@ -1,0 +1,31 @@
+Additions:
+
+-We need texture coordinates for each map.
+
+Task: Is it possible to calculate those inside the VertexShader?
+
+For this task we would need the absolute position for each vertex.
+Basically this directly is untransformed X/Z for each vertex.
+(We could even stop supplying Texture Coordinates at all.)
+
+So we could calculate:
+
+gl_TexCoord[0] = (gl_Vertex.xz / tilesize0);
+gl_TexCoord[1] = (gl_Vertex.xz / tilesize1);
+gl_TexCoord[2] = (gl_Vertex.xz / tilesize2);
+gl_TexCoord[3] = (gl_Vertex.xz / tilesize3);
+//etc...
+
+If we want to stay independend of actual vertex position,
+we could setup gl_MultiTexCoords0 to contain a basic position like now,
+where start of map == 0, end of map == 1. This means TileSize == mapsize.
+
+tilesizes would be supplied as a relative divisor then. (instead of absolute)
+256x256 texture. A tilesize of 128 would be supplied by a divisor of 2
+Means: supply Tilesize as (mapsize/tilesize)
+
+tilesizes will be supplied as uniforms.
+
+Shader could be optimized to reuse coordinates for identical tilesizes
+(actually only if texsize/tilesize is identical)
+

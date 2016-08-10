@@ -1,0 +1,197 @@
+Aktuelle FPS:
+
+(ohne Features)
+16x16x64 VBO: 1150
+16x16x64 DiL: 1210
+
+
+
+
+
+Performance überlegungen/TODO:
+
+
+0. automatisierte Benchmark einbauen, mit genauer analysemöglichkeit (renderall aktiv)
+-statische kamera:
+--FPS während mapaufbau
+--FPS während texturaufbau
+--FPS bei fertiger map
+--FPS bei höhenfeld manipulation mit festgeleger pinselgröße/stärke
+--FPS bei texturmanipulation
+
+-kameraflug (wird bei LOD interessant):
+--FPS bei fertiger map
+
+/********* Benchmarks (VBO sind noch quads)
+
+Ohne LOD, full detail:
+
+(W)x(H)x(BlockSize)
+16x16x128 DiL: 220
+16x16x128 VBO:  58
+
+16x16x64 DiL: 228
+16x16x64 VBO:  58
+
+16x16x32 DiL: 225
+16x16x32 VBO:  58
+
+16x16x16 DiL: 110
+16x16x16 VBO:  55
+
+Man sieht das die VBO's eindeutig grafikkartengebunden sind.
+Limit durch Spring (um alle mapgrößen darstellen zu können ist:
+N*N*64, d.h. 64x64 Blockgröße (kurze Nachforschung ergab: alle map längen sind vielfache von 2...)
+N*N*128, d.h. 128x128 Blockgröße geht in Ordnung.
+Texturgröße wäre damit 1024*1024. Klingt soweit gut.
+
+
+Mit LOD, LOD-dists: 400 + (lod * 400):
+
+(W)x(H)x(BlockSize)
+16x16x32  DiL mit LOD:  368
+16x16x64  DiL mit LOD: 1210		!!!(default bench)
+16x16x128 DiL mit LOD: 1130
+32x32x64  DiL mit LOD:  360
+32x32x128 DiL mit LOD: 1055
+
+16x16x32  VBO mit LOD: 215
+16x16x64  VBO mit LOD: 250
+16x16x128 VBO mit LOD: 207
+32x32x64  VBO mit LOD: 205
+32x32x128 VBO mit LOD: 202
+
+Umstellung auf Interleaved Arrays:
+16x16x64  VBO mit LOD: 708		!!!Erheblicher Rendergeschwindigkeitszuwachs!!!
+Umstellung auf TriangleStrip:
+16x16x64  VBO mit LOD: 857		!!!Rendergeschwindigkeitszuwachs!!! !!!(default bench)
+32x32x64  VBO mit LOD: 253
+32x32x128 VBO mit LOD: 895 (nur 150fps unter DiL!!!)
+
+Man müsste eine Möglichkeit finden CPU und Grafikkartenleistung abzustimmen.
+Bei meiner CPU ist die harte grenze wohl 16x16=256 Blöcke pro Frame (nächste Stufe: 32*32=1024 ... ist schon zuviel)
+
+-Zum aufrechterhalten der Geschwindigkeit beim erzeugen der Großen Blöcke,
+evtl pro frame nur einen Teil des Blocks in den Buffer schreiben (geht nur bei VBO...)
+
+Erzeugen eines LOD_0 64x64 Vertex Blocks:
+DiL:  8 ms
+VBO: 17 ms (umweg über RAM)
+VBO: 25 ms (direkt in Graka)  (komischerweise ist der direkte weg langsamer...)
+VBO:  5 ms (nach umstellung auf trianglestrip!!)
+
+Jetzt wo VBO's mit TriangleStrips und Interleaved Arrays laufen kann man folgendes sagen:
+1. erstellen ist wie gewünscht schneller. (gezieltes update der konkreten änderung evtl noch schneller!)
+(erstellen ging noch etwas schneller wenn man erst in ein array einfügt, und das dann an in den buffer einfügt)
+(System.arraycopy(...))
+2. rendern ist nurnoch ein wenig langsamer als bei den displaylists.
+
+Flaschenhals ist zurzeit das erzeugen(smoothen) der Normalen.
+Fast 4ms (von 5ms bei VBO, und 8ms bei DL) kostet das erzeugen(smoothen) der Normalen.
+Hier müsste man noch optimieren...
+
+
+Texturen erzeugen optimieren:
+DONE...-umstellen auf ein array mit allen 3 farben
+optimal wäre hierbei, das man zeilenweise operieren kann. sprich:
+textureMap[y][x]
+y und x sind hier vertauscht, damit wir später: textureData.put(textureMap[y], x*3, blockSizeInPixels*3) aufrufen können.
+DONE...-Prüfen inwieweit das überall funktioniert. (Klappt)
+
+Erzeugen eines LOD_0 64x64 (512x512) Textur Blocks:
+Zurzeit:   22 ms
+optimiert: 10 ms
+ohne texturkompression: 2 ms (wäre in ordnung!)
+
+
+
+/*********
+
+Ergebnisse Performance:
+zukünftige Blockgrößen:
+1. 64x64   Tile mit 512x512   Textur
+2. 128x128 Tile mit 1024x1024 Textur (erlaub nur vielfache von 2x2 maps)
+...Jetzt fehlen nurnoch die VBO Messungen
+
+
+1. 
+-Detail-Blockgröße auf 8x8 (4x4, je nach CPU) reduzieren.
+-jedes höhere LOD verdoppelt die beinhaltenden tiles:
+LOD_0: 8x8
+LOD_1: 16x16
+LOD_2: 32x32
+LOD_3: 64x64
+-die anzahl der dargestellten vertices bleibt jedoch gleich (die von LOD_0)
+Netter ansatz, aber ungleiche Blockgrößen geben viele Probleme...
+
+DONE... -Ansatz mit reduzierter Tilezahl, bei gleicher Blockgröße von 64x64 Tiles:
+LOD_0: 64x64
+LOD_1: 32x32
+LOD_2: 16x16
+LOD_3: 8x8
+LOD_4: 4x4
+LOD_5: 2x2
+
+Umsetzung der LOD's: 
+1.1 -ansteuern des einzigen VBO über verschiedene IndexBuffer.
+1.2 -Alternative dazu wären jeweils eigene VBO's für jedes LOD (wie bei DL).
+Vorteil davon wäre: Durchschnittswertbildung für genauere Darstellung. (Vertex und Normalen!)
+Weiterhin ist mit der alternative auch weiterhin ein leichter wechsel von VBO zu DL möglich
+Nachteil: locken/unlocken mehrerer VBO's für änderungen an der heightmap
+
+
+
+Problem: Löcher im Mesh.
+Lösung: Spezielle Übergangsstreifen? ignorieren?
+Theoretisch kann ein LOD an mehrere, beliebige andere LOD's grenzen. Müsste dynamisch angepasst werden...
+Rand immer in voller Tile-auflösung? schlecht...
+erstmal ignorieren... (sieht ok aus...)
+
+
+Problem: Texturen sind relativ groß. Komplettes aktualisieren zu langsam.
+Lösung: Feinere Pseudo-block struktur für texturen.
+512x512 Texturen werden in 128x128 Blocke unterteilt. (4x4).
+Pro Frame wird dann nur ein solcher sub-block aktualisiert.
+
+
+
+2. Falls direktmanipulation von java aus vernünfig möglich ist:
+(änderungsgeschwindigkeit unabhängig von blockgröße, d.h. nur übertragen der tatsächlichen änderungen möglich)
+-umstellen auf dynamische renderobjekte. (VBO, texturobjekte)
+-manipulation a) in den java strukturen, und b) in der grafikkarte direkt.
+DONE...-blockgröße maximieren(64 bzw 128), um cpu-last zu minimieren
+DONE...-statische (große) blockgröße möglich. leichte LOD implementation und leichte texturierung
+
+-verwenden von indexbuffern für LOD:
+--Vorteile:
+  -Spart eine menge neuberechnung und Speicherplatz, da alle normalen und vertices einfach nur neu indiziert werden.
+  -Indexbuffer sind viel kleiner als Vertex + Normale + texturkoordinaten. 
+    (12 + 12 + 8) = 32 Byte pro Vertex, gegenüber Index 4 Byte pro Vertex
+  
+--Nachteile:
+  -keine vernünftigen Normalen... (da für jeden vertex die LOD_0 normale automatisch benutzt werden würde)
+  -Effektiv bräuchte man einen buffer pro LOD an normalen extra.. kompliziert mit indexbuffern
+
+Umsetzung ohne Indexbuffer, genau wie Displaylists...
+
+
+3. Falls 2. nicht möglich(schnell genug) ist:
+-erstellen der benötigten LOD's wie jetzt auch. doppeltes ablegen auf der graka
+Beispielrechnung für 4 LOD's:
+2048*2048 Heightmap (32*32 in Spring)
+LOD_0: 48+32+48 = 128 MB
+LOD_1: 12+8+12 = 32 MB
+LOD_2: 3+2+3 = 8 MB
+LOD_3: 0.75+0.5+0.75 = 2 MB
+-------
+170 MB
+
+
+4. Simpelste methode erscheint hier punkt 2.
+Die CPU-Last als Flaschenhals wird durch die Große block-größe reduziert.
+Die Grafikkartenlast (die zurzeit gegen VBO's spricht) wird durch LOD reduziert.
+(Funktioniert aber nur bei guter updatebarkeit von textur und vertexdaten... TESTEN)
+(texturdaten sind momentan komprimiert... updateprobleme? unkomprimiert... zu groß?)
+
+
+Implementiert wurde 3 (mit Basis 2)

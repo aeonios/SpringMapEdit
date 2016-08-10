@@ -1,0 +1,60 @@
+[TEXTUREGENERATORSETUP]
+{
+	Levels=6;
+	[FLAT]
+	{
+		Texture1=beach2.png;
+		Texture2=grass4.png;
+		Texture3=grass3.png;
+		Texture4=grass5.png;
+		Texture5=dirt1.png;
+		Texture6=ice.png;
+	}
+	[STEEP]
+	{
+		Texture1=sandstone.png;
+		Texture2=sandstone.png;
+		Texture3=stone.png;
+		Texture4=stone.png;
+		Texture5=stone3.png;
+		Texture6=stone2.png;
+	}
+	[HEIGHTTRANSITIONS]
+	{
+		End1=0.1;
+
+		Start2=0.2;
+		End2=0.3;
+
+		Start3=0.4;
+		End3=0.5;
+
+		Start4=0.6;
+		End4=0.7;
+
+		Start5=0.8;
+		End5=0.9;
+
+		Start6=0.9;
+	}
+	[STEEPTRANSITIONS]
+	{
+		Flat1=0.005;
+		Steep1=0.03;
+
+		Flat2=0.005;
+		Steep2=0.03;
+
+		Flat3=0.005;
+		Steep3=0.03;
+
+		Flat4=0.005;
+		Steep4=0.03;
+
+		Flat5=0.005;
+		Steep5=0.03;
+
+		Flat6=0.005;
+		Steep6=0.03;
+	}
+}

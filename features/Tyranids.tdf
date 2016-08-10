@@ -1,0 +1,83 @@
+[Tyranid1] 
+{ 
+   world=allworld; 
+   description=TyranidCappilaryTower; 
+   category=Vegitation; 
+   object=Tyranid1.S3O; 
+   footprintx=11; 
+   footprintz=7; 
+   height=550; 
+   blocking=1; 
+   hitdensity=10; 
+   energy=800;
+   metal=0; 
+   damage=2800; 
+   flammable=0; 
+   reclaimable=1; 
+   autoreclaimable=1; 
+   featurereclamate=smudge01; 
+   seqnamereclamate=tree1reclamate; 
+} 
+
+[Tyranid2] 
+   { 
+   world=allworld; 
+   description=TyranidCappilaryTower; 
+   category=Vegitation; 
+   object=Tyranid2.S3O; 
+   footprintx=8; 
+   footprintz=8; 
+   height=357; 
+   blocking=1; 
+   hitdensity=15; 
+   energy=600;
+   metal=0; 
+   damage=2200; 
+   flammable=0; 
+   reclaimable=1; 
+   autoreclaimable=1; 
+   featurereclamate=smudge01; 
+   seqnamereclamate=tree1reclamate; 
+   } 
+
+[Tyranid3] 
+   { 
+   world=allworld; 
+   description=TyranidCappilaryTower; 
+   category=Vegitation; 
+   object=Tyranid3.S3O; 
+   footprintx=4; 
+   footprintz=4; 
+   height=272; 
+   blocking=1; 
+   hitdensity=10; 
+   energy=450;
+   metal=0; 
+   damage=2000; 
+   flammable=0; 
+   reclaimable=1; 
+   autoreclaimable=1; 
+   featurereclamate=smudge01; 
+   seqnamereclamate=tree1reclamate; 
+   } 
+
+[TyranidC] 
+   { 
+   world=allworld; 
+   description=TyranidCappilaryTower; 
+   category=arm_corpses; 
+   object=TyranidC.S3O; 
+   footprintx=17; 
+   footprintz=17; 
+   height=4972; 
+   blocking=1; 
+   hitdensity=24; 
+   energy=2350;
+   metal=0; 
+   damage=6500; 
+   flammable=0; 
+   reclaimable=1; 
+   autoreclaimable=1; 
+   featurereclamate=smudge01; 
+   seqnamereclamate=tree1reclamate; 
+   } 

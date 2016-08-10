@@ -1,0 +1,17 @@
+[TEXTUREGENERATORSETUP]
+{
+	Levels=1;
+	[FLAT]
+	{
+		Texture1=ttd.png;
+	}
+	[STEEP]
+	{
+		Texture1=ttd.png;
+	}
+	[STEEPTRANSITIONS]
+	{
+		Flat1=0.005;
+		Steep1=0.03;
+	}
+}

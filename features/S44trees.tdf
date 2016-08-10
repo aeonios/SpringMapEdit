@@ -1,0 +1,125 @@
+[S44tree_01a] 
+   { 
+   world=allworld; 
+   description=Tree; 
+   category=Trees; 
+   object=S44tree_01a.s3o; 
+   footprintx=1; 
+   footprintz=1; 
+   height=36; 
+   blocking=1; 
+   hitdensity=5; 
+   energy=100;
+   metal=0; 
+   damage=500; 
+   flammable=0; 
+   reclaimable=1; 
+   autoreclaimable=1; 
+   featurereclamate=smudge01; 
+   seqnamereclamate=tree1reclamate; 
+   } 
+
+[S44tree_01b] 
+   { 
+   world=allworld; 
+   description=Tree; 
+   category=Trees; 
+   object=S44tree_01b.s3o; 
+   footprintx=1; 
+   footprintz=1; 
+   height=36; 
+   blocking=1; 
+   hitdensity=5; 
+   energy=100;
+   metal=0; 
+   damage=500; 
+   flammable=0; 
+   reclaimable=1; 
+   autoreclaimable=1; 
+   featurereclamate=smudge01; 
+   seqnamereclamate=tree1reclamate; 
+   } 
+
+[S44tree_01c] 
+   { 
+   world=allworld; 
+   description=Tree; 
+   category=Trees; 
+   object=S44tree_01c.s3o; 
+   footprintx=1; 
+   footprintz=1; 
+   height=36; 
+   blocking=1; 
+   hitdensity=5; 
+   energy=100;
+   metal=0; 
+   damage=500; 
+   flammable=0; 
+   reclaimable=1; 
+   autoreclaimable=1; 
+   featurereclamate=smudge01; 
+   seqnamereclamate=tree1reclamate; 
+   } 
+
+[S44tree_02a] 
+   { 
+   world=allworld; 
+   description=Tree; 
+   category=Trees; 
+   object=S44tree_02a.s3o; 
+   footprintx=1; 
+   footprintz=1; 
+   height=36; 
+   blocking=1; 
+   hitdensity=5; 
+   energy=100;
+   metal=0; 
+   damage=500; 
+   flammable=0; 
+   reclaimable=1; 
+   autoreclaimable=1; 
+   featurereclamate=smudge01; 
+   seqnamereclamate=tree1reclamate; 
+   } 
+
+[S44tree_sprucea] 
+   { 
+   world=allworld; 
+   description=Spruce tree; 
+   category=Trees; 
+   object=S44tree_sprucea.s3o; 
+   footprintx=2; 
+   footprintz=2; 
+   height=36; 
+   blocking=1; 
+   hitdensity=5; 
+   energy=100;
+   metal=0; 
+   damage=500; 
+   flammable=0; 
+   reclaimable=1; 
+   autoreclaimable=1; 
+   featurereclamate=smudge01; 
+   seqnamereclamate=tree1reclamate; 
+   } 
+
+[S44tree_spruceb] 
+   { 
+   world=allworld; 
+   description=Spruce tree; 
+   category=Trees; 
+   object=S44tree_spruceb.s3o; 
+   footprintx=2; 
+   footprintz=2; 
+   height=36; 
+   blocking=1; 
+   hitdensity=5; 
+   energy=100;
+   metal=0; 
+   damage=500; 
+   flammable=0; 
+   reclaimable=1; 
+   autoreclaimable=1; 
+   featurereclamate=smudge01; 
+   seqnamereclamate=tree1reclamate; 
+   } 

@@ -1,0 +1,37 @@
+1. Create 16bit image from 8bit
+
+We blur the whole image slightly to generate intermediate values.
+This also converts to grayscale.
+
+convert circle.png -gaussian-blur 0x2 -type GrayScale -depth 16 circle_16bit.png
+
+
+
+
+2. Create circle_double.png
+
+montage circle.png circle.png  -tile 2x1  -geometry +0+0  circle_double.png
+
+
+
+
+3. Create circle_small.png
+
+convert circle.png -resize 16x16 -type GrayScale -depth 16 circle_small.png
+
+
+
+
+4. Convert ellipse:
+
+convert ellipse.png -gaussian-blur 0x2 -type GrayScale -depth 16 ellipse_16bit.png
+convert ellipse_cross.png -gaussian-blur 0x2 -type GrayScale -depth 16 ellipse_cross_16bit.png
+
+
+5. Random:
+
+//Not so good. reveals squareness...
+//convert -size 100x100 xc: +noise Random -type GrayScale -depth 16 noise_16bit.png
+
+Noise2:
+convert noise2.png -gaussian-blur 0x2 -type GrayScale -depth 16 noise2_16bit.png

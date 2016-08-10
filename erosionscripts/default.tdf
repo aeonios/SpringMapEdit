@@ -1,0 +1,23 @@
+[EROSIONSETUP]
+{
+	useAlternativeWetMethod=false;
+
+	[WET]
+	{
+		Iterations=100;
+		DropletHeight=0.1;
+		EvaporateAmount=0.001;
+	}
+
+	[WET2]
+	{
+		Iterations=1;
+		BreakHeight=1;
+	}
+
+	[DRY]
+	{
+		Iterations=1;
+		BreakHeight=0.05;
+	}
+}

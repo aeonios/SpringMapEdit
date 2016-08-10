@@ -1,0 +1,27 @@
+SpringMapEdit -- A 3D map editor for the Spring engine
+
+Copyright (C) 2008-2009  Heiko Schmitt <heikos23@web.de> <http://saddam.ath.cx:8085/sme>
+
+This distribution contains multiple components, some
+of which fall under different licenses.  By using SpringMapEdit
+or any of the bundled components enumerated below, you
+agree to be bound by the conditions of the license for
+each respective component.
+
+
+SpringMapEdit license:
+----------------------
+
+  SpringMapEdit is distributed under the GPL license version 2 (see GPLv2.txt).
+
+
+JOGL license:
+-------------
+
+  JOGL is distributed under the BSD license. (see LICENSE-JOGL-1.1.1.txt)
+
+
+SWT license:
+------------
+
+  SWT is distributed under the Eclipse Public License - v 1.0 (see epl-v10.html)
