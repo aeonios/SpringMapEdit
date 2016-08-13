@@ -1695,7 +1695,7 @@ public class MapRenderer
 			e.printStackTrace();
 		}
 		
-	    /* Turn off vsync */
+	    /* Set vsync */
 	    gl.setSwapInterval(rs.vsync ? 1 : 0);
 	    
 	    /* Activate Backface culling */

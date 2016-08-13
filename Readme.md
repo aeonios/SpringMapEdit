@@ -98,13 +98,14 @@ If Java can not find a batch of RAM as large as given number, it won't start, so
 
 Movement:
 
-SPACE		Toggle Mouselook
-MOUSE		Look around / move brush / actions
-ARROWS		Move around
-SHIFT		Hold to move around faster
-CTRL		Hold to move slower
-L		Lock Camera Height (useful for looking down and moving with arrows)
-B		Toggle Invert Mouse Y
+ARROWS					Move around
+Scrollwheel/Pageup/Pagedown	Zoom in/out
+Middle Mouse Button			Mouselook 	
+L						Toggle Mouselook
+MOUSE						Look around / move brush / actions
+SHIFT						Hold to move around faster
+CTRL						Hold to move slower
+B						Toggle Invert Mouse Y
 
 
 Editing:

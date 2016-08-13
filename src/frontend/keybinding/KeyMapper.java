@@ -112,7 +112,6 @@ public class KeyMapper
 		commandMap.put("RENDER_DISABLE_LOD", new Render_Disable_LOD(smeGUI));
 		commandMap.put("RENDER_SMOOTH_NORMALS", new Render_Smooth_Normals(smeGUI));
 		commandMap.put("RENDER_FAST_SMOOTH_NORMALS", new Render_Fast_Smooth_Normals(smeGUI));
-		commandMap.put("RENDER_USE_VBO", new Render_Use_VBO(smeGUI));
 		commandMap.put("RENDER_FILTER_TEXTURES", new Render_Filter_Textures(smeGUI));
 		
 		commandMap.put("RENDER_VIEW_SLOPEMAP", new Render_Mapmode(smeGUI, MapMode.SlopeMap));
@@ -157,15 +156,13 @@ public class KeyMapper
 
 		setMapping(Integer.toString((int)'b'), "VIEW_INVERT_MOUSE_Y");
 		setMapping(Integer.toString((int)'w'), "RENDER_WIREFRAMEMODE");
-		
-		setMapping(Integer.toString((int)'r'), "RENDER_ALL");
+
 		setMapping(Integer.toString((int)'q'), "RENDER_SHADERWATER");
 		setMapping(Integer.toString((int)'v'), "RENDER_FEATURE_LIGHTING");
 		setMapping(Integer.toString((int)'h'), "RENDER_LIGHTING");
 		setMapping(Integer.toString((int)'o'), "RENDER_DISABLE_LOD");
 		setMapping(Integer.toString((int)'n'), "RENDER_SMOOTH_NORMALS");
 		setMapping(Integer.toString((int)'m'), "RENDER_FAST_SMOOTH_NORMALS");
-		setMapping(Integer.toString((int)'d'), "RENDER_USE_VBO");
 		setMapping(Integer.toString((int)'f'), "RENDER_FILTER_TEXTURES");
 		
 		setMapping(Integer.toString(SWT.F1), "RENDER_VIEW_SLOPEMAP");
