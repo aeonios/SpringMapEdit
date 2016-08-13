@@ -123,11 +123,13 @@ public class SpringMapEditMenuBar {
 									}
 									sme.loadSM2Map(files[0], files[1], (MapRenderer) data[1]);
 									sme.CurrentMap = "";
+									smeGUI.resetCamera();
 							}
 							else
 							{
 								sme.loadSM2Map((File) data[0], (MapRenderer) data[1]);
 								sme.CurrentMap = data[0].toString();
+								smeGUI.resetCamera();
 							}
 							pd.close();
 						} catch (Exception e)
@@ -966,16 +968,6 @@ public class SpringMapEditMenuBar {
 			}
 		});
 		
-		menuItem = new MenuItem(menu, SWT.PUSH);
-		menuItem.setText("Change Map Properties");
-		menuItem.addSelectionListener(new SelectionAdapter() 
-		{
-			public void widgetSelected(SelectionEvent e)
-			{
-				new EditMapDialog(shell, smeGUI).open();
-			}
-		});
-		
 		/////////////////////////////
 		// VIEW Menu
 		/////////////////////////////
@@ -1181,9 +1173,19 @@ public class SpringMapEditMenuBar {
 		menuItem.setText("Settings");
 		menu = new Menu(menuItem);
 		menuItem.setMenu(menu);
+
+		menuItem = new MenuItem(menu, SWT.PUSH);
+		menuItem.setText("Change Map Properties");
+		menuItem.addSelectionListener(new SelectionAdapter()
+		{
+			public void widgetSelected(SelectionEvent e)
+			{
+				new EditMapDialog(shell, smeGUI).open();
+			}
+		});
 		
 		menuItem = new MenuItem(menu, SWT.PUSH);
-		menuItem.setText("Render Settings");
+		menuItem.setText("SpringMapEdit Settings");
 		menuItem.addSelectionListener(new SelectionAdapter()
 		{
 			public void widgetSelected(SelectionEvent e)

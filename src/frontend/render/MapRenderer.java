@@ -95,8 +95,6 @@ public class MapRenderer
 	//Feature sorting
 	private int featuresToRenderCount;
 	private FeatureMapContainer[] featuresToRender;
-	private boolean camPosChanged;
-	private boolean camViewChanged;
 	
 	//Textures
 	private ByteBuffer textureData;
@@ -154,13 +152,12 @@ public class MapRenderer
 	
 	public void camPosChangedNotify()
 	{
-		camPosChanged = true;
-		camViewChanged = true;
+
 	}
 	
 	public void camViewChangedNotify()
 	{
-		camViewChanged = true;
+
 	}
 	
 	public void setMaxFeaturesToDisplay(int maxFeaturesToDisplay)
@@ -173,8 +170,6 @@ public class MapRenderer
 		if (sme == null)
 			return;
 		releaseSpringMapEdit();
-		this.camPosChanged = true;
-		this.camViewChanged = true;
 		this.sme = sme;
 		featureManager = sme.featureManager;
 		this.setBlockSizeinTiles(rs.blockSize);
@@ -692,228 +687,123 @@ public class MapRenderer
 		long start = System.nanoTime();
 		
 		Vector3 v1, v2, v3, v4, vBaseNormal;
-		
-		if (rs.useVBO)
-		{
-	    	//Generate VertexBuffer Data
-	    	vbo[lodLevel].clear();
-				    	
-			xStart = ((index % mapWidthInBlocks) * blockSizeinTiles) + lodSkip;
-	    	yStart = ((index / mapWidthInBlocks) * blockSizeinTiles) + lodSkip;
-	    	
-			v4 = null;
-	    	int xLocal;
-	    	int yLocal = 0;
-			for (int y = yStart; y < (yStart + blockSizeinTiles); y += lodSkip)
-			{
-				xLocal = 0;
-				x = xStart;
-				
-				try {
-					v1 = new Vector3(-rs.quadHalfSize - lodNegativeExtendTileSize + (x * rs.quadSize),
-							heightmap[y-lodSkip][x-lodSkip] * maxHeight, -rs.quadHalfSize - lodNegativeExtendTileSize + (y * rs.quadSize));
-					v2 = new Vector3(-rs.quadHalfSize - lodNegativeExtendTileSize + (x * rs.quadSize),
-							heightmap[y][x-lodSkip] * maxHeight, rs.quadHalfSize + (y * rs.quadSize));
-				} catch (ArrayIndexOutOfBoundsException e) {
-					break; // Temporary hack for a problem that should not happen
-				}
-				v3 = new Vector3(rs.quadHalfSize + (x * rs.quadSize), heightmap[y - lodSkip][x] * maxHeight,
-						-rs.quadHalfSize - lodNegativeExtendTileSize + (y * rs.quadSize));
-				
-				vBaseNormal = Vector3Math.crossProduct(Vector3Math.subVectors(v1, v2), Vector3Math.subVectors(v2, v3)).normalize();
-				
-				/* TEXCOORD */
-				vbo[lodLevel].put(0 + (xLocal / (float)blockSizeinTiles));
-				vbo[lodLevel].put(0 + (yLocal / (float)blockSizeinTiles));
-				/* NORMAL   */vbo[lodLevel].put(getSmoothedNormal(heightmap, x - lodSkip, y - lodSkip, width,
-						height, vBaseNormal, lodSkip, lodSkipTileSize, maxHeight).vector, 0, 3);
-				/* VERTEX   */vbo[lodLevel].put(v1.vector, 0, 3);
-				
-				/* TEXCOORD */
-				vbo[lodLevel].put(0 + (xLocal / (float)blockSizeinTiles)); vbo[lodLevel].put(texFraction + (yLocal / (float)blockSizeinTiles));
-				/* NORMAL   */
-				vbo[lodLevel].put(getSmoothedNormal(heightmap, x - lodSkip, y, width, height, vBaseNormal, lodSkip, lodSkipTileSize, maxHeight).vector, 0, 3);
-				/* VERTEX   */vbo[lodLevel].put(v2.vector, 0, 3);
-				
-				for (; x < (xStart + blockSizeinTiles); x += lodSkip)
-				{
-					v3 = new Vector3(rs.quadHalfSize + (x * rs.quadSize),
-							heightmap[y - lodSkip][x] * maxHeight, -rs.quadHalfSize - lodNegativeExtendTileSize + (y * rs.quadSize));
-					v4 = new Vector3(rs.quadHalfSize + (x * rs.quadSize), heightmap[y][x] * maxHeight, rs.quadHalfSize + (y * rs.quadSize));
-					
-					vBaseNormal = Vector3Math.crossProduct(Vector3Math.subVectors(v1, v2), Vector3Math.subVectors(v2, v3)).normalize();
-					
-					/* TEXCOORD */
-					vbo[lodLevel].put(texFraction + (xLocal / (float)blockSizeinTiles));
-					vbo[lodLevel].put(0 + (yLocal / (float)blockSizeinTiles));
-					/* NORMAL   */
-					vbo[lodLevel].put(getSmoothedNormal(heightmap, x, y - lodSkip, width, height, vBaseNormal, lodSkip, lodSkipTileSize, maxHeight).vector, 0, 3);
-					/* VERTEX   */
-					vbo[lodLevel].put(v3.vector, 0, 3);
-					
-					/* TEXCOORD */vbo[lodLevel].put(texFraction + (xLocal / (float)blockSizeinTiles));
-					vbo[lodLevel].put(texFraction + (yLocal / (float)blockSizeinTiles));
-					/* NORMAL   */
-					vbo[lodLevel].put(getSmoothedNormal(heightmap, x, y, width, height, vBaseNormal, lodSkip, lodSkipTileSize, maxHeight).vector, 0, 3);
-					/* VERTEX   */
-					vbo[lodLevel].put(v4.vector, 0, 3);
-				    
-					//Copy last 2 vectors to new first ones
-					v1 = v3;
-					v2 = v4;
-					
-				    xLocal += lodSkip;
-				}
-				
-				//We need to insert null triangles here, for lf+cr
-				//Last point again
-				/* TEXCOORD */vbo[lodLevel].put(0); vbo[lodLevel].put(0);
-				/* NORMAL   */vbo[lodLevel].put(nullVector.vector, 0, 3);
-				/* VERTEX   */vbo[lodLevel].put(v4.vector, 0, 3);
-				
-				//First point of next row again (=second point of this row)
-				v2 = new Vector3(-rs.quadHalfSize - lodNegativeExtendTileSize + (xStart * rs.quadSize),
-						heightmap[y][xStart - lodSkip] * maxHeight, rs.quadHalfSize + (y * rs.quadSize));
-				/* TEXCOORD */vbo[lodLevel].put(0); vbo[lodLevel].put(0);
-				/* NORMAL   */vbo[lodLevel].put(nullVector.vector, 0, 3);
-				/* VERTEX   */vbo[lodLevel].put(v2.vector, 0, 3);
-				
-				yLocal += lodSkip;
-			}
-			vbo[lodLevel].flip();
-			
-			//Upload our interleaved Array
-	    	boolean isNewArray = (vboID[lodLevel][index] < 0);
-	    	
-	    	if (isNewArray)
-	    		gl.glGenBuffers(1, vboID[lodLevel], index);
-	    	
-	    	gl.glBindBuffer(GL.GL_ARRAY_BUFFER, vboID[lodLevel][index]);
-	    	
-	    	if (isNewArray)
-	    		gl.glBufferData(GL.GL_ARRAY_BUFFER, verticesPerBlock[lodLevel] * 8 * BufferUtil.SIZEOF_FLOAT, vbo[lodLevel], GL.GL_DYNAMIC_DRAW);
-	    	else
-	    		gl.glBufferSubData(GL.GL_ARRAY_BUFFER, 0, verticesPerBlock[lodLevel] * 8 * BufferUtil.SIZEOF_FLOAT, vbo[lodLevel]);
 
-	    	if (rs.outputPerfDebug)
-	    		System.out.println("Done creating VBO Block. LOD: " + lodLevel + " ( " + ((System.nanoTime() - start) / 1000000) + " ms )");
-		}
-		else
-		{
-			/*
-			 * GL_QUADS:
-			 * 940 - 960 FPS bei 77568 Quads
-			 * 160 FPS bei 786432 Quads (mit R)
-			 * 
-			 * GL_TRIANGLES:
-			 * 940 - 960 FPS bei 77568*2 Tris
-			 * 160 FPS bei 786432*2 Tris (mit R)
-			 * 
-			 * GL_TRIANGLE_STRIP:
-			 * 980 FPS bei 77568*2 = 155136 Tris
-			 * 180 FPS bei 786432*2 = 1572864 Tris (mit R)
-			 * 
-			 * TODO for smoothing: store normals somewhere (3 arrays of double?),
-			 * then smooth out normals with adjacent normals
-			 * 
-			 *  1. compute rough normals (smoothed with adjacent normals)
-			 *  2. smooth out those normals by averaging it with adjacent normals
-			 */
-			
-			//Remove old list
-			if (displayListID[lodLevel][index] >= 0)
-				gl.glDeleteLists(displayListID[lodLevel][index], 1);
-			
-			//use DisplayList
-			displayListID[lodLevel][index] = gl.glGenLists(1);
-			gl.glNewList(displayListID[lodLevel][index], GL.GL_COMPILE);
-			
-			/*
-			 * Lodlevel gives the number to add, to reach the next used vertex?
-			 * 0 = 1; //64
-			 * 1 = 2; //32
-			 * 2 = 4; //16
-			 * 3 = 8; // 8
-			 * 4 = 16 // 4
-			 * 5 = 32 // 2
-			 * Which is just 2^LODLEVEL :)
-			 * This number should somehow be used to smooth out the normals.
-			 * 
-			 * algorithm stays the same for each lodlevel,
-			 * just the "skip" increases
-			 * 
-			 */
-			
-			xStart = ((index % mapWidthInBlocks) * blockSizeinTiles) + lodSkip;
-	    	yStart = ((index / mapWidthInBlocks) * blockSizeinTiles) + lodSkip;
-	    	int xLocal;
-	    	int yLocal = 0;
-			for (int y = yStart; y < (yStart + blockSizeinTiles); y += lodSkip)
-			{
-				//START Triangle Strip
-				gl.glBegin(GL.GL_TRIANGLE_STRIP);
-				
-				x = xStart;
-				xLocal = 0;
+		//Generate VertexBuffer Data
+		vbo[lodLevel].clear();
+
+		xStart = ((index % mapWidthInBlocks) * blockSizeinTiles) + lodSkip;
+		yStart = ((index / mapWidthInBlocks) * blockSizeinTiles) + lodSkip;
+	    	
+		v4 = null;
+		int xLocal;
+		int yLocal = 0;
+		for (int y = yStart; y < (yStart + blockSizeinTiles); y += lodSkip) {
+			xLocal = 0;
+			x = xStart;
+
+			try {
 				v1 = new Vector3(-rs.quadHalfSize - lodNegativeExtendTileSize + (x * rs.quadSize),
-						heightmap[y - lodSkip][x - lodSkip] * maxHeight, -rs.quadHalfSize -lodNegativeExtendTileSize + (y * rs.quadSize));
+						heightmap[y - lodSkip][x - lodSkip] * maxHeight, -rs.quadHalfSize - lodNegativeExtendTileSize + (y * rs.quadSize));
 				v2 = new Vector3(-rs.quadHalfSize - lodNegativeExtendTileSize + (x * rs.quadSize),
 						heightmap[y][x - lodSkip] * maxHeight, rs.quadHalfSize + (y * rs.quadSize));
-				//We need the third vertex here for base-normal calculation
-				v3 = new Vector3(rs.quadHalfSize + (x * rs.quadSize),
-						heightmap[y - lodSkip][x] * maxHeight, -rs.quadHalfSize -lodNegativeExtendTileSize + (y * rs.quadSize));
-				
-				/*
-				 * It is VERY important for the gl.glNormal call to stay inside this GL_TRI block,
-				 * else the displaylists are WAY slower....?!?!?
-				 */						
-				vBaseNormal = Vector3Math.crossProduct(Vector3Math.subVectors(v1, v2), Vector3Math.subVectors(v2, v3)).normalize();
-				
-				//First vertex (init trianglestrip)
-				gl.glNormal3fv(getSmoothedNormal(heightmap, x - lodSkip, y - lodSkip, width, height, vBaseNormal, lodSkip, lodSkipTileSize, maxHeight).vector, 0);
-			    gl.glTexCoord2f(0 + (xLocal / (float)blockSizeinTiles), 0 + (yLocal / (float)blockSizeinTiles));
-			    gl.glVertex3fv(v1.vector, 0);
-				
-			    //Second vertex (init trianglestrip)
-			    gl.glNormal3fv(getSmoothedNormal(heightmap, x - lodSkip, y, width, height, vBaseNormal, lodSkip, lodSkipTileSize, maxHeight).vector, 0);
-			    gl.glTexCoord2f(0 + (xLocal / (float)blockSizeinTiles), texFraction + (yLocal / (float)blockSizeinTiles));
-			    gl.glVertex3fv(v2.vector, 0);
-				
-				for (; x < (xStart + blockSizeinTiles); x += lodSkip)
-				{
-					//2 Vertices for 2 Triangles, which form the quad
-					v3 = new Vector3(rs.quadHalfSize + (x * rs.quadSize), heightmap[y - lodSkip][x] * maxHeight, -rs.quadHalfSize -lodNegativeExtendTileSize + (y * rs.quadSize));
-					v4 = new Vector3(rs.quadHalfSize + (x * rs.quadSize), heightmap[y][x] * maxHeight, rs.quadHalfSize + (y * rs.quadSize));
-					
-					vBaseNormal = Vector3Math.crossProduct(Vector3Math.subVectors(v1, v2), Vector3Math.subVectors(v2, v3)).normalize();
-					
-					//First triangle (third vertex)
-					gl.glNormal3fv(getSmoothedNormal(heightmap, x, y - lodSkip, width, height, vBaseNormal, lodSkip, lodSkipTileSize, maxHeight).vector, 0);
-				    gl.glTexCoord2f(texFraction + (xLocal / (float)blockSizeinTiles), 0 + (yLocal / (float)blockSizeinTiles));
-				    gl.glVertex3fv(v3.vector, 0);
-					
-				    //Second triangle (fourth vertex)
-				    gl.glNormal3fv(getSmoothedNormal(heightmap, x, y, width, height, vBaseNormal, lodSkip, lodSkipTileSize, maxHeight).vector, 0);
-				    gl.glTexCoord2f(texFraction + (xLocal / (float)blockSizeinTiles), texFraction + (yLocal / (float)blockSizeinTiles));
-				    gl.glVertex3fv(v4.vector, 0);	
-						
-					//Copy last 2 vectors to new first ones
-					v1 = v3;
-					v2 = v4;
-						
-				    xLocal += lodSkip;
-				}
-				
-				gl.glEnd();
-				//END Triangle Strip
-				
-				yLocal += lodSkip;
+			} catch (ArrayIndexOutOfBoundsException e) {
+				break; // Temporary hack for a problem that should not happen
 			}
-			gl.glEndList();
-			
-			if (rs.outputPerfDebug)
-				System.out.println("Done creating DL Block. LOD: " + lodLevel + " ( " + ((System.nanoTime() - start) / 1000000) + " ms )");
+			v3 = new Vector3(rs.quadHalfSize + (x * rs.quadSize), heightmap[y - lodSkip][x] * maxHeight,
+					-rs.quadHalfSize - lodNegativeExtendTileSize + (y * rs.quadSize));
+
+			vBaseNormal = Vector3Math.crossProduct(Vector3Math.subVectors(v1, v2), Vector3Math.subVectors(v2, v3)).normalize();
+				
+			/* TEXCOORD */
+			vbo[lodLevel].put(0 + (xLocal / (float) blockSizeinTiles));
+			vbo[lodLevel].put(0 + (yLocal / (float) blockSizeinTiles));
+			/* NORMAL   */
+			vbo[lodLevel].put(getSmoothedNormal(heightmap, x - lodSkip, y - lodSkip, width,
+					height, vBaseNormal, lodSkip, lodSkipTileSize, maxHeight).vector, 0, 3);
+			/* VERTEX   */
+			vbo[lodLevel].put(v1.vector, 0, 3);
+				
+			/* TEXCOORD */
+			vbo[lodLevel].put(0 + (xLocal / (float) blockSizeinTiles));
+			vbo[lodLevel].put(texFraction + (yLocal / (float) blockSizeinTiles));
+			/* NORMAL   */
+			vbo[lodLevel].put(getSmoothedNormal(heightmap, x - lodSkip, y, width, height, vBaseNormal, lodSkip, lodSkipTileSize, maxHeight).vector, 0, 3);
+			/* VERTEX   */
+			vbo[lodLevel].put(v2.vector, 0, 3);
+
+			for (; x < (xStart + blockSizeinTiles); x += lodSkip) {
+				v3 = new Vector3(rs.quadHalfSize + (x * rs.quadSize),
+						heightmap[y - lodSkip][x] * maxHeight, -rs.quadHalfSize - lodNegativeExtendTileSize + (y * rs.quadSize));
+				v4 = new Vector3(rs.quadHalfSize + (x * rs.quadSize), heightmap[y][x] * maxHeight, rs.quadHalfSize + (y * rs.quadSize));
+
+				vBaseNormal = Vector3Math.crossProduct(Vector3Math.subVectors(v1, v2), Vector3Math.subVectors(v2, v3)).normalize();
+					
+				/* TEXCOORD */
+				vbo[lodLevel].put(texFraction + (xLocal / (float) blockSizeinTiles));
+				vbo[lodLevel].put(0 + (yLocal / (float) blockSizeinTiles));
+				/* NORMAL   */
+				vbo[lodLevel].put(getSmoothedNormal(heightmap, x, y - lodSkip, width, height, vBaseNormal, lodSkip, lodSkipTileSize, maxHeight).vector, 0, 3);
+				/* VERTEX   */
+				vbo[lodLevel].put(v3.vector, 0, 3);
+					
+				/* TEXCOORD */
+				vbo[lodLevel].put(texFraction + (xLocal / (float) blockSizeinTiles));
+				vbo[lodLevel].put(texFraction + (yLocal / (float) blockSizeinTiles));
+				/* NORMAL   */
+				vbo[lodLevel].put(getSmoothedNormal(heightmap, x, y, width, height, vBaseNormal, lodSkip, lodSkipTileSize, maxHeight).vector, 0, 3);
+				/* VERTEX   */
+				vbo[lodLevel].put(v4.vector, 0, 3);
+
+				//Copy last 2 vectors to new first ones
+				v1 = v3;
+				v2 = v4;
+
+				xLocal += lodSkip;
+			}
+
+			//We need to insert null triangles here, for lf+cr
+			//Last point again
+			/* TEXCOORD */
+			vbo[lodLevel].put(0);
+			vbo[lodLevel].put(0);
+			/* NORMAL   */
+			vbo[lodLevel].put(nullVector.vector, 0, 3);
+			/* VERTEX   */
+			vbo[lodLevel].put(v4.vector, 0, 3);
+
+			//First point of next row again (=second point of this row)
+			v2 = new Vector3(-rs.quadHalfSize - lodNegativeExtendTileSize + (xStart * rs.quadSize),
+						heightmap[y][xStart - lodSkip] * maxHeight, rs.quadHalfSize + (y * rs.quadSize));
+			/* TEXCOORD */
+			vbo[lodLevel].put(0);
+			vbo[lodLevel].put(0);
+			/* NORMAL   */
+			vbo[lodLevel].put(nullVector.vector, 0, 3);
+			/* VERTEX   */
+			vbo[lodLevel].put(v2.vector, 0, 3);
+
+			yLocal += lodSkip;
 		}
+
+		vbo[lodLevel].flip();
+
+		//Upload our interleaved Array
+		boolean isNewArray = (vboID[lodLevel][index] < 0);
+
+		if (isNewArray)
+			gl.glGenBuffers(1, vboID[lodLevel], index);
+
+		gl.glBindBuffer(GL.GL_ARRAY_BUFFER, vboID[lodLevel][index]);
+
+		if (isNewArray)
+			gl.glBufferData(GL.GL_ARRAY_BUFFER, verticesPerBlock[lodLevel] * 8 * BufferUtil.SIZEOF_FLOAT, vbo[lodLevel], GL.GL_DYNAMIC_DRAW);
+		else
+			gl.glBufferSubData(GL.GL_ARRAY_BUFFER, 0, verticesPerBlock[lodLevel] * 8 * BufferUtil.SIZEOF_FLOAT, vbo[lodLevel]);
+
+		if (rs.outputPerfDebug)
+			System.out.println("Done creating VBO Block. LOD: " + lodLevel + " ( " + ((System.nanoTime() - start) / 1000000) + " ms )");
+
+
 		
 		//If map heights changed, we need to adopt the feature heights and slopemap
 		updateFeatureBlockHeights(index);
@@ -1049,8 +939,7 @@ public class MapRenderer
 		float currentWaterlevel = sme.map.waterHeight;
 		int width = sme.map.heightmap.getHeightmapWidth();
 		int length = sme.map.heightmap.getHeightmapLength();
-		if (rs.fancyWater)
-		{
+		if (rs.fancyWater) {
 			//Bind Reflectionmap
 			gl.glActiveTexture(GL.GL_TEXTURE0);
 			gl.glBindTexture(GL.GL_TEXTURE_2D, reflectionMapID);
@@ -1137,21 +1026,18 @@ public class MapRenderer
 			gl.glActiveTexture(GL.GL_TEXTURE0);
 			
 		    shaderManager.unbindShader();
+		}else{
+			gl.glEnable(GL.GL_BLEND);
+			gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
+			gl.glColor4f(0.1f, 0.1f, 0.8f, 0.5f);
+			gl.glBegin(GL.GL_QUADS);
+			gl.glVertex3f(-100, currentWaterlevel, -100);
+			gl.glVertex3f(-100,  currentWaterlevel, 100 + (length * rs.quadSize));
+			gl.glVertex3f(100 + (width * rs.quadSize), currentWaterlevel, 100 + (length * rs.quadSize));
+			gl.glVertex3f(100 + (width * rs.quadSize), currentWaterlevel, -100);
+			gl.glEnd();
+			gl.glDisable(GL.GL_BLEND);
 		}
-		else
-			if (camViewChanged)
-			{
-				gl.glEnable(GL.GL_BLEND);
-		    	gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
-		    	gl.glColor4f(0.1f, 0.1f, 0.8f, 0.5f);
-				gl.glBegin(GL.GL_QUADS);
-				gl.glVertex3f(-100, currentWaterlevel, -100);
-				gl.glVertex3f(-100,  currentWaterlevel, 100 + (length * rs.quadSize));
-				gl.glVertex3f(100 + (width * rs.quadSize), currentWaterlevel, 100 + (length * rs.quadSize));
-				gl.glVertex3f(100 + (width * rs.quadSize), currentWaterlevel, -100);
-			    gl.glEnd();
-			    gl.glDisable(GL.GL_BLEND);
-			}
 	}
 	
 	private void renderBrush(GL gl)
@@ -1222,39 +1108,40 @@ public class MapRenderer
     	{
     		//TODO create interface for brushes with pattern/with texture 
     		
-//	    	gl.glEnable(GL.GL_BLEND);
-//	    	gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
-//			for (int y = yStart+1; y < (yStart + brushHeight); y++)
-//			{
-//				for (int x = xStart+1; x < (xStart + brushWidth); x++)
-//				{
-//					if ((x > 0) && (x < sme.heightMapWidth) && (y > 0) && (y < sme.heightMapHeight))
-//					{
-//						gl.glColor4f(1f, 1f, 1f, rs.brush.brushPattern.pattern[x - xStart - 1][y - yStart - 1]);
-//						gl.glBegin(GL.GL_QUADS);
-//						    //gl.glTexCoord2f(0, 0);
-//						    gl.glVertex3f(-rs.quadHalfSize + (x * rs.quadSize), (map[x-1][y-1] * sme.maxHeight) + yHeightOffset, -rs.quadHalfSize + (y * rs.quadSize));
-//						    					    
-//						    //gl.glTexCoord2f(0, 1);
-//						    gl.glVertex3f(-rs.quadHalfSize + (x * rs.quadSize), (map[x-1][y] * sme.maxHeight) + yHeightOffset, rs.quadHalfSize + (y * rs.quadSize));
-//						    					    	
-//						    //gl.glTexCoord2f(1, 1);  
-//						    gl.glVertex3f(rs.quadHalfSize + (x * rs.quadSize), (map[x][y] * sme.maxHeight) + yHeightOffset, rs.quadHalfSize + (y * rs.quadSize));
-//						    					    
-//						    //gl.glTexCoord2f(1, 0);
-//						    gl.glVertex3f(rs.quadHalfSize + (x * rs.quadSize), (map[x][y-1] * sme.maxHeight) + yHeightOffset, -rs.quadHalfSize + (y * rs.quadSize));
-//					    gl.glEnd();
-//					}
-//				}
-//			}
-//			gl.glDisable(GL.GL_BLEND);
+	    	gl.glEnable(GL.GL_BLEND);
+	    	gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
+			float[][] pattern = sme.mes.activeBrush.getPattern().getPattern();
+			for (int y = yStart+1; y < (yStart + brushHeight); y++)
+			{
+				for (int x = xStart+1; x < (xStart + brushWidth); x++)
+				{
+					if ((x > 0) && (x < sme.width) && (y > 0) && (y < sme.height))
+					{
+						gl.glColor4f(1f, 1f, 1f, pattern[x - xStart - 1][y - yStart - 1]);
+						gl.glBegin(GL.GL_QUADS);
+						    //gl.glTexCoord2f(0, 0);
+						    gl.glVertex3f(-rs.quadHalfSize + (x * rs.quadSize), (map[x-1][y-1] * sme.map.maxHeight) + yHeightOffset, -rs.quadHalfSize + (y * rs.quadSize));
+
+						    //gl.glTexCoord2f(0, 1);
+						    gl.glVertex3f(-rs.quadHalfSize + (x * rs.quadSize), (map[x-1][y] * sme.map.maxHeight) + yHeightOffset, rs.quadHalfSize + (y * rs.quadSize));
+
+						    //gl.glTexCoord2f(1, 1);
+						    gl.glVertex3f(rs.quadHalfSize + (x * rs.quadSize), (map[x][y] * sme.map.maxHeight) + yHeightOffset, rs.quadHalfSize + (y * rs.quadSize));
+
+						    //gl.glTexCoord2f(1, 0);
+						    gl.glVertex3f(rs.quadHalfSize + (x * rs.quadSize), (map[x][y-1] * sme.map.maxHeight) + yHeightOffset, -rs.quadHalfSize + (y * rs.quadSize));
+					    gl.glEnd();
+					}
+				}
+			}
+			gl.glDisable(GL.GL_BLEND);
     	}
 	}
 	
 	private boolean isBlockVisible(int index)
 	{
-		if (rs.renderAll) return true;
-		
+		return true;
+		/*
 		//Retrieve camera
 		CameraPosition cam = rs.cameraPosition;
 		
@@ -1268,13 +1155,9 @@ public class MapRenderer
 		int distXinTiles = xPosInTiles - blockXPosInTiles;
 		int distYinTiles = yPosInTiles - blockYPosInTiles;
 		float distInTiles = (float)Math.sqrt((distXinTiles * distXinTiles) + (distYinTiles * distYinTiles));
+		*/
 		
 		//TODO: cull non visible blocks. make real frustrum culling
-		
-		if (distInTiles <= rs.renderRadius)
-			return true;
-		else
-			return false;
 	}
 	
 	private void renderReflectionMap(GL gl)
@@ -1488,8 +1371,7 @@ public class MapRenderer
 		Iterator<FeatureMapContainer> it;
 		
 		//Clear feature sort list
-		if (camPosChanged)
-			featuresToRenderCount = 0;
+		featuresToRenderCount = 0;
 		
 		//Clear
 		gl.glClearColor(0f, 0f, 0f, 1f);
@@ -1527,44 +1409,32 @@ public class MapRenderer
 						createBlock(gl, i, lodLevel);
 					
 					//Render Block
-					if (rs.useVBO)
-					{
-						//VBO
-						if (vboID[lodLevel][i] >= 0)
-							//Set Buffer
-							gl.glBindBuffer(GL.GL_ARRAY_BUFFER, vboID[lodLevel][i]);
+					//VBO
+					if (vboID[lodLevel][i] >= 0)
+						//Set Buffer
+						gl.glBindBuffer(GL.GL_ARRAY_BUFFER, vboID[lodLevel][i]);
 							
-							//Format:
-							gl.glInterleavedArrays(GL.GL_T2F_N3F_V3F, 0, 0);
+					//Format:
+					gl.glInterleavedArrays(GL.GL_T2F_N3F_V3F, 0, 0);
 							
-					        //Render Buffer
-							gl.glDrawArrays(GL.GL_TRIANGLE_STRIP, 0, verticesPerBlock[lodLevel]);
-							rs.trisRendered += triCountPerBlock[lodLevel];
-					}
-					else
-						//DisplayList
-						if (displayListID[lodLevel][i] >= 0)
-						{
-							gl.glCallList(displayListID[lodLevel][i]);
-							rs.trisRendered += triCountPerBlock[lodLevel];
-						}
+					//Render Buffer
+					gl.glDrawArrays(GL.GL_TRIANGLE_STRIP, 0, verticesPerBlock[lodLevel]);
+					rs.trisRendered += triCountPerBlock[lodLevel];
+
 					
-					//add features from block to sortable list
-					if (camPosChanged)
-					{
-						if (lodLevel <= rs.renderFeatureLOD)
-						{
-							if (!isFeatureCached[i])
-								createFeatureBlock(i);
+
+					if (lodLevel <= rs.renderFeatureLOD) {
+						if (!isFeatureCached[i])
+							createFeatureBlock(i);
 								
-							it = featureList[i].iterator();
-							while (it.hasNext())
-							{
-								featuresToRender[featuresToRenderCount] = it.next();
-								featuresToRenderCount++;
-							}
+						it = featureList[i].iterator();
+						while (it.hasNext())
+						{
+							featuresToRender[featuresToRenderCount] = it.next();
+							featuresToRenderCount++;
 						}
 					}
+
 				}
 			}
 		}
@@ -1591,48 +1461,33 @@ public class MapRenderer
 					}
 					
 					//Render Block
-					if (rs.useVBO)
-					{
-						//VBO
-						if (vboID[lodLevel][i] >= 0)
-						{
-							//Set Buffer
-							gl.glBindBuffer(GL.GL_ARRAY_BUFFER, vboID[lodLevel][i]);
+					//VBO
+					if (vboID[lodLevel][i] >= 0) {
+						//Set Buffer
+						gl.glBindBuffer(GL.GL_ARRAY_BUFFER, vboID[lodLevel][i]);
 							
-							//Format:
-							gl.glInterleavedArrays(GL.GL_T2F_N3F_V3F, 0, 0);
+						//Format:
+						gl.glInterleavedArrays(GL.GL_T2F_N3F_V3F, 0, 0);
 							
-					        //Render Buffer
-							gl.glDrawArrays(GL.GL_TRIANGLE_STRIP, 0, verticesPerBlock[lodLevel]);
-							rs.trisRendered += triCountPerBlock[lodLevel];
-						}
+						//Render Buffer
+						gl.glDrawArrays(GL.GL_TRIANGLE_STRIP, 0, verticesPerBlock[lodLevel]);
+						rs.trisRendered += triCountPerBlock[lodLevel];
 					}
-					else
-					{
-						//DisplayList
-						if (displayListID[lodLevel][i] >= 0)
-						{
-							gl.glCallList(displayListID[lodLevel][i]);
-							rs.trisRendered += triCountPerBlock[lodLevel];
-						}
-					}
+
 					
 					//add features from block to sortable list
-					if (camPosChanged)
-					{
-						if (lodLevel <= rs.renderFeatureLOD)
-						{
-							if (!isFeatureCached[i])
-								createFeatureBlock(i);
+					if (lodLevel <= rs.renderFeatureLOD) {
+						if (!isFeatureCached[i])
+							createFeatureBlock(i);
 								
-							it = featureList[i].iterator();
-							while (it.hasNext())
-							{
-								featuresToRender[featuresToRenderCount] = it.next();
-								featuresToRenderCount++;
-							}
+						it = featureList[i].iterator();
+						while (it.hasNext())
+						{
+							featuresToRender[featuresToRenderCount] = it.next();
+							featuresToRenderCount++;
 						}
 					}
+
 				}
 			}
 		}
@@ -1662,14 +1517,8 @@ public class MapRenderer
 		if (rs.batchMode)
 			return;
 
-		if (rs.alwaysReRender)
-		{
-			camPosChanged = true;
-			camViewChanged = true;
-		}
-		
-		if (camViewChanged)
-			rs.trisRendered = 0;
+
+		rs.trisRendered = 0;
 		
 		//Switch between wireframe and normal mode
 		if (switchPolyMode)
@@ -1685,10 +1534,18 @@ public class MapRenderer
 		//Setup lighting
 		setupLight(gl);
 		
-		//Skybox
-		
-		//Render only if cameraposition changed
-		if (rs.fancyWater && camViewChanged && (sme.map.waterHeight >= 0))
+		//Render the Scene
+		setupProjection(gl);
+		setCameraPosition(gl, rs.cameraPosition);
+		gl.glMatrixMode(GL.GL_MODELVIEW);
+		gl.glLoadIdentity();
+
+		renderScene(gl);
+		renderBrush(gl);
+		renderSun(gl);
+
+		//Render water, after the scene is rendered.
+		if (rs.fancyWater && (sme.map.waterHeight >= 0))
 		{
 			//Render ReflectionMap
 			renderReflectionMap(gl);
@@ -1704,28 +1561,14 @@ public class MapRenderer
 		//Render Water Plane
 		if (sme.map.waterHeight >= 0)
 			renderWater(gl);
-		
-	    if (camViewChanged)
-	    {
-			renderScene(gl);
-			renderBrush(gl);
-			renderSun(gl);
-	    }
-		
+
+		//Render the skybox (currently disabled)
 		renderSkyBox(gl);
-		
-		//Reset camPosChanged
-		if (camViewChanged)
-			if ((blocksCreatedThisFrame == 0) && (texturesCreatedThisFrame == 0) && (featureBlocksCreatedThisFrame == 0) && (featuresCreatedThisFrame == 0))
-			{
-				camPosChanged = false;
-				camViewChanged = false;
-			}
 	}
 	
 	private int getLODLevel(int index)
 	{
-		if (rs.noLOD)
+		if (!rs.useLOD)
 			return 0;
 		
 		double x = (((index % mapWidthInBlocks) * blockSizeinTiles) * rs.quadSize) + (rs.quadHalfSize * blockSizeinTiles);
@@ -1813,7 +1656,7 @@ public class MapRenderer
 	    gl.glMaterialfv(GL.GL_FRONT, GL.GL_SPECULAR,  new float[] { 0f, 0f, 0f, 0f }, 0);
 	    gl.glMaterialfv(GL.GL_FRONT, GL.GL_SHININESS, new float[] { 100f }, 0);
 	    gl.glMaterialfv(GL.GL_FRONT, GL.GL_AMBIENT,   new float[] { 1f, 1f, 1f, 1f }, 0);
-	    //gl.glMaterialfv(GL.GL_FRONT, GL.GL_DIFFUSE,   new float[] { 0.4f, 0.8f, 0.4f, 1f }, 0);
+	    gl.glMaterialfv(GL.GL_FRONT, GL.GL_DIFFUSE,   new float[] { 1f, 1f, 1f, 1f }, 0);
 
 	    /* Interpolation mode: nicest */
 	    gl.glHint(GL.GL_PERSPECTIVE_CORRECTION_HINT, GL.GL_NICEST);
@@ -1996,8 +1839,7 @@ public class MapRenderer
 	{
 		gl.glMatrixMode(GL.GL_PROJECTION);
 	    gl.glLoadIdentity();
-	    glu.gluPerspective(rs.fov, rs.displayWidth / rs.displayHeight, 1,
-	    		(rs.renderAll ? (Math.max(sme.map.heightmap.getHeightmapWidth(), sme.map.heightmap.getHeightmapLength()) * rs.quadSize * 1.5) : rs.farClip));
+	    glu.gluPerspective(rs.fov, rs.displayWidth / rs.displayHeight, 1, sme.diag * 3.0f);
 	}
 	
 	private void setCameraPosition(GL gl, CameraPosition cameraPosition)

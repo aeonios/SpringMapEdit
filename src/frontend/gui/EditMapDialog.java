@@ -230,6 +230,7 @@ public class EditMapDialog extends Dialog
 								sme.map.resizeMap(newLength, newWidth);
 							sme.width = sme.map.width;
 							sme.height = sme.map.height;
+							sme.diag = (float) Math.sqrt((newWidth * newWidth * 128 * 128) + (newLength * newLength * 128 * 128));
 						}
 						sme.map.waterHeight = newWaterHeight;
 						sme.map.maxHeight = newMaxHeight;

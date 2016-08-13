@@ -128,6 +128,7 @@ public class SpringMapEdit
 	 * Width and Height in spring units
 	 */
 	public int width, height;
+	public float diag;
 	
 	public Map map; 
 	
@@ -338,7 +339,8 @@ public class SpringMapEdit
 		{
 			resetMap();
 			width = newWidth;
-			height = newHeight;	
+			height = newHeight;
+			diag = (float) Math.sqrt((width * width * 128 * 128) + (height * height * 128 * 128));
 			map = new Map(height, width);
 			if (random)
 				map.randomizeMap(mes.getTerraGenSetup());

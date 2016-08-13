@@ -37,13 +37,7 @@ import javax.media.opengl.GLContext;
 import javax.media.opengl.GLDrawableFactory;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.KeyAdapter;
-import org.eclipse.swt.events.KeyEvent;
-import org.eclipse.swt.events.MouseAdapter;
-import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.events.MouseMoveListener;
-import org.eclipse.swt.events.ShellAdapter;
-import org.eclipse.swt.events.ShellEvent;
+import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.opengl.GLCanvas;
 import org.eclipse.swt.opengl.GLData;
@@ -103,6 +97,8 @@ public class SpringMapEditGUI
 		ARROW_RIGHT,
 		ARROW_DOWN,
 		ARROW_UP,
+		PAGE_UP,
+		PAGE_DOWN,
 		MOUSE_1,
 		MOUSE_2,
 		MOUSE_3,
@@ -259,18 +255,30 @@ public class SpringMapEditGUI
 				if (cmd != null)
 					messageQueue.offer(cmd);
 			}
+
+		});
+
+		glCanvas.addMouseWheelListener(new MouseWheelListener() {
+			public void mouseScrolled(MouseEvent e) {
+				Command cmd;
+				if (e.count > 0) {
+					cmd = keyMap.getScrollCommand(true);
+				}else{
+					cmd = keyMap.getScrollCommand(false);
+				}
+				if (cmd != null)
+					messageQueue.offer(cmd);
+			}
 		});
 		
-		glCanvas.addMouseMoveListener(new MouseMoveListener() 
-		{
-			public void mouseMove(MouseEvent e)
-			{
-				Object[] data = new Object[] {e.x, e.y};
+		glCanvas.addMouseMoveListener(new MouseMoveListener() {
+			public void mouseMove(MouseEvent e) {
+				Object[] data = new Object[]{e.x, e.y};
 				/*Command cmd = new Command(new Object[] { e.x, e.y }) 
 				{
 					public void execute(Object[] data2)
 					{*/
-						mousePos = new Point((Integer)data[0], (Integer)data[1]);
+				mousePos = new Point((Integer) data[0], (Integer) data[1]);
 					/*}
 				};
 				messageQueue.offer(cmd);*/
@@ -280,11 +288,11 @@ public class SpringMapEditGUI
 		this.sme = new SpringMapEdit(as.initialMapWidth, as.initialMapHeight, null, as); //spring units... 8x8 equals 512x512
 		
 		//Setup initial position
-		as.cameraPosition.camX = 0;//-50;
-		as.cameraPosition.camY = 200;
-		as.cameraPosition.camZ = 0;//-50;
-		as.cameraPosition.camRotX = -30;
-		as.cameraPosition.camRotY = 225;
+		as.cameraPosition.camX = as.initialMapWidth*64;//-50;
+		as.cameraPosition.camY = (float) Math.sqrt((as.initialMapHeight * 128 * as.initialMapHeight * 128) + (as.initialMapWidth * 128 * as.initialMapWidth * 128));
+		as.cameraPosition.camZ = as.initialMapHeight*128;//-50;
+		as.cameraPosition.camRotX = -70;
+		as.cameraPosition.camRotY = 0;
 		as.cameraPosition.camRotZ = 0;
 		
 		this.renderer = new MapRenderer(this.sme, as);
@@ -409,7 +417,33 @@ public class SpringMapEditGUI
 	
 	public void resetCamera()
 	{
+		as.cameraPosition.camX = sme.width * 64;//-50;
+		as.cameraPosition.camY = sme.diag;
+		as.cameraPosition.camZ = sme.height * 128;//-50;
+		as.cameraPosition.camRotX = -70;
+		as.cameraPosition.camRotY = 0;
+		as.cameraPosition.camRotZ = 0;
+	}
 
+	public void zoom(boolean zoomIn){
+		float curMoveSpeed = (holdableKeys[HoldableKeys.SHIFT.ordinal()] ? as.fastSpeed : as.normalSpeed);
+		curMoveSpeed = (holdableKeys[HoldableKeys.CTRL.ordinal()] ? as.slowSpeed : curMoveSpeed);
+
+		double upDownAmount = Math.cos(as.cameraPosition.camRotX * Math.PI / 180);
+
+		if (zoomIn){
+			if (as.cameraPosition.camY + (curMoveSpeed * 10 * (float)Math.sin(as.cameraPosition.camRotX * Math.PI / 180)) >= 0)
+				as.cameraPosition.camY += curMoveSpeed * 10 * (float)Math.sin(as.cameraPosition.camRotX * Math.PI / 180);
+			as.cameraPosition.camX = as.cameraPosition.camX + (float)(Math.abs(upDownAmount) * curMoveSpeed * 10 * Math.sin(-as.cameraPosition.camRotY * Math.PI / 180));
+			as.cameraPosition.camZ = as.cameraPosition.camZ - (float)(Math.abs(upDownAmount) * curMoveSpeed * 10 * Math.cos(-as.cameraPosition.camRotY * Math.PI / 180));
+			renderer.camPosChangedNotify();
+		}else{
+			if (as.cameraPosition.camY - (curMoveSpeed * 10 * (float)Math.sin(as.cameraPosition.camRotX * Math.PI / 180)) >= 0)
+				as.cameraPosition.camY -= curMoveSpeed * 10 * (float)Math.sin(as.cameraPosition.camRotX * Math.PI / 180);
+			as.cameraPosition.camX = as.cameraPosition.camX - (float)(Math.abs(upDownAmount) * curMoveSpeed * 10 * Math.sin(-as.cameraPosition.camRotY * Math.PI / 180));
+			as.cameraPosition.camZ = as.cameraPosition.camZ + (float)(Math.abs(upDownAmount) * curMoveSpeed * 10 * Math.cos(-as.cameraPosition.camRotY * Math.PI / 180));
+			renderer.camPosChangedNotify();
+		}
 	}
 	
 	public void run() throws InterruptedException
@@ -453,47 +487,53 @@ public class SpringMapEditGUI
 				// Handle Camera
 				if (holdableKeys[HoldableKeys.ARROW_LEFT.ordinal()])
 				{
-					if (true)
-					{
-						as.cameraPosition.camX -= curMoveSpeed * (float)Math.cos(-as.cameraPosition.camRotY * Math.PI / 180);
-						as.cameraPosition.camZ -= curMoveSpeed * (float)Math.sin(-as.cameraPosition.camRotY * Math.PI / 180);
-						renderer.camPosChangedNotify();
-					}
+					as.cameraPosition.camX -= curMoveSpeed * (float)Math.cos(-as.cameraPosition.camRotY * Math.PI / 180);
+					as.cameraPosition.camZ -= curMoveSpeed * (float)Math.sin(-as.cameraPosition.camRotY * Math.PI / 180);
+					renderer.camPosChangedNotify();
 				}
 				if (holdableKeys[HoldableKeys.ARROW_RIGHT.ordinal()])
 				{
-					if (true)
-					{
-						as.cameraPosition.camX += curMoveSpeed * (float)Math.cos(-as.cameraPosition.camRotY * Math.PI / 180);
-						as.cameraPosition.camZ += curMoveSpeed * (float)Math.sin(-as.cameraPosition.camRotY * Math.PI / 180);
-						renderer.camPosChangedNotify();
-					}
+					as.cameraPosition.camX += curMoveSpeed * (float)Math.cos(-as.cameraPosition.camRotY * Math.PI / 180);
+					as.cameraPosition.camZ += curMoveSpeed * (float)Math.sin(-as.cameraPosition.camRotY * Math.PI / 180);
+					renderer.camPosChangedNotify();
 				}
 				if (holdableKeys[HoldableKeys.ARROW_UP.ordinal()])
 				{
-					double upDownAmount = Math.cos(as.cameraPosition.camRotX * Math.PI / 180);
-					if (lockCameraY)
-						upDownAmount = 1;
-					else
-						if (as.cameraPosition.camY + (curMoveSpeed * (float)Math.sin(as.cameraPosition.camRotX * Math.PI / 180)) >= 0)
-							as.cameraPosition.camY += curMoveSpeed * (float)Math.sin(as.cameraPosition.camRotX * Math.PI / 180);
+					double upDownAmount = 1;
+
 					as.cameraPosition.camX = as.cameraPosition.camX + (float)(Math.abs(upDownAmount) * curMoveSpeed * Math.sin(-as.cameraPosition.camRotY * Math.PI / 180));
 					as.cameraPosition.camZ = as.cameraPosition.camZ - (float)(Math.abs(upDownAmount) * curMoveSpeed * Math.cos(-as.cameraPosition.camRotY * Math.PI / 180));
 					renderer.camPosChangedNotify();
 				}
 				if (holdableKeys[HoldableKeys.ARROW_DOWN.ordinal()])
 				{
-					double upDownAmount = Math.cos(as.cameraPosition.camRotX * Math.PI / 180);
-					if (lockCameraY)
-						upDownAmount = 1;
-					else
-						if (as.cameraPosition.camY - (curMoveSpeed * (float)Math.sin(as.cameraPosition.camRotX * Math.PI / 180)) >= 0)
-							as.cameraPosition.camY -= curMoveSpeed * (float)Math.sin(as.cameraPosition.camRotX * Math.PI / 180);
+					double upDownAmount = 1;
+
 					as.cameraPosition.camX = as.cameraPosition.camX - (float)(Math.abs(upDownAmount) * curMoveSpeed * Math.sin(-as.cameraPosition.camRotY * Math.PI / 180));
 					as.cameraPosition.camZ = as.cameraPosition.camZ + (float)(Math.abs(upDownAmount) * curMoveSpeed * Math.cos(-as.cameraPosition.camRotY * Math.PI / 180));
 					renderer.camPosChangedNotify();
 				}
-				if (as.mouseLook)
+				if (holdableKeys[HoldableKeys.PAGE_UP.ordinal()])
+				{
+					// zoom in
+					double upDownAmount = Math.cos(as.cameraPosition.camRotX * Math.PI / 180);
+					if (as.cameraPosition.camY + (curMoveSpeed * (float)Math.sin(as.cameraPosition.camRotX * Math.PI / 180)) >= 0)
+						as.cameraPosition.camY += curMoveSpeed * (float)Math.sin(as.cameraPosition.camRotX * Math.PI / 180);
+					as.cameraPosition.camX = as.cameraPosition.camX + (float)(Math.abs(upDownAmount) * curMoveSpeed * Math.sin(-as.cameraPosition.camRotY * Math.PI / 180));
+					as.cameraPosition.camZ = as.cameraPosition.camZ - (float)(Math.abs(upDownAmount) * curMoveSpeed * Math.cos(-as.cameraPosition.camRotY * Math.PI / 180));
+					renderer.camPosChangedNotify();
+				}
+				if (holdableKeys[HoldableKeys.PAGE_DOWN.ordinal()])
+				{
+					// zoom out
+					double upDownAmount = Math.cos(as.cameraPosition.camRotX * Math.PI / 180);
+					if (as.cameraPosition.camY - (curMoveSpeed * (float)Math.sin(as.cameraPosition.camRotX * Math.PI / 180)) >= 0)
+						as.cameraPosition.camY -= curMoveSpeed * (float)Math.sin(as.cameraPosition.camRotX * Math.PI / 180);
+					as.cameraPosition.camX = as.cameraPosition.camX - (float)(Math.abs(upDownAmount) * curMoveSpeed * Math.sin(-as.cameraPosition.camRotY * Math.PI / 180));
+					as.cameraPosition.camZ = as.cameraPosition.camZ + (float)(Math.abs(upDownAmount) * curMoveSpeed * Math.cos(-as.cameraPosition.camRotY * Math.PI / 180));
+					renderer.camPosChangedNotify();
+				}
+				if (holdableKeys[HoldableKeys.MOUSE_2.ordinal()] || as.mouseLook) // for mouse look
 				{
 					Point mousePosScreen = MouseInfo.getPointerInfo().getLocation();
 					
@@ -570,8 +610,6 @@ public class SpringMapEditGUI
 					}
 				}
 				//Handle edit
-				if (holdableKeys[HoldableKeys.MOUSE_2.ordinal()])
-					toggleMouseLook();
 				if (holdableKeys[HoldableKeys.MOUSE_1.ordinal()])
 				{
 					switch (sme.mes.getBrushMode())
@@ -768,7 +806,7 @@ public class SpringMapEditGUI
 			//Ensure we render at least once every 100 world ticks.
 			if ((!makeTickThisLoop) || (ticksSinceLastRender > 100))
 			{
-				if (as.renderFullspeed || (ticksSinceLastRender > 0))
+				if (!as.vsync || (ticksSinceLastRender > 0))
 				{
 					//Activate glContext 
 					glCanvas.setCurrent();
@@ -798,7 +836,7 @@ public class SpringMapEditGUI
 					ticksSinceLastRender = 0;
 					fps.tick();
 				}
-				if (!as.renderFullspeed)
+				if (as.vsync)
 				{
 					/* Here we calculate how long we need to sleep.
 					 * Only do the sleep, if the sleeptime is higher than our minimum.

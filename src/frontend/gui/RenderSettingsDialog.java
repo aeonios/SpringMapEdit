@@ -90,7 +90,7 @@ public class RenderSettingsDialog extends Dialog
 		
 		Button b = new Button(shell, SWT.CHECK);
 		b.setText("VSync");
-		b.setToolTipText("Limits FPS to monitor refresh rate");
+		b.setToolTipText("Limits FPS to monitor refresh rate, saving gpu power and reducing tearing artifacts.");
 		b.setSelection(rs.vsync);
 		b.addSelectionListener(new SelectionAdapter()
 		{
@@ -141,26 +141,6 @@ public class RenderSettingsDialog extends Dialog
 					public void execute(Object[] data2)
 					{
 						rs.fastNormals = (Boolean) data[0];
-						renderer.invalidateAllBlocks(true, false, false);
-					}
-				};
-				smeGUI.messageQueue.offer(cmd);
-			}
-		});
-		
-		b = new Button(shell, SWT.CHECK);
-		b.setText("use VBO instead of DL");
-		b.setToolTipText("CPU: faster heightmap editing, GPU: increases GPU load");
-		b.setSelection(rs.useVBO);
-		b.addSelectionListener(new SelectionAdapter()
-		{
-			public void widgetSelected(SelectionEvent e)
-			{
-				Command cmd = new Command(new Object[] { ((Button)e.widget).getSelection() }) 
-				{
-					public void execute(Object[] data2)
-					{
-						rs.useVBO = (Boolean) data[0];
 						renderer.invalidateAllBlocks(true, false, false);
 					}
 				};
@@ -229,26 +209,6 @@ public class RenderSettingsDialog extends Dialog
 		});
 		
 		b = new Button(shell, SWT.CHECK);
-		b.setText("view complete Map");
-		b.setToolTipText("CPU+GPU: slower (beware if your GPU runs out of VRAM)");
-		b.setSelection(rs.renderAll);
-		b.addSelectionListener(new SelectionAdapter()
-		{
-			public void widgetSelected(SelectionEvent e)
-			{
-				Command cmd = new Command(new Object[] { ((Button)e.widget).getSelection() }) 
-				{
-					public void execute(Object[] data2)
-					{
-						rs.renderAll = (Boolean) data[0];
-						renderer.camViewChangedNotify();
-					}
-				};
-				smeGUI.messageQueue.offer(cmd);
-			}
-		});
-		
-		b = new Button(shell, SWT.CHECK);
 		b.setText("draw Sun");
 		b.setSelection(rs.drawSun);
 		b.addSelectionListener(new SelectionAdapter()
@@ -280,44 +240,6 @@ public class RenderSettingsDialog extends Dialog
 					{
 						rs.moveSun = (Boolean) data[0];
 						renderer.camViewChangedNotify();
-					}
-				};
-				smeGUI.messageQueue.offer(cmd);
-			}
-		});
-		
-		b = new Button(shell, SWT.CHECK);
-		b.setText("always re-render unchanged objects");
-		b.setToolTipText("CPU+GPU: slower");
-		b.setSelection(rs.alwaysReRender);
-		b.addSelectionListener(new SelectionAdapter()
-		{
-			public void widgetSelected(SelectionEvent e)
-			{
-				Command cmd = new Command(new Object[] { ((Button)e.widget).getSelection() }) 
-				{
-					public void execute(Object[] data2)
-					{
-						rs.alwaysReRender = (Boolean) data[0];
-					}
-				};
-				smeGUI.messageQueue.offer(cmd);
-			}
-		});
-		
-		b = new Button(shell, SWT.CHECK);
-		b.setText("render fullspeed");
-		b.setToolTipText("useful for showing max possible FPS");
-		b.setSelection(rs.renderFullspeed);
-		b.addSelectionListener(new SelectionAdapter()
-		{
-			public void widgetSelected(SelectionEvent e)
-			{
-				Command cmd = new Command(new Object[] { ((Button)e.widget).getSelection() }) 
-				{
-					public void execute(Object[] data2)
-					{
-						rs.renderFullspeed = (Boolean) data[0];
 					}
 				};
 				smeGUI.messageQueue.offer(cmd);
@@ -359,14 +281,33 @@ public class RenderSettingsDialog extends Dialog
 				smeGUI.messageQueue.offer(cmd);
 			}
 		});
-		
-		//SPACER
-//		b = new Button(shell, SWT.NONE);
-//		b.setVisible(false);
-		
+
+		b = new Button(shell, SWT.CHECK);
+		b.setText("use LOD");
+		b.setToolTipText("Trades quality for performance.");
+		b.setSelection(rs.useLOD);
+		b.addSelectionListener(new SelectionAdapter()
+		{
+			public void widgetSelected(SelectionEvent e)
+			{
+				Command cmd = new Command(new Object[] { ((Button)e.widget).getSelection() })
+				{
+					public void execute(Object[] data2)
+					{
+						rs.useLOD = (Boolean) data[0];
+					}
+				};
+				smeGUI.messageQueue.offer(cmd);
+			}
+		});
+
 		final Label lLOD = new Label(shell, SWT.NONE);
-		lLOD.setLayoutData(new GridData(GridData.FILL, GridData.VERTICAL_ALIGN_BEGINNING, true, false, 1, 1));
+		lLOD.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END, GridData.VERTICAL_ALIGN_END, false, false, 1, 1));
 		lLOD.setText("LOD: " + FastMath.round(rs.lodDist / 10));
+
+		//SPACER
+		b = new Button(shell, SWT.NONE);
+		b.setVisible(false);
 		
 		Slider sl = new Slider(shell, SWT.HORIZONTAL);
 		sl.setMinimum(1);

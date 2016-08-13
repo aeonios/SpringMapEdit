@@ -64,16 +64,13 @@ public class AppSettings
 	public int initialMapWidth = 8;
 	public int initialMapHeight = 8;
 	
-	//Level of Detail 
-	public int renderRadius = 128;
-	public int farClip = 200;
+	//Level of Detail
 	public boolean batchMode = false;
-	public boolean renderAll = true;
 	public boolean smoothNormals = true;
-	public int maxBlocksPerFrame = 1;
-	public int maxTexturesPerFrame = 1;
-	public int maxFeatureBlocksPerFrame = 1;
-	public int maxFeaturesPerFrame = 1;
+	public int maxBlocksPerFrame = 16;
+	public int maxTexturesPerFrame = 16;
+	public int maxFeatureBlocksPerFrame = 16;
+	public int maxFeaturesPerFrame = 32;
 	public boolean fancyWater = false;
 	public boolean useLighting = true;
 	public int waterMapExtend = 200;
@@ -86,18 +83,13 @@ public class AppSettings
 	public boolean compressTextures = true;
 	public boolean fastNormals = false;
 	public int maxFeaturesToDisplay = 10240;
-	public boolean alwaysReRender = true;
-	public boolean renderFullspeed = true;
-	public boolean vsync = false;
+	public boolean vsync = true;
 	public boolean featureLighting = false;
 	
 	public int renderFeatureLOD = 3;
-	public boolean noLOD = false;
-	public float lodDist;
+	public boolean useLOD = true;
+	public float lodDist = 160f;
 	public int blockSize = 64;
-	
-	//Render method
-	public boolean useVBO = true;
 	
 	//Frame statistics
 	public int trisRendered;
@@ -109,13 +101,12 @@ public class AppSettings
 	public boolean animateGUI = true;
 	
 	//Controls
-	public boolean lockCameraY = false;
 	public boolean mouseLook = false;
 	public boolean invertY = true;
 	public float sensitivity = 5;
-	public float slowSpeed = 1;
-	public float normalSpeed = 8;
-	public float fastSpeed = 16;
+	public float slowSpeed = 8;
+	public float normalSpeed = 16;
+	public float fastSpeed = 32;
 	
 	//Debugging
 	public boolean outputPerfDebug = false;
@@ -162,29 +153,15 @@ public class AppSettings
 	{
 		try
 		{
-			//Integer props
-			if (propertyName.equals("quadSize")) 
-			{
-				quadSize = Integer.parseInt(values[0]);
-				quadHalfSize = quadSize / 2;
-			}
-			else if (propertyName.equals("displayWidth")) displayWidth = Integer.parseInt(values[0]);
+			if (propertyName.equals("displayWidth")) displayWidth = Integer.parseInt(values[0]);
 			else if (propertyName.equals("displayHeight")) displayHeight = Integer.parseInt(values[0]);
 			else if (propertyName.equals("featureTexSize")) featureTexSize = Integer.parseInt(values[0]);
 			else if (propertyName.equals("prefabSize")) prefabSize = Integer.parseInt(values[0]);
-			else if (propertyName.equals("renderRadius")) renderRadius = Integer.parseInt(values[0]);
-			else if (propertyName.equals("farClip")) farClip = Integer.parseInt(values[0]);
-			else if (propertyName.equals("maxBlocksPerFrame")) maxBlocksPerFrame = Integer.parseInt(values[0]);
-			else if (propertyName.equals("maxTexturesPerFrame")) maxTexturesPerFrame = Integer.parseInt(values[0]);
-			else if (propertyName.equals("maxFeatureBlocksPerFrame")) maxFeatureBlocksPerFrame = Integer.parseInt(values[0]);
-			else if (propertyName.equals("maxFeaturesPerFrame")) maxFeaturesPerFrame = Integer.parseInt(values[0]);
 			else if (propertyName.equals("waterMapExtend")) waterMapExtend = Integer.parseInt(values[0]);
 			else if (propertyName.equals("maxFeaturesToDisplay")) maxFeaturesToDisplay = Integer.parseInt(values[0]);
 			else if (propertyName.equals("renderFeatureLOD")) renderFeatureLOD = Integer.parseInt(values[0]);
-			else if (propertyName.equals("blockSize")) blockSize = Integer.parseInt(values[0]);
 			
 			//Boolean props
-			else if (propertyName.equals("renderAll")) renderAll = Boolean.parseBoolean(values[0]);
 			else if (propertyName.equals("smoothNormals")) smoothNormals = Boolean.parseBoolean(values[0]);
 			else if (propertyName.equals("fancyWater")) fancyWater = Boolean.parseBoolean(values[0]);
 			else if (propertyName.equals("useLighting")) useLighting = Boolean.parseBoolean(values[0]);
@@ -194,16 +171,11 @@ public class AppSettings
 			else if (propertyName.equals("filterTextures")) filterTextures = Boolean.parseBoolean(values[0]);
 			else if (propertyName.equals("compressTextures")) compressTextures = Boolean.parseBoolean(values[0]);
 			else if (propertyName.equals("fastNormals")) fastNormals = Boolean.parseBoolean(values[0]);
-			else if (propertyName.equals("alwaysReRender")) alwaysReRender = Boolean.parseBoolean(values[0]);
-			else if (propertyName.equals("renderFullspeed")) renderFullspeed = Boolean.parseBoolean(values[0]);
 			else if (propertyName.equals("vsync")) vsync = Boolean.parseBoolean(values[0]);
 			else if (propertyName.equals("featureLighting")) featureLighting = Boolean.parseBoolean(values[0]);
-			else if (propertyName.equals("noLOD")) noLOD = Boolean.parseBoolean(values[0]);
-			else if (propertyName.equals("useVBO")) useVBO = Boolean.parseBoolean(values[0]);
+			else if (propertyName.equals("useLOD")) useLOD = Boolean.parseBoolean(values[0]);
 			else if (propertyName.equals("outputPerfDebug")) outputPerfDebug = Boolean.parseBoolean(values[0]);
-			else if (propertyName.equals("mouseLook")) mouseLook = Boolean.parseBoolean(values[0]);
 			else if (propertyName.equals("invertY")) invertY = Boolean.parseBoolean(values[0]);
-			else if (propertyName.equals("lockCameraY")) lockCameraY = Boolean.parseBoolean(values[0]);
 			else if (propertyName.equals("animateGUI")) animateGUI = Boolean.parseBoolean(values[0]);
 			else if (propertyName.equals("keepBruhesInRam")) keepBruhesInRam = Boolean.parseBoolean(values[0]);
 			else if (propertyName.equals("quicksave_compress")) quicksave_compress = Boolean.parseBoolean(values[0]);
@@ -276,21 +248,13 @@ public class AppSettings
 		try
 		{
 			bw = new BufferedWriter(new FileWriter(file));
-			
-			bw.write("quadSize" + "\t" + quadSize + "\n");
+
 			bw.write("displayWidth" + "\t" + displayWidth + "\n");
 			bw.write("displayHeight" + "\t" + displayHeight + "\n");
 			bw.write("featureTexSize" + "\t" + featureTexSize + "\n");
 			bw.write("prefabSize" + "\t" + prefabSize + "\n");
-			bw.write("fov" + "\t" + fov + "\n");
-			bw.write("renderRadius" + "\t" + renderRadius + "\n");
-			bw.write("farClip" + "\t" + farClip + "\n");
-			bw.write("renderAll" + "\t" + renderAll + "\n");
 			bw.write("smoothNormals" + "\t" + smoothNormals + "\n");
-			bw.write("maxBlocksPerFrame" + "\t" + maxBlocksPerFrame + "\n");
-			bw.write("maxTexturesPerFrame" + "\t" + maxTexturesPerFrame + "\n");
-			bw.write("maxFeatureBlocksPerFrame" + "\t" + maxFeatureBlocksPerFrame + "\n");
-			bw.write("maxFeaturesPerFrame" + "\t" + maxFeaturesPerFrame + "\n");
+			bw.write("fastNormals" + "\t" + fastNormals + "\n");
 			bw.write("fancyWater" + "\t" + fancyWater + "\n");
 			bw.write("useLighting" + "\t" + useLighting + "\n");
 			bw.write("waterMapExtend" + "\t" + waterMapExtend + "\n");
@@ -299,24 +263,17 @@ public class AppSettings
 			bw.write("onlyOutlineBrush" + "\t" + onlyOutlineBrush + "\n");
 			bw.write("filterTextures" + "\t" + filterTextures + "\n");
 			bw.write("compressTextures" + "\t" + compressTextures + "\n");
-			bw.write("fastNormals" + "\t" + fastNormals + "\n");
 			bw.write("maxFeaturesToDisplay" + "\t" + maxFeaturesToDisplay + "\n");
-			bw.write("alwaysReRender" + "\t" + alwaysReRender + "\n");
-			bw.write("renderFullspeed" + "\t" + renderFullspeed + "\n");
 			bw.write("vsync" + "\t" + vsync + "\n");
 			bw.write("featureLighting" + "\t" + featureLighting + "\n");
 			bw.write("renderFeatureLOD" + "\t" + renderFeatureLOD + "\n");
-			bw.write("noLOD" + "\t" + noLOD + "\n");
-			bw.write("useVBO" + "\t" + useVBO + "\n");
+			bw.write("useLOD" + "\t" + useLOD + "\n");
 			bw.write("outputPerfDebug" + "\t" + outputPerfDebug + "\n");
-			bw.write("blockSize" + "\t" + blockSize + "\n");
-			bw.write("mouseLook" + "\t" + mouseLook + "\n");
 			bw.write("invertY" + "\t" + invertY + "\n");
 			bw.write("sensitivity" + "\t" + sensitivity + "\n");
 			bw.write("slowSpeed" + "\t" + slowSpeed + "\n");
 			bw.write("normalSpeed" + "\t" + normalSpeed + "\n");
 			bw.write("fastSpeed" + "\t" + fastSpeed + "\n");
-			bw.write("lockCameraY" + "\t" + lockCameraY + "\n");
 			bw.write("animateGUI" + "\t" + animateGUI + "\n");
 			bw.write("keepBruhesInRam" + "\t" + keepBruhesInRam + "\n");
 			bw.write("quicksave_compress" + "\t" + quicksave_compress + "\n");

@@ -72,19 +72,19 @@ public class Featuremap {
 	
 	public void switchMapAxis()
 	{
-		ArrayList<FeatureMapContainer> temp = new ArrayList<FeatureMapContainer>();
-		for (int i = 0; i < featureBlockCount; i++)
-		{
-			temp = featureList[i];
-			featureList[i] = featureList[i % featureMapWidthInBlocks * featureMapWidthInBlocks + i / featureMapWidthInBlocks];
-			featureList[i % featureMapWidthInBlocks * featureMapWidthInBlocks + i / featureMapWidthInBlocks] = temp;
-			for (int j = 0; j < featureList.length; j++)
-			{
-				FeatureMapContainer f = featureList[i].remove(j);
-				float tv = f.x;
-				f.x = f.z;
-				f.z = tv;
-				featureList[i].add(j, f);
+		if (featureList.length > 0) {
+			ArrayList<FeatureMapContainer> temp = new ArrayList<FeatureMapContainer>();
+			for (int i = 0; i < featureBlockCount; i++) {
+				temp = featureList[i];
+				featureList[i] = featureList[i % featureMapWidthInBlocks * featureMapWidthInBlocks + i / featureMapWidthInBlocks];
+				featureList[i % featureMapWidthInBlocks * featureMapWidthInBlocks + i / featureMapWidthInBlocks] = temp;
+				for (int j = 0; j < featureList.length; j++) {
+					FeatureMapContainer f = featureList[i].remove(j);
+					float tv = f.x;
+					f.x = f.z;
+					f.z = tv;
+					featureList[i].add(j, f);
+				}
 			}
 		}
 	}

@@ -29,36 +29,9 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 
+import frontend.commands.*;
 import org.eclipse.swt.SWT;
 
-import frontend.commands.Edit_Autogen_Texture;
-import frontend.commands.Edit_Blank_Texture;
-import frontend.commands.Edit_Erode_Heightmap_Dry;
-import frontend.commands.Edit_Erode_Heightmap_Wet;
-import frontend.commands.Edit_Quickload_Map;
-import frontend.commands.Edit_Quicksave_Map;
-import frontend.commands.Edit_Randomize_Heightmap;
-import frontend.commands.Edit_Set_Heightmap;
-import frontend.commands.Edit_Smooth_Heightmap;
-import frontend.commands.Edit_TTDIZE_Heightmap;
-import frontend.commands.Holdable_Handler;
-import frontend.commands.Move_Lock_Y;
-import frontend.commands.Render_All;
-import frontend.commands.Render_BlendTextureMap;
-import frontend.commands.Render_Disable_LOD;
-import frontend.commands.Render_Farclip;
-import frontend.commands.Render_Fast_Smooth_Normals;
-import frontend.commands.Render_Feature_Lighting;
-import frontend.commands.Render_Filter_Textures;
-import frontend.commands.Render_Lighting;
-import frontend.commands.Render_Mapmode;
-import frontend.commands.Render_Renderradius;
-import frontend.commands.Render_Shaderwater;
-import frontend.commands.Render_Smooth_Normals;
-import frontend.commands.Render_Use_VBO;
-import frontend.commands.Render_WireframeMode;
-import frontend.commands.View_Invert_Mouse_Y;
-import frontend.commands.View_Mouselook;
 import frontend.gui.Command;
 import frontend.gui.SpringMapEditGUI;
 import frontend.gui.SpringMapEditGUI.HoldableKeys;
@@ -105,6 +78,10 @@ public class KeyMapper
 		commandMap.put("-MOVE_FORWARD", new Holdable_Handler(smeGUI, false, HoldableKeys.ARROW_UP));
 		commandMap.put("+MOVE_BACKWARD", new Holdable_Handler(smeGUI, true, HoldableKeys.ARROW_DOWN));
 		commandMap.put("-MOVE_BACKWARD", new Holdable_Handler(smeGUI, false, HoldableKeys.ARROW_DOWN));
+		commandMap.put("+ZOOM_IN", new Holdable_Handler(smeGUI, true, HoldableKeys.PAGE_UP));
+		commandMap.put("-ZOOM_IN", new Holdable_Handler(smeGUI, false, HoldableKeys.PAGE_UP));
+		commandMap.put("+ZOOM_OUT", new Holdable_Handler(smeGUI, true, HoldableKeys.PAGE_DOWN));
+		commandMap.put("-ZOOM_OUT", new Holdable_Handler(smeGUI, false, HoldableKeys.PAGE_DOWN));
 		
 		commandMap.put("+PRESS_SHIFT", new Holdable_Handler(smeGUI, true, HoldableKeys.SHIFT));
 		commandMap.put("-PRESS_SHIFT", new Holdable_Handler(smeGUI, false, HoldableKeys.SHIFT));
@@ -119,20 +96,17 @@ public class KeyMapper
 		commandMap.put("-PRESS_MOUSE_2", new Holdable_Handler(smeGUI, false, HoldableKeys.MOUSE_2));
 		commandMap.put("+PRESS_MOUSE_3", new Holdable_Handler(smeGUI, true, HoldableKeys.MOUSE_3));
 		commandMap.put("-PRESS_MOUSE_3", new Holdable_Handler(smeGUI, false, HoldableKeys.MOUSE_3));
-		
-		commandMap.put("MOVE_LOCK_Y", new Move_Lock_Y(smeGUI));
+
+		commandMap.put("SCROLL_UP", new Scroll(smeGUI, true));
+		commandMap.put("SCROLL_DOWN", new Scroll(smeGUI, false));
+
+		commandMap.put("RESET_CAMERA", new Reset_Camera(smeGUI));
 		commandMap.put("VIEW_MOUSELOOK", new View_Mouselook(smeGUI));
 		commandMap.put("VIEW_INVERT_MOUSE_Y", new View_Invert_Mouse_Y(smeGUI));
 		
 		commandMap.put("RENDER_WIREFRAMEMODE", new Render_WireframeMode(smeGUI));
-		commandMap.put("RENDER_ALL", new Render_All(smeGUI));
 		commandMap.put("RENDER_SHADERWATER", new Render_Shaderwater(smeGUI));
 		commandMap.put("RENDER_FEATURE_LIGHTING", new Render_Feature_Lighting(smeGUI));
-		commandMap.put("RENDER_INC_FARCLIP", new Render_Farclip(smeGUI, 50));
-		commandMap.put("RENDER_DEC_FARCLIP", new Render_Farclip(smeGUI, -50));
-		
-		commandMap.put("RENDER_INC_RENDERRADIUS", new Render_Renderradius(smeGUI, 1));
-		commandMap.put("RENDER_DEC_RENDERRADIUS", new Render_Renderradius(smeGUI, -1));
 		commandMap.put("RENDER_LIGHTING", new Render_Lighting(smeGUI));
 		
 		commandMap.put("RENDER_DISABLE_LOD", new Render_Disable_LOD(smeGUI));
@@ -168,7 +142,10 @@ public class KeyMapper
 		setMapping(Integer.toString(SWT.ARROW_RIGHT), "+MOVE_RIGHT");
 		setMapping(Integer.toString(SWT.ARROW_UP), "+MOVE_FORWARD");
 		setMapping(Integer.toString(SWT.ARROW_DOWN), "+MOVE_BACKWARD");
-		setMapping(Integer.toString((int)'l'), "MOVE_LOCK_Y");
+		setMapping(Integer.toString(SWT.PAGE_UP), "+ZOOM_IN");
+		setMapping(Integer.toString(SWT.PAGE_DOWN), "+ZOOM_OUT");
+		setMapping(Integer.toString(SWT.TAB), "RESET_CAMERA");
+		setMapping(Integer.toString((int)'l'), "VIEW_MOUSELOOK");
 		
 		setMapping(Integer.toString(SWT.SHIFT), "+PRESS_SHIFT");
 		setMapping(Integer.toString(SWT.CTRL), "+PRESS_CTRL");
@@ -177,18 +154,13 @@ public class KeyMapper
 		setMapping(Integer.toString(1), "+PRESS_MOUSE_1");
 		setMapping(Integer.toString(2), "+PRESS_MOUSE_2");
 		setMapping(Integer.toString(3), "+PRESS_MOUSE_3");
-		
-		setMapping(Integer.toString((int)' '), "VIEW_MOUSELOOK");
+
 		setMapping(Integer.toString((int)'b'), "VIEW_INVERT_MOUSE_Y");
 		setMapping(Integer.toString((int)'w'), "RENDER_WIREFRAMEMODE");
 		
 		setMapping(Integer.toString((int)'r'), "RENDER_ALL");
 		setMapping(Integer.toString((int)'q'), "RENDER_SHADERWATER");
 		setMapping(Integer.toString((int)'v'), "RENDER_FEATURE_LIGHTING");
-		setMapping(Integer.toString((int)'i'), "RENDER_INC_FARCLIP");
-		setMapping(Integer.toString((int)'u'), "RENDER_DEC_FARCLIP");
-		setMapping(Integer.toString((int)'+'), "RENDER_INC_RENDERRADIUS");
-		setMapping(Integer.toString((int)'-'), "RENDER_DEC_RENDERRADIUS");
 		setMapping(Integer.toString((int)'h'), "RENDER_LIGHTING");
 		setMapping(Integer.toString((int)'o'), "RENDER_DISABLE_LOD");
 		setMapping(Integer.toString((int)'n'), "RENDER_SMOOTH_NORMALS");
@@ -385,5 +357,13 @@ public class KeyMapper
 		
 		//Nothing found...
 		return null;
+	}
+
+	public Command getScrollCommand(boolean up){
+		if (up){
+			return commandMap.get("SCROLL_UP");
+		}else{
+			return commandMap.get("SCROLL_DOWN");
+		}
 	}
 }

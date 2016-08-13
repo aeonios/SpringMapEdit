@@ -203,16 +203,6 @@ public class SpringMapEditDialog
 		shell.setLayout(new GridLayout(4, false));
 		
 		////Controls
-		addSlider(Widgets.L_FOV, Widgets.SL_FOV, shell, "FOV: " + (int)rs.fov, (int)rs.fov, 10, 180, 
-				new Command(null) { public void execute(Object[] data2)
-				{
-					rs.fov = (Integer) data2[0];
-					renderer.camViewChangedNotify();
-				}},
-				new Getter(null) { public Object getValue(Object[] data2)
-				{
-					return "FOV: " + (Integer) data2[0];
-				}});
 		
 		addSlider(Widgets.L_BRUSHSTRENGTH, Widgets.SL_BRUSHSTRENGTH, shell, "Brush Strength: " + sme.mes.activeBrush.getStrengthInt(), sme.mes.activeBrush.getStrengthInt(), 1, 1000, 
 				new Command(null) { public void execute(Object[] data2)
