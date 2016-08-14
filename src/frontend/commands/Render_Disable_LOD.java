@@ -36,7 +36,7 @@ public class Render_Disable_LOD extends SpringMapEditGUICommand
 	@Override
 	public void execute(Object[] data2)
 	{
-		smeGUI.as.noLOD = !smeGUI.as.noLOD;
+		smeGUI.as.useLOD = !smeGUI.as.useLOD;
 		smeGUI.renderer.camViewChangedNotify();
 	}
 }

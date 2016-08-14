@@ -301,8 +301,8 @@ public class MapRenderer
 	
 	private void createTexture(GL gl, int index)
 	{
-		if (texturesCreatedThisFrame >= rs.maxTexturesPerFrame)
-			return;
+		/*if (texturesCreatedThisFrame >= rs.maxTexturesPerFrame)
+			return;*/
 		
 		long start = System.nanoTime();
 		
@@ -670,151 +670,152 @@ public class MapRenderer
 			System.out.println("Done updating complete Slopemap ( " + ((System.nanoTime() - start) / 1000000) + " ms )");
 	}
 	
-	private void createBlock(GL gl, int index, int lodLevel)
+	private void createBlock(GL gl, int index)
 	{
-		if (blocksCreatedThisFrame >= rs.maxBlocksPerFrame)
-			return;
+		/*if (blocksCreatedThisFrame >= rs.maxBlocksPerFrame)
+			return;*/
 		float[][] heightmap = sme.map.heightmap.getHeightMap();
 		int x, xStart, yStart;
 		int width = sme.map.heightmap.getHeightmapWidth();
 		int height = sme.map.heightmap.getHeightmapLength();
 		float maxHeight = sme.map.maxHeight * 2;
-		
-		int lodSkip = FastMath.pow(2, lodLevel);
-		int lodNegativeExtendTileSize = (lodSkip-1) * rs.quadSize;
-		int lodSkipTileSize = lodSkip * rs.quadSize;
-		float texFraction = lodSkip / (float)blockSizeinTiles;
-		long start = System.nanoTime();
-		
-		Vector3 v1, v2, v3, v4, vBaseNormal;
 
-		//Generate VertexBuffer Data
-		vbo[lodLevel].clear();
+		for (int lodLevel = 0; lodLevel < 4; lodLevel++) {
+			int lodSkip = FastMath.pow(2, lodLevel);
+			int lodNegativeExtendTileSize = (lodSkip - 1) * rs.quadSize;
+			int lodSkipTileSize = lodSkip * rs.quadSize;
+			float texFraction = lodSkip / (float) blockSizeinTiles;
+			long start = System.nanoTime();
 
-		xStart = ((index % mapWidthInBlocks) * blockSizeinTiles) + lodSkip;
-		yStart = ((index / mapWidthInBlocks) * blockSizeinTiles) + lodSkip;
-	    	
-		v4 = null;
-		int xLocal;
-		int yLocal = 0;
-		for (int y = yStart; y < (yStart + blockSizeinTiles); y += lodSkip) {
-			xLocal = 0;
-			x = xStart;
+			Vector3 v1, v2, v3, v4, vBaseNormal;
 
-			try {
-				v1 = new Vector3(-rs.quadHalfSize - lodNegativeExtendTileSize + (x * rs.quadSize),
-						heightmap[y - lodSkip][x - lodSkip] * maxHeight, -rs.quadHalfSize - lodNegativeExtendTileSize + (y * rs.quadSize));
-				v2 = new Vector3(-rs.quadHalfSize - lodNegativeExtendTileSize + (x * rs.quadSize),
-						heightmap[y][x - lodSkip] * maxHeight, rs.quadHalfSize + (y * rs.quadSize));
-			} catch (ArrayIndexOutOfBoundsException e) {
-				break; // Temporary hack for a problem that should not happen
-			}
-			v3 = new Vector3(rs.quadHalfSize + (x * rs.quadSize), heightmap[y - lodSkip][x] * maxHeight,
-					-rs.quadHalfSize - lodNegativeExtendTileSize + (y * rs.quadSize));
+			//Generate VertexBuffer Data
+			vbo[lodLevel].clear();
 
-			vBaseNormal = Vector3Math.crossProduct(Vector3Math.subVectors(v1, v2), Vector3Math.subVectors(v2, v3)).normalize();
-				
-			/* TEXCOORD */
-			vbo[lodLevel].put(0 + (xLocal / (float) blockSizeinTiles));
-			vbo[lodLevel].put(0 + (yLocal / (float) blockSizeinTiles));
-			/* NORMAL   */
-			vbo[lodLevel].put(getSmoothedNormal(heightmap, x - lodSkip, y - lodSkip, width,
-					height, vBaseNormal, lodSkip, lodSkipTileSize, maxHeight).vector, 0, 3);
-			/* VERTEX   */
-			vbo[lodLevel].put(v1.vector, 0, 3);
-				
-			/* TEXCOORD */
-			vbo[lodLevel].put(0 + (xLocal / (float) blockSizeinTiles));
-			vbo[lodLevel].put(texFraction + (yLocal / (float) blockSizeinTiles));
-			/* NORMAL   */
-			vbo[lodLevel].put(getSmoothedNormal(heightmap, x - lodSkip, y, width, height, vBaseNormal, lodSkip, lodSkipTileSize, maxHeight).vector, 0, 3);
-			/* VERTEX   */
-			vbo[lodLevel].put(v2.vector, 0, 3);
+			xStart = ((index % mapWidthInBlocks) * blockSizeinTiles) + lodSkip;
+			yStart = ((index / mapWidthInBlocks) * blockSizeinTiles) + lodSkip;
 
-			for (; x < (xStart + blockSizeinTiles); x += lodSkip) {
-				v3 = new Vector3(rs.quadHalfSize + (x * rs.quadSize),
-						heightmap[y - lodSkip][x] * maxHeight, -rs.quadHalfSize - lodNegativeExtendTileSize + (y * rs.quadSize));
-				v4 = new Vector3(rs.quadHalfSize + (x * rs.quadSize), heightmap[y][x] * maxHeight, rs.quadHalfSize + (y * rs.quadSize));
+			v4 = null;
+			int xLocal;
+			int yLocal = 0;
+			for (int y = yStart; y < (yStart + blockSizeinTiles); y += lodSkip) {
+				xLocal = 0;
+				x = xStart;
+
+				try {
+					v1 = new Vector3(-rs.quadHalfSize - lodNegativeExtendTileSize + (x * rs.quadSize),
+							heightmap[y - lodSkip][x - lodSkip] * maxHeight, -rs.quadHalfSize - lodNegativeExtendTileSize + (y * rs.quadSize));
+					v2 = new Vector3(-rs.quadHalfSize - lodNegativeExtendTileSize + (x * rs.quadSize),
+							heightmap[y][x - lodSkip] * maxHeight, rs.quadHalfSize + (y * rs.quadSize));
+				} catch (ArrayIndexOutOfBoundsException e) {
+					break; // Temporary hack for a problem that should not happen
+				}
+				v3 = new Vector3(rs.quadHalfSize + (x * rs.quadSize), heightmap[y - lodSkip][x] * maxHeight,
+						-rs.quadHalfSize - lodNegativeExtendTileSize + (y * rs.quadSize));
 
 				vBaseNormal = Vector3Math.crossProduct(Vector3Math.subVectors(v1, v2), Vector3Math.subVectors(v2, v3)).normalize();
-					
-				/* TEXCOORD */
-				vbo[lodLevel].put(texFraction + (xLocal / (float) blockSizeinTiles));
+				
+			/* TEXCOORD */
+				vbo[lodLevel].put(0 + (xLocal / (float) blockSizeinTiles));
 				vbo[lodLevel].put(0 + (yLocal / (float) blockSizeinTiles));
-				/* NORMAL   */
-				vbo[lodLevel].put(getSmoothedNormal(heightmap, x, y - lodSkip, width, height, vBaseNormal, lodSkip, lodSkipTileSize, maxHeight).vector, 0, 3);
-				/* VERTEX   */
-				vbo[lodLevel].put(v3.vector, 0, 3);
+			/* NORMAL   */
+				vbo[lodLevel].put(getSmoothedNormal(heightmap, x - lodSkip, y - lodSkip, width,
+						height, vBaseNormal, lodSkip, lodSkipTileSize, maxHeight).vector, 0, 3);
+			/* VERTEX   */
+				vbo[lodLevel].put(v1.vector, 0, 3);
+				
+			/* TEXCOORD */
+				vbo[lodLevel].put(0 + (xLocal / (float) blockSizeinTiles));
+				vbo[lodLevel].put(texFraction + (yLocal / (float) blockSizeinTiles));
+			/* NORMAL   */
+				vbo[lodLevel].put(getSmoothedNormal(heightmap, x - lodSkip, y, width, height, vBaseNormal, lodSkip, lodSkipTileSize, maxHeight).vector, 0, 3);
+			/* VERTEX   */
+				vbo[lodLevel].put(v2.vector, 0, 3);
+
+				for (; x < (xStart + blockSizeinTiles); x += lodSkip) {
+					v3 = new Vector3(rs.quadHalfSize + (x * rs.quadSize),
+							heightmap[y - lodSkip][x] * maxHeight, -rs.quadHalfSize - lodNegativeExtendTileSize + (y * rs.quadSize));
+					v4 = new Vector3(rs.quadHalfSize + (x * rs.quadSize), heightmap[y][x] * maxHeight, rs.quadHalfSize + (y * rs.quadSize));
+
+					vBaseNormal = Vector3Math.crossProduct(Vector3Math.subVectors(v1, v2), Vector3Math.subVectors(v2, v3)).normalize();
 					
 				/* TEXCOORD */
-				vbo[lodLevel].put(texFraction + (xLocal / (float) blockSizeinTiles));
-				vbo[lodLevel].put(texFraction + (yLocal / (float) blockSizeinTiles));
+					vbo[lodLevel].put(texFraction + (xLocal / (float) blockSizeinTiles));
+					vbo[lodLevel].put(0 + (yLocal / (float) blockSizeinTiles));
 				/* NORMAL   */
-				vbo[lodLevel].put(getSmoothedNormal(heightmap, x, y, width, height, vBaseNormal, lodSkip, lodSkipTileSize, maxHeight).vector, 0, 3);
+					vbo[lodLevel].put(getSmoothedNormal(heightmap, x, y - lodSkip, width, height, vBaseNormal, lodSkip, lodSkipTileSize, maxHeight).vector, 0, 3);
 				/* VERTEX   */
+					vbo[lodLevel].put(v3.vector, 0, 3);
+					
+				/* TEXCOORD */
+					vbo[lodLevel].put(texFraction + (xLocal / (float) blockSizeinTiles));
+					vbo[lodLevel].put(texFraction + (yLocal / (float) blockSizeinTiles));
+				/* NORMAL   */
+					vbo[lodLevel].put(getSmoothedNormal(heightmap, x, y, width, height, vBaseNormal, lodSkip, lodSkipTileSize, maxHeight).vector, 0, 3);
+				/* VERTEX   */
+					vbo[lodLevel].put(v4.vector, 0, 3);
+
+					//Copy last 2 vectors to new first ones
+					v1 = v3;
+					v2 = v4;
+
+					xLocal += lodSkip;
+				}
+
+				//We need to insert null triangles here, for lf+cr
+				//Last point again
+			/* TEXCOORD */
+				vbo[lodLevel].put(0);
+				vbo[lodLevel].put(0);
+			/* NORMAL   */
+				vbo[lodLevel].put(nullVector.vector, 0, 3);
+			/* VERTEX   */
 				vbo[lodLevel].put(v4.vector, 0, 3);
 
-				//Copy last 2 vectors to new first ones
-				v1 = v3;
-				v2 = v4;
-
-				xLocal += lodSkip;
-			}
-
-			//We need to insert null triangles here, for lf+cr
-			//Last point again
-			/* TEXCOORD */
-			vbo[lodLevel].put(0);
-			vbo[lodLevel].put(0);
-			/* NORMAL   */
-			vbo[lodLevel].put(nullVector.vector, 0, 3);
-			/* VERTEX   */
-			vbo[lodLevel].put(v4.vector, 0, 3);
-
-			//First point of next row again (=second point of this row)
-			v2 = new Vector3(-rs.quadHalfSize - lodNegativeExtendTileSize + (xStart * rs.quadSize),
+				//First point of next row again (=second point of this row)
+				v2 = new Vector3(-rs.quadHalfSize - lodNegativeExtendTileSize + (xStart * rs.quadSize),
 						heightmap[y][xStart - lodSkip] * maxHeight, rs.quadHalfSize + (y * rs.quadSize));
 			/* TEXCOORD */
-			vbo[lodLevel].put(0);
-			vbo[lodLevel].put(0);
+				vbo[lodLevel].put(0);
+				vbo[lodLevel].put(0);
 			/* NORMAL   */
-			vbo[lodLevel].put(nullVector.vector, 0, 3);
+				vbo[lodLevel].put(nullVector.vector, 0, 3);
 			/* VERTEX   */
-			vbo[lodLevel].put(v2.vector, 0, 3);
+				vbo[lodLevel].put(v2.vector, 0, 3);
 
-			yLocal += lodSkip;
+				yLocal += lodSkip;
+			}
+
+			vbo[lodLevel].flip();
+
+			//Upload our interleaved Array
+			boolean isNewArray = (vboID[lodLevel][index] < 0);
+
+			if (isNewArray)
+				gl.glGenBuffers(1, vboID[lodLevel], index);
+
+			gl.glBindBuffer(GL.GL_ARRAY_BUFFER, vboID[lodLevel][index]);
+
+			if (isNewArray)
+				gl.glBufferData(GL.GL_ARRAY_BUFFER, verticesPerBlock[lodLevel] * 8 * BufferUtil.SIZEOF_FLOAT, vbo[lodLevel], GL.GL_DYNAMIC_DRAW);
+			else
+				gl.glBufferSubData(GL.GL_ARRAY_BUFFER, 0, verticesPerBlock[lodLevel] * 8 * BufferUtil.SIZEOF_FLOAT, vbo[lodLevel]);
+
+			if (rs.outputPerfDebug)
+				System.out.println("Done creating VBO Block. LOD: " + lodLevel + " ( " + ((System.nanoTime() - start) / 1000000) + " ms )");
+
+
+			//If map heights changed, we need to adopt the feature heights and slopemap
+			updateFeatureBlockHeights(index);
+			updateSlopemapBlock(index);
+
+			//invalidate slope texture
+			if (rs.mapMode == MapMode.SlopeMap)
+				isTextureCached[index] = false;
+
+			blocksCreatedThisFrame++;
+			isGeometryCached[lodLevel][index] = true;
 		}
-
-		vbo[lodLevel].flip();
-
-		//Upload our interleaved Array
-		boolean isNewArray = (vboID[lodLevel][index] < 0);
-
-		if (isNewArray)
-			gl.glGenBuffers(1, vboID[lodLevel], index);
-
-		gl.glBindBuffer(GL.GL_ARRAY_BUFFER, vboID[lodLevel][index]);
-
-		if (isNewArray)
-			gl.glBufferData(GL.GL_ARRAY_BUFFER, verticesPerBlock[lodLevel] * 8 * BufferUtil.SIZEOF_FLOAT, vbo[lodLevel], GL.GL_DYNAMIC_DRAW);
-		else
-			gl.glBufferSubData(GL.GL_ARRAY_BUFFER, 0, verticesPerBlock[lodLevel] * 8 * BufferUtil.SIZEOF_FLOAT, vbo[lodLevel]);
-
-		if (rs.outputPerfDebug)
-			System.out.println("Done creating VBO Block. LOD: " + lodLevel + " ( " + ((System.nanoTime() - start) / 1000000) + " ms )");
-
-
-		
-		//If map heights changed, we need to adopt the feature heights and slopemap
-		updateFeatureBlockHeights(index);
-		updateSlopemapBlock(index);
-		
-		//invalidate slope texture
-		if (rs.mapMode == MapMode.SlopeMap)
-			isTextureCached[index] = false;
-    	
-		blocksCreatedThisFrame++;
-		isGeometryCached[lodLevel][index] = true;
 	}
 		
 	private Vector3 getSmoothedNormal(float map[][], int x, int y, int width, int height, Vector3 baseVector, int lodSkip, int lodSkipTileSize, float maxHeight)
@@ -1406,7 +1407,7 @@ public class MapRenderer
 					lodLevel = getLODLevel(i);
 					
 					if (!isGeometryCached[lodLevel][i])
-						createBlock(gl, i, lodLevel);
+						createBlock(gl, i);
 					
 					//Render Block
 					//VBO
@@ -1449,7 +1450,7 @@ public class MapRenderer
 					lodLevel = getLODLevel(i);
 					
 					if (!isGeometryCached[lodLevel][i])
-						createBlock(gl, i, lodLevel);
+						createBlock(gl, i);
 					if (!isTextureCached[i])
 						createTexture(gl, i);
 					

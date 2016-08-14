@@ -52,5 +52,6 @@
       </library>
     </orderEntry>
     <orderEntry type="library" name="lib_win64" level="project" />
+    <orderEntry type="library" name="lib_win64" level="project" />
   </component>
 </module>
