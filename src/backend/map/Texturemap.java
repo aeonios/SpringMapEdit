@@ -472,36 +472,35 @@ public class Texturemap {
 		byte[][] textureB = brush.texture.getTextureB();
 		byte[][] textureA = brush.texture.getTextureA();
 		for (int y = py; y < py + length; y++)
-			for (int x = px; x < px + width; x++)
-				//if ((x >= 0) && (x < textureMapWidth) && (y >= 0) && (y < texturemapLength))
-			{
-					patternX = (x - px) / heightmapSizeTextureFactor;
-					patternY = (y - py) / heightmapSizeTextureFactor;
-					newTexAmountOrigin = amount * newPattern[patternX][patternY];
-					newTexAmountRight = newTexAmountOrigin;
-					newTexAmountLower = newTexAmountOrigin;
-					newTexAmountLowerRight = newTexAmountOrigin;
-					if ((patternX + 1) < patternWidth)
-						newTexAmountRight = amount * newPattern[patternX + 1][patternY];
-					if ((patternY + 1) < patternHeight)
-						newTexAmountLower = amount * newPattern[patternX][patternY + 1];
-					if (((patternX + 1) < patternWidth) && ((patternY + 1) < patternHeight))
-						newTexAmountLowerRight = amount * newPattern[patternX + 1][patternY + 1];
-					blendFactorX = ((x - px) % heightmapSizeTextureFactor) / (float)heightmapSizeTextureFactor;
-					blendFactorY = ((y - py) % heightmapSizeTextureFactor) / (float)heightmapSizeTextureFactor;
-					leftVal = (newTexAmountOrigin * (1 - blendFactorY)) + (newTexAmountLower * blendFactorY);
-					rightVal = (newTexAmountRight * (1 - blendFactorY)) + (newTexAmountLowerRight * blendFactorY);
-					newTexAmount = (leftVal * (1 - blendFactorX)) + (rightVal * blendFactorX);
+			for (int x = px; x < px + width; x++) {
+				patternX = (x - px) / heightmapSizeTextureFactor;
+				patternY = (y - py) / heightmapSizeTextureFactor;
+				newTexAmountOrigin = amount * newPattern[patternX][patternY];
+				newTexAmountRight = newTexAmountOrigin;
+				newTexAmountLower = newTexAmountOrigin;
+				newTexAmountLowerRight = newTexAmountOrigin;
+				if ((patternX + 1) < patternWidth)
+					newTexAmountRight = amount * newPattern[patternX + 1][patternY];
+				if ((patternY + 1) < patternHeight)
+					newTexAmountLower = amount * newPattern[patternX][patternY + 1];
+				if (((patternX + 1) < patternWidth) && ((patternY + 1) < patternHeight))
+					newTexAmountLowerRight = amount * newPattern[patternX + 1][patternY + 1];
+				blendFactorX = ((x - px) % heightmapSizeTextureFactor) / (float)heightmapSizeTextureFactor;
+				blendFactorY = ((y - py) % heightmapSizeTextureFactor) / (float)heightmapSizeTextureFactor;
+				leftVal = (newTexAmountOrigin * (1 - blendFactorY)) + (newTexAmountLower * blendFactorY);
+				rightVal = (newTexAmountRight * (1 - blendFactorY)) + (newTexAmountLowerRight * blendFactorY);
+				newTexAmount = (leftVal * (1 - blendFactorX)) + (rightVal * blendFactorX);
 
-					invNewTexAmount = 1 - newTexAmount;
-					r = FastMath.round((invNewTexAmount * (textureMap[y][(x * 3) + 0] & 0xFF)) + (newTexAmount * (textureR[x % brush.texture.width][y % brush.texture.height] & 0xFF)));
-					g = FastMath.round((invNewTexAmount * (textureMap[y][(x * 3) + 1] & 0xFF)) + (newTexAmount * (textureG[x % brush.texture.width][y % brush.texture.height] & 0xFF)));
-					b = FastMath.round((invNewTexAmount * (textureMap[y][(x * 3) + 2] & 0xFF)) + (newTexAmount * (textureB[x % brush.texture.width][y % brush.texture.height] & 0xFF)));
-					
-					textureMap[y][(x * 3) + 0] = (byte)Math.min(Math.max(r, 0), 255);
-					textureMap[y][(x * 3) + 1] = (byte)Math.min(Math.max(g, 0), 255);
-					textureMap[y][(x * 3) + 2] = (byte)Math.min(Math.max(b, 0), 255);
-				}
+				newTexAmount *= (textureA[x % brush.texture.width][y % brush.texture.height] & 0xFF) / (float) 0xFF;
+				invNewTexAmount = 1 - newTexAmount;
+				r = FastMath.round((invNewTexAmount * (textureMap[y][(x * 3) + 0] & 0xFF)) + (newTexAmount * (textureR[x % brush.texture.width][y % brush.texture.height] & 0xFF)));
+				g = FastMath.round((invNewTexAmount * (textureMap[y][(x * 3) + 1] & 0xFF)) + (newTexAmount * (textureG[x % brush.texture.width][y % brush.texture.height] & 0xFF)));
+				b = FastMath.round((invNewTexAmount * (textureMap[y][(x * 3) + 2] & 0xFF)) + (newTexAmount * (textureB[x % brush.texture.width][y % brush.texture.height] & 0xFF)));
+
+				textureMap[y][(x * 3) + 0] = (byte)Math.min(Math.max(r, 0), 255);
+				textureMap[y][(x * 3) + 1] = (byte)Math.min(Math.max(g, 0), 255);
+				textureMap[y][(x * 3) + 2] = (byte)Math.min(Math.max(b, 0), 255);
+			}
 	}
 	
 	public void stampColorToTexture(int px, int py, TextureBrush brush)
