@@ -101,11 +101,11 @@ Movement:
 ARROWS					Move around
 Scrollwheel/Pageup/Pagedown	Zoom in/out
 Middle Mouse Button			Mouselook 	
-L						Toggle Mouselook
+L							Toggle Mouselook
 MOUSE						Look around / move brush / actions
 SHIFT						Hold to move around faster
 CTRL						Hold to move slower
-B						Toggle Invert Mouse Y
+B							Toggle Invert Mouse Y
 
 
 Editing:
@@ -130,11 +130,7 @@ System:
 
 Q		Toggle "nice Shader Water"
 W		Wireframe mode
-R		Toggle "View complete Map"
-U/I		decrease/increase clipping distance when "View complete Map" is disabled
-+/-		(NOT on Numpad!) decrease/increase view distance when "View complete Map" is disabled
 O		Toggle Terrain LOD
-D		Toggle "use VBO instead of DisplayList" Setting
 F		Toggle Texture filtering
 H		Toggle Lighting
 N		Toggle "Smooth Normal Calculation"
@@ -150,19 +146,11 @@ so you may wish to alter these files directly.
 
 settings.cfg:
 
-quadSize	2					size of one tile in openGL units. Do not modify, needs to be in sync with spring.
 displayWidth	1024			initial window width
 displayHeight	768				initial window height
 featureTexSize	128				size of feature selektor buttons
-fov	60.0						initial fov
-renderRadius	128				Key: +/-
-farClip	200						Key: U/I
-renderAll	true				Key: R
 smoothNormals	true			Key: M
-maxBlocksPerFrame	1			How many geometry-blocks will be updated each frame
-maxTexturesPerFrame	1			How many texture-blocks will be updated each frame
-maxFeatureBlocksPerFrame	1	How many feature-blocks will be updated each frame
-maxFeaturesPerFrame	1			How many features will be loaded each frame
+fastNormals	false				Key: N
 fancyWater	false				Key: Q
 useLighting	true				Key: H
 waterMapExtend	200				How far the water will extend beyond terrain
@@ -171,36 +159,24 @@ drawSun	false
 onlyOutlineBrush	true		If Brush will be solid, or outlined. (If set to false could impact performance)
 filterTextures	true
 compressTextures	true		If textures will be compressed (affects only Texturemap&Features)
-fastNormals	false				Key: N
 maxFeaturesToDisplay	10240	Maximum number of features that will be rendered
-alwaysReRender	true			Always render the full scene, despite nothing changed
-renderFullspeed	true			Render fullspeed, despite nothing may change between world updates
 vsync	false
 featureLighting	false			If Features recieve lighting, or not
 renderFeatureLOD	3			Last Terrain-LOD which will show features
-noLOD	false					Disable LOD
-useVBO	true					Key: D
+useLOD	false					Enable/Disable LOD
 outputPerfDebug	false			Output performance debugging info
-blockSize	64					block size in tiles. MUST be 2^n. Smaller values reduce block updating time(while editing), while large values increase rendering performance
 mouseLook	false				Key: SPACE
 invertY	true					If Y-Axis is inverted while Mouselook is active
 sensitivity	5.0					Mouse sensitivity while looking around
 slowSpeed	1.0					Slow movespeed (CTRL)
 normalSpeed	8.0					Normal movespeed
 fastSpeed	16.0				Fast movespeed (SHIFT)
-lockCameraY	false				if camera height is locked
 compressQuicksave	false		if quicksaves should be compressed into RAM. Should only be used if RAM is low.
 dialogAlwaysOnTop	true		if dialog is always on top
 quitWithoutAsking	false		if a confirmation dialog should be displayed on exit
-lodDists	400.0	800.0	1200.0	1600.0	2000.0	2400.0			...
+lodDist	800						the distance away from the camera up to which maximum detail is used.
 Up to the distance of the first value, LODLevel 0 will be used,
 up to the distance of the second value, LODLevel 1 will be uses and so on...
-NOTE:
-The amount of values needed here depends on blockSize. 2^x = blockSize, x = needed values.
-2^x = 64
-x = 6
-6 Values needed.
-If the number of values is wrong, all values will be ignored and set to a default.
 
 If you mess up, just delete the config.
 A new one will be created with proper defaults.
@@ -214,9 +190,6 @@ Basically it is just:
 keyCode is a mixture of modifiers and an actual keycode.
 Since the codes are from SWT, they do not completely correspond to ASCII.
 Normal letters do match, but special keys do not (F1, F2, Arrows...)
-
-SHIFT114	RENDER_ALL
-This would be SHIFT+R to execute RENDER_ALL
 
 Modifiers are "SHIFT", "CTRL", "ALT".
 If used, they MUST be used in above order.
