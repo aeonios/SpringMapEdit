@@ -250,12 +250,12 @@ public class PrefabBrush extends Brush
 	public void copy (int px, int py, PrefabBrush brush)
 	{
 		if (true)
-			sme.map.copy(px, py, brush);
+			sme.map.copy(px, py, this);
 	}
 	
 	public void paste (int px, int py, PrefabBrush brush)
 	{
 		if (true)
-			sme.map.paste(px, py, brush);
+			sme.map.paste(px, py, this);
 	}
 }

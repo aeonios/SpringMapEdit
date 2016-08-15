@@ -828,8 +828,8 @@ public class SpringMapEditDialog
 		
 		cpg.setVisible(false);
 		
-		addRadioGroup(shell, "Brushmode", sme.mes.getBrushMode().ordinal(), 4, 7, //10,
-				new String[] { "Height", "Texture", "Metal", "Type", "Vegetation", /*"Feature",*/ "Prefab", "Copy/Paste" }, new SelectionAdapter[] {
+		addRadioGroup(shell, "Brushmode", sme.mes.getBrushMode().ordinal(), 4, 6, //10,
+				new String[] { "Height", "Texture", "Metal", "Type", "Vegetation", /*"Feature",*/ "Prefab" /*"Copy/Paste"*/ }, new SelectionAdapter[] {
 				new SelectionAdapter()
 				{
 					public void widgetSelected(SelectionEvent e)
@@ -841,7 +841,7 @@ public class SpringMapEditDialog
 						cpg.setVisible(false);
 						updateWidgets();
 						sme.mes.setBrushMode(BrushMode.Height);
-						rs.mapMode = MapMode.SlopeMap;
+						rs.mapMode = MapMode.TextureMap;
 						renderer.invalidateAllBlocks(false, true, false);
 					}
 				},
@@ -935,7 +935,7 @@ public class SpringMapEditDialog
 						renderer.invalidateAllBlocks(false, true, false);
 					}
 				},
-				new SelectionAdapter()
+				/*new SelectionAdapter()
 				{
 					public void widgetSelected(SelectionEvent e)
 					{
@@ -949,7 +949,7 @@ public class SpringMapEditDialog
 						rs.mapMode = MapMode.TextureMap;
 						renderer.invalidateAllBlocks(false, true, false);
 					}
-				},
+				},*/
 			});
 	}
 

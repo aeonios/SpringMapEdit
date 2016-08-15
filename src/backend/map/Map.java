@@ -399,8 +399,8 @@ public class Map {
 			typemap.copy(py / heightmapSizeTypemapDivisor, px / heightmapSizeTypemapDivisor, height / heightmapSizeTypemapDivisor, width / heightmapSizeTypemapDivisor);
 		/*if (true)
 			vegetationMap.copy(py / heightmapSizeVegetationmapDivisor, px / heightmapSizeVegetationmapDivisor, height / heightmapSizeVegetationmapDivisor, width / heightmapSizeVegetationmapDivisor);*/
-		if (true)
-			featuremap.copy(px, py, (height * springMapSizeHeightmapFactor) + 1, (width * springMapSizeHeightmapFactor) + 1);
+		//if (true)
+		//	featuremap.copy(px, py, (height * springMapSizeHeightmapFactor) + 1, (width * springMapSizeHeightmapFactor) + 1);
 	}
 	
 	public void paste(int px, int py, PrefabBrush brush)
@@ -418,8 +418,8 @@ public class Map {
 		if (true)
 			typemap.paste(py / heightmapSizeTypemapDivisor, px / heightmapSizeTypemapDivisor, height / heightmapSizeTypemapDivisor, width / heightmapSizeTypemapDivisor);
 		
-		if (true)
-			featuremap.paste(px, py, brush);
+		//if (true)
+		//	featuremap.paste(px, py, brush);
 	}
 	
 	public void setToTypemap(int px, int py, TypeBrush brush, boolean invert)

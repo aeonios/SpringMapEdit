@@ -697,10 +697,11 @@ public class SpringMapEditGUI
 						{	
 							public void execute(Object[] data2)
 							{
-								sme.mes.getCopypasteBrush().copy(sme.mes.brushPos.x(), sme.mes.brushPos.y(), sme.mes.getPrefabBrush());
+								sme.mes.getCopypasteBrush().paste(sme.mes.brushPos.x(), sme.mes.brushPos.y(), sme.mes.getPrefabBrush());
 							}
 						});
 						holdableKeys[HoldableKeys.MOUSE_1.ordinal()] = false;
+						renderer.invalidateBlocksByBrush(sme.mes.brushPos.x(), sme.mes.brushPos.y(), sme.mes.getCopypasteBrush(), true, true, false);
 						break;
 					}
 				}
@@ -784,15 +785,13 @@ public class SpringMapEditGUI
 						renderer.invalidateBlocksByBrush(sme.mes.brushPos.x(), sme.mes.brushPos.y(), sme.mes.getPrefabBrush(), true, true, false);
 						break;
 					case Copypaste:
-						messageQueue.offer(new Command(null)
-						{	
+						messageQueue.offer(new Command(null) {
 							public void execute(Object[] data2)
 							{
-								sme.mes.getCopypasteBrush().paste(sme.mes.brushPos.x(), sme.mes.brushPos.y(), sme.mes.getPrefabBrush());
+								sme.mes.getCopypasteBrush().copy(sme.mes.brushPos.x(), sme.mes.brushPos.y(), sme.mes.getPrefabBrush());
 							}
 						});
 						holdableKeys[HoldableKeys.MOUSE_3.ordinal()] = false;
-						renderer.invalidateBlocksByBrush(sme.mes.brushPos.x(), sme.mes.brushPos.y(), sme.mes.getPrefabBrush(), true, true, false);
 						break;
 					}
 				}
