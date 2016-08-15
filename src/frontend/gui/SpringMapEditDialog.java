@@ -654,7 +654,7 @@ public class SpringMapEditDialog
 		
 		tg.setVisible(false);
 		
-		fg = addRadioGroup(shell, "Featuremode", sme.mes.getFeatureBrush().mode.ordinal(), 4, 3, 
+		fg = addRadioGroup(shell, "Featuremode", sme.mes.getFeatureBrush().mode.ordinal(), 4, 3,
 				new String[] { "Add", "Rotate", "Rotate Same Random", "Move Features" }, new SelectionAdapter[] {
 			new SelectionAdapter()
 			{
@@ -828,8 +828,8 @@ public class SpringMapEditDialog
 		
 		cpg.setVisible(false);
 		
-		addRadioGroup(shell, "Brushmode", sme.mes.getBrushMode().ordinal(), 4, 8, //10,
-				new String[] { "Height", "Texture", "Metal", "Type", "Vegetation", /*"Diffuse", "Decal",*/ "Feature", "Prefab", "Copy/Paste" }, new SelectionAdapter[] {
+		addRadioGroup(shell, "Brushmode", sme.mes.getBrushMode().ordinal(), 4, 7, //10,
+				new String[] { "Height", "Texture", "Metal", "Type", "Vegetation", /*"Feature",*/ "Prefab", "Copy/Paste" }, new SelectionAdapter[] {
 				new SelectionAdapter()
 				{
 					public void widgetSelected(SelectionEvent e)
@@ -904,37 +904,7 @@ public class SpringMapEditDialog
 						rs.mapMode = MapMode.VegetationMap;
 						renderer.invalidateAllBlocks(false, true, false);
 					}
-				},
-				/*new SelectionAdapter()
-				{
-					public void widgetSelected(SelectionEvent e)
-					{
-						hg.setVisible(false);
-						tg.setVisible(false);
-						fg.setVisible(false);
-						pfg.setVisible(false);
-		cpg.setVisible(false);
-						updateWidgets();
-						sme.mes.setBrushMode(BrushMode.Diffuse);
-						rs.mapMode = MapMode.DiffuseMap;
-						renderer.invalidateAllBlocks(false, true, false);
-					}
-				},*/
-				/*new SelectionAdapter()
-				{
-					public void widgetSelected(SelectionEvent e)
-					{
-						hg.setVisible(false);
-						tg.setVisible(false);
-						fg.setVisible(false);
-						pfg.setVisible(false);
-		cpg.setVisible(false);
-						updateWidgets();
-						sme.mes.setBrushMode(BrushMode.Decal);
-						rs.mapMode = MapMode.TextureMap;
-						renderer.invalidateAllBlocks(false, true, false);
-					}
-				},*/
+				},/*
 				new SelectionAdapter()
 				{
 					public void widgetSelected(SelectionEvent e)
@@ -949,7 +919,7 @@ public class SpringMapEditDialog
 						rs.mapMode = MapMode.TextureMap;//FeatureMap;
 						renderer.invalidateAllBlocks(false, true, false);
 					}
-				},
+				},*/
 				new SelectionAdapter()
 				{
 					public void widgetSelected(SelectionEvent e)
@@ -1063,7 +1033,7 @@ public class SpringMapEditDialog
 		GridData gd = new GridData(GridData.FILL, GridData.BEGINNING, true, false, 4, 1);
 		group.setLayoutData(gd);
 		group.setLayout(new GridLayout(columns, false));
-		
+
 		for (int i = 0; i < count; i++)
 		{
 			Button b = new Button(group, SWT.RADIO);

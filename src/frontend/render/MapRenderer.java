@@ -60,6 +60,7 @@ public class MapRenderer
 	private SpringMapEdit sme;
 	private GL staticGl;
 	private GLU glu;
+	private GLUT glut;
 	private AppSettings rs;
 	private ShaderManager shaderManager;
 	private FeatureManager featureManager;
@@ -113,9 +114,6 @@ public class MapRenderer
 	private int featureFBOID = -1;
 	private int featureRBOID = -1;
 	private int featureTexID = -1;
-	
-	//static displaylists
-	private int mouseCenterSphere = -1;
 	
 	//Skybox
 	private int skyboxTexID = -1; 
@@ -600,7 +598,7 @@ public class MapRenderer
     				if ((feature.x >= minX) && (feature.z >= minY) && (feature.x < maxX) && (feature.z < maxY))
     				{
     					//Set Height appropriate to heightmap
-    					feature.y = sme.map.heightmap.getHeightMap()[FastMath.round(feature.z / rs.quadSize)][FastMath.round(feature.x / rs.quadSize)] * sme.map.maxHeight * 2;
+    					feature.y = sme.map.heightmap.getHeightMap()[FastMath.round(feature.z / rs.quadSize)][FastMath.round(feature.x / rs.quadSize)] * sme.map.maxHeight;
     					featureList[index].add(feature);
     				}
     			}
@@ -621,7 +619,7 @@ public class MapRenderer
 		while (it.hasNext())
 		{
 			cont = it.next();
-			cont.y = heightMap[FastMath.round(cont.z / rs.quadSize)][FastMath.round(cont.x / rs.quadSize)] * sme.map.maxHeight * 2;
+			cont.y = heightMap[FastMath.round(cont.z / rs.quadSize)][FastMath.round(cont.x / rs.quadSize)] * sme.map.maxHeight;
 		}
 	}
 	
@@ -632,7 +630,7 @@ public class MapRenderer
 		Vector3 v1, v2, v3, v4, vN1, vN2;
 		int lodSkip = 2;
 		int lodNegativeExtendTileSize = (lodSkip-1) * rs.quadSize;
-		int maxHeight = sme.map.maxHeight * 2; //
+		int maxHeight = sme.map.maxHeight; //
 		long start = System.nanoTime();
 			    	
 		int xStart = ((index % mapWidthInBlocks) * blockSizeinTiles) + lodSkip;
@@ -678,7 +676,7 @@ public class MapRenderer
 		int x, xStart, yStart;
 		int width = sme.map.heightmap.getHeightmapWidth();
 		int height = sme.map.heightmap.getHeightmapLength();
-		float maxHeight = sme.map.maxHeight * 2;
+		float maxHeight = sme.map.maxHeight;
 
 		for (int lodLevel = 0; lodLevel < 4; lodLevel++) {
 			int lodSkip = FastMath.pow(2, lodLevel);
@@ -1046,7 +1044,7 @@ public class MapRenderer
 		float[][] map = sme.map.heightmap.getHeightMap();
 		int width = sme.map.heightmap.getHeightmapWidth();
 		int length = sme.map.heightmap.getHeightmapLength();
-		int maxHeight = sme.map.maxHeight * 2; //
+		int maxHeight = sme.map.maxHeight; //
 		int xStart, yStart, brushWidth, brushHeight;
     	if (sme.mes.activeBrush.isVertexOriented())
     	{
@@ -1092,7 +1090,8 @@ public class MapRenderer
 					gl.glVertex3f(-rs.quadHalfSize + (x * rs.quadSize), (map[y - 1][x - 1] * maxHeight) + yHeightOffset, -rs.quadHalfSize + (y * rs.quadSize));
 			}
 		    gl.glEnd();
-		    
+
+			//draw brush center dot
 		    int xCenter = (x + (brushWidth / 2));
 		    int yCenter = (y + (brushHeight / 2));
 		    if ((xCenter > 0) && (xCenter < width) && (yCenter > 0) && (yCenter < length))
@@ -1100,8 +1099,10 @@ public class MapRenderer
 		    	float height = Math.max(Math.max(Math.max(map[yCenter][xCenter], map[yCenter - 1][xCenter]),
 		    			map[yCenter][xCenter - 1]), map[yCenter - 1][xCenter - 1]);
 			    gl.glPushMatrix();
+				float centerScale = Math.max(1, (brushWidth + brushHeight) / 40);
 			    gl.glTranslatef(xCenter * rs.quadSize, (height * maxHeight) + yHeightOffset, yCenter * rs.quadSize);
-			    gl.glCallList(mouseCenterSphere);
+				gl.glScalef(centerScale, centerScale, centerScale);
+				glut.glutSolidOctahedron();
 			    gl.glPopMatrix();
 		    }
     	}
@@ -1571,15 +1572,15 @@ public class MapRenderer
 	{
 		if (!rs.useLOD)
 			return 0;
+
+		float dist;
 		
 		double x = (((index % mapWidthInBlocks) * blockSizeinTiles) * rs.quadSize) + (rs.quadHalfSize * blockSizeinTiles);
-    	double y = sme.map.maxHeight / 2d;
-    	double z = (((index / mapWidthInBlocks) * blockSizeinTiles) * rs.quadSize) + (rs.quadHalfSize * blockSizeinTiles); 
-		
-    	float dist = (float)Math.sqrt(
-    			((x - rs.cameraPosition.camX) * (x - rs.cameraPosition.camX)) +
-    			((y - rs.cameraPosition.camY) * (y - rs.cameraPosition.camY)) +
-    			((z - rs.cameraPosition.camZ) * (z - rs.cameraPosition.camZ)) );
+		double z = (((index / mapWidthInBlocks) * blockSizeinTiles) * rs.quadSize) + (rs.quadHalfSize * blockSizeinTiles);
+
+		dist = (float) Math.sqrt(
+				((x - rs.cameraPosition.camX) * (x - rs.cameraPosition.camX)) +
+						((z - rs.cameraPosition.camZ) * (z - rs.cameraPosition.camZ)));
 
 		float n = rs.lodDist;
 		if (dist > n * 4){
@@ -1633,7 +1634,7 @@ public class MapRenderer
 
 	public void init(GL gl)
 	{
-		GLUT glut = new GLUT();
+		glut = new GLUT();
 		glu = new GLU();
 		
 		if (!checkHardware(gl))
@@ -1706,11 +1707,6 @@ public class MapRenderer
 	    
 	    shaderManager = new ShaderManager(gl);
 	    //featureManager = new FeatureManager();
-	    
-	    mouseCenterSphere = gl.glGenLists(1);
-	    gl.glNewList(mouseCenterSphere, GL.GL_COMPILE);
-	    	glut.glutSolidOctahedron();
-	    gl.glEndList();
 	    
 	    /* FBO Setup */
 	    setupOffscreenBuffers(gl);

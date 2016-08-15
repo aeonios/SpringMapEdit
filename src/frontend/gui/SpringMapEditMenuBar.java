@@ -1173,16 +1173,6 @@ public class SpringMapEditMenuBar {
 		menuItem.setText("Settings");
 		menu = new Menu(menuItem);
 		menuItem.setMenu(menu);
-
-		menuItem = new MenuItem(menu, SWT.PUSH);
-		menuItem.setText("Change Map Properties");
-		menuItem.addSelectionListener(new SelectionAdapter()
-		{
-			public void widgetSelected(SelectionEvent e)
-			{
-				new EditMapDialog(shell, smeGUI).open();
-			}
-		});
 		
 		menuItem = new MenuItem(menu, SWT.PUSH);
 		menuItem.setText("SpringMapEdit Settings");
@@ -1375,6 +1365,19 @@ public class SpringMapEditMenuBar {
 					}
 				};
 				smeGUI.messageQueue.offer(cmd);
+			}
+		});
+
+		//spacer
+		menuItem = new MenuItem(menu, SWT.SEPARATOR);
+
+		menuItem = new MenuItem(menu, SWT.PUSH);
+		menuItem.setText("Change Map Properties");
+		menuItem.addSelectionListener(new SelectionAdapter()
+		{
+			public void widgetSelected(SelectionEvent e)
+			{
+				new EditMapDialog(shell, smeGUI).open();
 			}
 		});
 		

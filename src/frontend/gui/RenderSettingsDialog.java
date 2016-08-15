@@ -311,7 +311,7 @@ public class RenderSettingsDialog extends Dialog
 		
 		Slider sl = new Slider(shell, SWT.HORIZONTAL);
 		sl.setMinimum(1);
-		sl.setMaximum(201);
+		sl.setMaximum(101);
 		sl.setThumb(1);
 		sl.setSelection(FastMath.round(rs.lodDist / 10));
 		sl.setLayoutData(new GridData(GridData.FILL, GridData.VERTICAL_ALIGN_BEGINNING, true, false, 1, 1));
