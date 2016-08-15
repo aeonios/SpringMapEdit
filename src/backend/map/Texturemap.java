@@ -506,29 +506,39 @@ public class Texturemap {
 	
 	public void stampColorToTexture(int px, int py, TextureBrush brush)
 	{
-		float amount = brush.getStrength();
+		float strength = brush.getStrength();
+		float amount;
 		byte[][] textureR = brush.texture.getTextureR();
 		byte[][] textureG = brush.texture.getTextureG();
 		byte[][] textureB = brush.texture.getTextureB();
 		byte[][] textureA = brush.texture.getTextureA();
+
+		// First get the brush center pos and convert it into texture coords
+		px += brush.getWidth()/2;
+		py += brush.getHeight()/2;
 		px = (px * heightmapSizeTextureFactor);
 		py = (py * heightmapSizeTextureFactor);
+
+		// Then offset it by half of the brush texture size to center it.
+		px -= brush.texture.width/2;
+		py -= brush.texture.height/2;
+
 		int r, g, b;
-		for (int y = py; y < py + (brush.getHeight() * heightmapSizeTextureFactor); y++)
-			for (int x = px; x < px + (brush.getWidth() * heightmapSizeTextureFactor); x++)
-				if ((x >= 0) && (x < textureMapWidth) && (y >= 0) && (y < texturemapLength))
+		for (int y = 0; y < brush.texture.height ; y++)
+			for (int x = 0; x < brush.texture.width; x++)
+				if ((x+px >= 0) && (x+px < textureMapWidth) && (y+py >= 0) && (y+py < texturemapLength))
 				{
-					amount = (textureA[(x - px) % brush.texture.width][(y - py) % brush.texture.height] & 0xFF) / (float)0xFF;
-					r = FastMath.round(((1 - amount) * (textureMap[y][(x * 3) + 0] & 0xFF))
-							+ (amount * (textureR[(x - px) % brush.texture.width][(y - py) % brush.texture.height] & 0xFF)));
-					g = FastMath.round(((1 - amount) * (textureMap[y][(x * 3) + 1] & 0xFF))
-							+ (amount * (textureG[(x - px) % brush.texture.width][(y - py) % brush.texture.height] & 0xFF)));
-					b = FastMath.round(((1 - amount) * (textureMap[y][(x * 3) + 2] & 0xFF))
-							+ (amount * (textureB[(x - px) % brush.texture.width][(y - py) % brush.texture.height] & 0xFF)));
+					amount = strength * ((textureA[x][y] & 0xFF) / (float) 0xFF);
+					r = FastMath.round(((1 - amount) * (textureMap[y+py][((x+px) * 3) + 0] & 0xFF))
+							+ (amount * (textureR[x][y] & 0xFF)));
+					g = FastMath.round(((1 - amount) * (textureMap[y+py][((x+px) * 3) + 1] & 0xFF))
+							+ (amount * (textureG[x][y] & 0xFF)));
+					b = FastMath.round(((1 - amount) * (textureMap[y+py][((x+px) * 3) + 2] & 0xFF))
+							+ (amount * (textureB[x][y] & 0xFF)));
 							
-					textureMap[y][(x * 3) + 0] = (byte)Math.min(Math.max(r, 0), 255);
-					textureMap[y][(x * 3) + 1] = (byte)Math.min(Math.max(g, 0), 255);
-					textureMap[y][(x * 3) + 2] = (byte)Math.min(Math.max(b, 0), 255);
+					textureMap[y+py][((x+px) * 3) + 0] = (byte)Math.min(Math.max(r, 0), 255);
+					textureMap[y+py][((x+px) * 3) + 1] = (byte)Math.min(Math.max(g, 0), 255);
+					textureMap[y+py][((x+px) * 3) + 2] = (byte)Math.min(Math.max(b, 0), 255);
 				}
 	}
 	

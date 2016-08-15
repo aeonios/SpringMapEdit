@@ -624,8 +624,9 @@ public class SpringMapEditGUI
 						});
 						if (false)
 							insertUndo(new UndoRedo(sme.mes.brushPos, sme.mes.getHeightBrush().getHeight(), sme.mes.getHeightBrush().getWidth(), sme.map.heightmap.getHeightMap(), sme));
-						if (sme.mes.getHeightBrush().brushMode == 3) 
+						if (sme.mes.getHeightBrush().brushMode == 3) {
 							holdableKeys[HoldableKeys.MOUSE_1.ordinal()] = false;
+						}
 						renderer.invalidateBlocksByBrush(sme.mes.brushPos.x(), sme.mes.brushPos.y(), sme.mes.getHeightBrush(), true, false, false);
 						break;
 					case Texture:
@@ -636,8 +637,10 @@ public class SpringMapEditGUI
 								sme.mes.getTextureBrush().applyBrush(sme.mes.brushPos, sme.mes.getTextureBrush(), false);
 							}
 						});
-						if (sme.mes.getTextureBrush().brushMode == 3) 
+						if (sme.mes.getTextureBrush().brushMode == 3) {
 							holdableKeys[HoldableKeys.MOUSE_1.ordinal()] = false;
+							renderer.invalidateAllBlocks(false, true, false);
+						}
 						renderer.invalidateBlocksByBrush(sme.mes.brushPos.x(), sme.mes.brushPos.y(), sme.mes.getTextureBrush(), false, true, false);
 						break;
 					case Metal:

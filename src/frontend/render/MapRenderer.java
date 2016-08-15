@@ -882,8 +882,8 @@ public class MapRenderer
 	
 	public void invalidateBlocksByBrush(int tileX, int tileY, Brush brush, boolean geometry, boolean texture, boolean feature)
 	{
-		for (int y = tileY - 2; y < (tileY + brush.getHeight() + 4); y++)
-			for (int x = tileX - 2; x < (tileX + brush.getWidth() + 4); x++)
+		for (int y = tileY - 4; y < (tileY + brush.getHeight() + 4); y++)
+			for (int x = tileX - 4; x < (tileX + brush.getWidth() + 4); x++)
 				if ((x >= 0) && (x < sme.map.heightmap.getHeightmapWidth() - 1) && (y >= 0) && (y < sme.map.heightmap.getHeightmapLength() - 1))
 				{
 					if (geometry)
@@ -1423,8 +1423,6 @@ public class MapRenderer
 					gl.glDrawArrays(GL.GL_TRIANGLE_STRIP, 0, verticesPerBlock[lodLevel]);
 					rs.trisRendered += triCountPerBlock[lodLevel];
 
-					
-
 					if (lodLevel <= rs.renderFeatureLOD) {
 						if (!isFeatureCached[i])
 							createFeatureBlock(i);
@@ -1527,10 +1525,6 @@ public class MapRenderer
 		{
 			switchPolyMode = false;
 			wireFrameMode = !wireFrameMode;
-			if (wireFrameMode)
-				gl.glPolygonMode(GL.GL_FRONT, GL.GL_LINE);
-			else
-				gl.glPolygonMode(GL.GL_FRONT, GL.GL_FILL);
 		}
 		
 		//Setup lighting
@@ -1542,7 +1536,16 @@ public class MapRenderer
 		gl.glMatrixMode(GL.GL_MODELVIEW);
 		gl.glLoadIdentity();
 
-		renderScene(gl);
+		if (wireFrameMode) {
+			gl.glPolygonMode(GL.GL_FRONT, GL.GL_LINE);
+			renderScene(gl);
+			gl.glPolygonMode(GL.GL_FRONT, GL.GL_FILL);
+		}else{
+			gl.glPolygonMode(GL.GL_FRONT, GL.GL_FILL);
+			renderScene(gl);
+		}
+
+
 		renderBrush(gl);
 		renderSun(gl);
 
