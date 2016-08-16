@@ -76,7 +76,6 @@ public class SpringMapEditDialog
 	
 	private enum Widgets
 	{
-		L_FOV, SL_FOV,
 		L_BRUSHSTRENGTH, SL_BRUSHSTRENGTH,
 		L_BRUSHSIZE, SL_BRUSHSIZE,
 	}
@@ -224,7 +223,7 @@ public class SpringMapEditDialog
 					return "Brush Size: " + (Integer) data2[0];
 				}});
 		
-		final Group hg, tg, fg, pfg, cpg;
+		final Group heightGroup, tg, fg, pfg, cpg;
 		
 		Button b = new Button(shell, SWT.PUSH);
 		b.setText("Select Brush");
@@ -280,7 +279,7 @@ public class SpringMapEditDialog
 			}
 		});
 		
-		hg = addRadioGroup(shell, "Heightmode", sme.mes.getHeightBrush().brushMode, 3, 4,
+		heightGroup = addRadioGroup(shell, "Heightmode", sme.mes.getHeightBrush().brushMode, 3, 4,
 				new String[] { "Raise/Lower", "Stamp", "Set", "Smooth" }, new SelectionAdapter[] {
 						new SelectionAdapter() {
 							public void widgetSelected(SelectionEvent e) {
@@ -761,82 +760,82 @@ public class SpringMapEditDialog
 				{
 					public void widgetSelected(SelectionEvent e)
 					{
-						hg.setVisible(true);
+						heightGroup.setVisible(true);
 						tg.setVisible(false);
 						fg.setVisible(false);
 						pfg.setVisible(false);
 						cpg.setVisible(false);
-						updateWidgets();
 						sme.mes.setBrushMode(BrushMode.Height);
 						rs.mapMode = MapMode.TextureMap;
 						renderer.invalidateAllBlocks(false, true, false);
+						updateWidgets();
 					}
 				},
 				new SelectionAdapter()
 				{
 					public void widgetSelected(SelectionEvent e)
 					{
-						hg.setVisible(false);
+						heightGroup.setVisible(false);
 						tg.setVisible(true);
 						fg.setVisible(false);
 						pfg.setVisible(false);
 						cpg.setVisible(false);
-						updateWidgets();
 						sme.mes.setBrushMode(BrushMode.Texture);
 						rs.mapMode = MapMode.TextureMap;
 						renderer.invalidateAllBlocks(false, true, false);
+						updateWidgets();
 					}
 				},
 				new SelectionAdapter()
 				{
 					public void widgetSelected(SelectionEvent e)
 					{
-						hg.setVisible(false);
+						heightGroup.setVisible(false);
 						tg.setVisible(false);
 						fg.setVisible(false);
 						pfg.setVisible(false);
 						cpg.setVisible(false);
-						updateWidgets();
 						sme.mes.setBrushMode(BrushMode.Metal);
 						rs.mapMode = MapMode.MetalMap;
 						renderer.invalidateAllBlocks(false, true, false);
+						updateWidgets();
 					}
 				},
 				new SelectionAdapter()
 				{
 					public void widgetSelected(SelectionEvent e)
 					{
-						hg.setVisible(false);
+						heightGroup.setVisible(false);
 						tg.setVisible(false);
 						fg.setVisible(false);
 						pfg.setVisible(false);
 						cpg.setVisible(false);
-						updateWidgets();
 						sme.mes.setBrushMode(BrushMode.Type);
 						rs.mapMode = MapMode.TypeMap;
 						renderer.invalidateAllBlocks(false, true, false);
+						updateWidgets();
 					}
 				},
 				new SelectionAdapter()
 				{
 					public void widgetSelected(SelectionEvent e)
 					{
-						hg.setVisible(false);
+						heightGroup.setVisible(false);
 						tg.setVisible(false);
 						fg.setVisible(false);
 						pfg.setVisible(false);
 						cpg.setVisible(false);
-						updateWidgets();
 						sme.mes.setBrushMode(BrushMode.Vegetation);
 						rs.mapMode = MapMode.VegetationMap;
 						renderer.invalidateAllBlocks(false, true, false);
+						updateWidgets();
 					}
 				},/*
 				new SelectionAdapter()
 				{
 					public void widgetSelected(SelectionEvent e)
 					{
-						hg.setVisible(false);
+						heightGroup.setVisible(false);
 						tg.setVisible(false);
 						fg.setVisible(true);
 						pfg.setVisible(false);
@@ -851,22 +850,22 @@ public class SpringMapEditDialog
 				{
 					public void widgetSelected(SelectionEvent e)
 					{
-						hg.setVisible(false);
+						heightGroup.setVisible(false);
 						tg.setVisible(false);
 						fg.setVisible(false);
 						pfg.setVisible(true);
 						cpg.setVisible(false);
-						updateWidgets();
 						sme.mes.setBrushMode(BrushMode.Prefab);
 						rs.mapMode = MapMode.TextureMap;
 						renderer.invalidateAllBlocks(false, true, false);
+						updateWidgets();
 					}
 				},
 				/*new SelectionAdapter()
 				{
 					public void widgetSelected(SelectionEvent e)
 					{
-						hg.setVisible(false);
+						heightGroup.setVisible(false);
 						tg.setVisible(false);
 						fg.setVisible(false);
 						pfg.setVisible(false);
@@ -878,6 +877,7 @@ public class SpringMapEditDialog
 					}
 				},*/
 			});
+		updateWidgets();
 	}
 
 	/**
@@ -896,7 +896,10 @@ public class SpringMapEditDialog
 				
 				setWidgetValue(Widgets.SL_BRUSHSTRENGTH, Integer.toString(brush.getStrengthInt()));
 				setWidgetValue(Widgets.L_BRUSHSTRENGTH, "Brush Strength: " + brush.getStrengthInt());
-				
+
+				Slider str = (Slider) widgetMap.get(Widgets.SL_BRUSHSTRENGTH);
+				str.setMaximum(brush.getMaxStrengthInt() + 1);
+
 				//TODO Update Brush/Texture Windows too
 			}
 		});

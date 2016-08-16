@@ -82,9 +82,9 @@ public class TextureBrush extends Brush
 		moduloMode[TextureMode.Stamp.ordinal()] = false;
 		
 		strength = new float[count];
-		strength[TextureMode.Blend.ordinal()] = 0.2f;
-		strength[TextureMode.Add.ordinal()] = 0.01f;
-		strength[TextureMode.Multiply.ordinal()] = 0.01f;
+		strength[TextureMode.Blend.ordinal()] = 0.25f;
+		strength[TextureMode.Add.ordinal()] = 0.1f;
+		strength[TextureMode.Multiply.ordinal()] = 0.1f;
 		strength[TextureMode.Stamp.ordinal()] = 1f;
 		
 		//Set up pattern and texture
@@ -126,7 +126,13 @@ public class TextureBrush extends Brush
 		this.height[brushMode] = height;
 		setPattern(pattern[brushMode].patternID);
 	}
-	
+
+	@Override
+	public int getMaxStrengthInt()
+	{
+		return 100;
+	}
+
 	public float getStrength()
 	{
 		return strength[brushMode];
@@ -134,12 +140,12 @@ public class TextureBrush extends Brush
 	
 	public int getStrengthInt()
 	{
-		return (int)(strength[brushMode] * 1000f);
+		return (int)(strength[brushMode] * 100f);
 	}
 
 	public void setStrengthInt(int strength)
 	{
-		this.strength[brushMode] = strength / 1000f;
+		this.strength[brushMode] = strength / 100f;
 	}
 	
 	public boolean getModuloMode()

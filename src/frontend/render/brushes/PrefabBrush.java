@@ -121,6 +121,12 @@ public class PrefabBrush extends Brush
 	{
 		return height;
 	}
+
+	@Override
+	public int getMaxStrengthInt()
+	{
+		return 2;
+	}
 	
 	public float getStrength()
 	{

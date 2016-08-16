@@ -100,9 +100,17 @@ public class Brush
 	}
 	
 	/**
-	 * This method should return the Strength value stretched to range 1-1000
+	 * This method should return the Strength value scaled to the max range.
 	 */
 	public int getStrengthInt()
+	{
+		return (int)strength;
+	}
+
+	/**
+	 * This method should return the maximum Strength value as an int (that the brush strength slider will scale to).
+	 */
+	public int getMaxStrengthInt()
 	{
 		return (int)strength;
 	}

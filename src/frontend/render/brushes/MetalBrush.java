@@ -78,6 +78,13 @@ public class MetalBrush extends Brush
 		}
 	}
 
+	@Override
+	public int getMaxStrengthInt()
+	{
+		return 255;
+	}
+
+	@Override
 	public float getStrength()
 	{
 		return strength[mode.ordinal()];
@@ -89,7 +96,7 @@ public class MetalBrush extends Brush
 		switch (mode)
 		{
 			case Add: result = (int)strength[mode.ordinal()]; break;
-			case Set: result = (int)(strength[mode.ordinal()] * 1000); break;
+			case Set: result = (int)(strength[mode.ordinal()] * 255); break;
 		}
 		return result;
 	}
@@ -99,7 +106,7 @@ public class MetalBrush extends Brush
 		switch (mode)
 		{
 			case Add: this.strength[mode.ordinal()] = strength; break;
-			case Set: this.strength[mode.ordinal()] = strength / 1000f; break;
+			case Set: this.strength[mode.ordinal()] = strength / 255f; break;
 		}
 	}
 	

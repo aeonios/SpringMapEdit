@@ -43,17 +43,26 @@ public class TypeBrush extends Brush
 			this.height = pattern[0].height;
 		}
 	}
-	
+
+	@Override
+	public int getMaxStrengthInt()
+	{
+		return 255;
+	}
+
+	@Override
 	public float getStrength()
 	{
 		return typeID;
 	}
-	
+
+	@Override
 	public int getStrengthInt()
 	{
 		return typeID + 1;
 	}
-	
+
+	@Override
 	public void setStrengthInt(int strength)
 	{
 		typeID = strength - 1;

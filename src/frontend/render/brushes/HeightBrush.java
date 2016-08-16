@@ -59,7 +59,7 @@ public class HeightBrush extends Brush
 		int count = HeightMode.values().length;
 
 		strength = new float[count];
-		strength[HeightMode.Raise.ordinal()] = 0.01f;
+		strength[HeightMode.Raise.ordinal()] = 0.1f;
 		strength[HeightMode.Stamp.ordinal()] = 0.1f;
 		strength[HeightMode.Set.ordinal()] = 0.5f;
 		strength[HeightMode.Smooth.ordinal()] = 0.25f;
@@ -119,14 +119,24 @@ public class HeightBrush extends Brush
 		this.height[brushMode] = height;
 		setPattern(pattern[brushMode].patternID);
 	}
+
+	@Override
+	public int getMaxStrengthInt()
+	{
+		if (brushMode == 3){
+			return 100;
+		}else{
+			return sme.map.maxHeight;
+		}
+	}
 	
 	public int getStrengthInt()
 	{
 		int result = 0;
 		switch (brushMode)
 		{
-			case 0: result = (int)(strength[brushMode] * 10000f); break;
-			case 1: result = (int)(strength[brushMode] * 1000f); break;
+			case 0: result = (int)(strength[brushMode] * (float) sme.map.maxHeight); break;
+			case 1: result = (int)(strength[brushMode] * (float) sme.map.maxHeight); break;
 			case 2: result = (int)(strength[brushMode] * (float) sme.map.maxHeight); break;
 			case 3: result = (int)(strength[brushMode] * 100f); break;
 		}
@@ -138,9 +148,9 @@ public class HeightBrush extends Brush
 		switch (brushMode)
 		{
 		case 0:
-			this.strength[brushMode] = newStrength / 10000f; break;
+			this.strength[brushMode] = Math.min(newStrength / (float) sme.map.maxHeight, 1f); break;
 		case 1:
-			this.strength[brushMode] = newStrength / 1000f; break;
+			this.strength[brushMode] = Math.min(newStrength / (float) sme.map.maxHeight, 1f); break;
 		case 2:
 			this.strength[brushMode] = Math.min(newStrength / (float) sme.map.maxHeight, 1f); break;
 		case 3:
