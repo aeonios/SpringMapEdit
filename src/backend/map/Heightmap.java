@@ -535,7 +535,7 @@ public class Heightmap extends AbstractMap {
 				heightMap[y][x] = setHeight;
 	}
 	
-	public void smoothHeight(int px, int py, HeightBrush brush, float limit)
+	public void smoothHeight(int px, int py, HeightBrush brush, float strength)
 	{
 		int length = brush.getHeight();
 		int width = brush.getWidth();
@@ -543,7 +543,7 @@ public class Heightmap extends AbstractMap {
 			return;
 		float[][] smoothedMap;
 		float[][] pattern = brush.getPattern().getPattern();
-		float[][] newPattern = pattern;
+		float[][] newPattern;
 		if (px >= heightMapWidth || py >= heightmapLength)
 			return;
 		if (px < 0)
@@ -552,7 +552,7 @@ public class Heightmap extends AbstractMap {
 			if (width <= 2)
 				return;
 			newPattern = new float[width][length];
-			System.arraycopy(pattern, -px - 1, newPattern, 0, width);
+			System.arraycopy(pattern, -px, newPattern, 0, width);
 			pattern = newPattern;
 			px = 0;
 		}
@@ -563,7 +563,7 @@ public class Heightmap extends AbstractMap {
 				return;
 			newPattern = new float[width][length];
 			for (int x = 0; x < width; x++)
-				System.arraycopy(pattern[x], -py - 1, newPattern[x], 0, length);
+				System.arraycopy(pattern[x], -py, newPattern[x], 0, length);
 			pattern = newPattern;
 			py = 0;
 		}
@@ -573,10 +573,10 @@ public class Heightmap extends AbstractMap {
 			width = heightMapWidth - px;
 		if (width <= 2 || length <= 2)
 			return;
-		smoothedMap = new float[length - 2][width - 2];
-		for (int y = 0; y < length - 2; y++)
-			for (int x = 0; x < width - 2; x++)
-				smoothedMap[y][x] = smooth9HeightmapBorderAware(limit, px + x + 1, py + y + 1);
+		smoothedMap = new float[length][width];
+		for (int y = 0; y < length; y++)
+			for (int x = 0; x < width; x++)
+				smoothedMap[y][x] = smooth9HeightmapBorderAware(px + x, py + y);
 		/*float yStart = heightMap[py][px + width / 2];
 		float xStart = heightMap[py + length / 2][px];
 		float yGradient = (heightMap[py + length - 1][px + width / 2] - yStart) / length;
@@ -595,9 +595,11 @@ public class Heightmap extends AbstractMap {
 			for (int x = 0; x < width - 2; x++)
 				smoothedMap[y][x] += newSmooth(limit, px + x + 1, py + y + 1, yStart + yGradient * (y + 1));
 		}*/
-		for (int y = 0; y < length - 2; y++)
-			for (int x = 0; x < width - 2; x++)
-				heightMap[py + 1 + y][px + 1 + x] += smoothedMap[y][x] * pattern[x + 1][y + 1];
+		for (int y = 0; y < length; y++)
+			for (int x = 0; x < width; x++) {
+				float alpha = pattern[x][y] * strength;
+				heightMap[py + y][px + x] = ((1f - alpha) * heightMap[py + y][px + x]) + (alpha * smoothedMap[y][x]);
+			}
 	}
 	
 	public void setPrefabHeightMap(int px, int py, PrefabBrush brush, float brushHeightAlign, int maxHeight)
@@ -655,7 +657,7 @@ public class Heightmap extends AbstractMap {
 				heightMap[y][x] = gradient;
 }
 	
-	public void smoothMap(float limit)
+	public void smoothMap(float strength)
 	{
 		long start = System.nanoTime();
 		int x, y;
@@ -663,20 +665,20 @@ public class Heightmap extends AbstractMap {
 		//Center (No Border checks required -> faster)
 		for (y = 1; y < heightmapLength - 1; y++)
 			for (x = 1; x < heightMapWidth - 1; x++)
-				smoothedMap[y][x] = smooth9(limit, heightMap[y][x], heightMap[y - 1][x - 1], heightMap[y - 1][x], heightMap[y - 1][x + 1],
+				smoothedMap[y][x] = smooth9(strength, heightMap[y][x], heightMap[y - 1][x - 1], heightMap[y - 1][x], heightMap[y - 1][x + 1],
 						heightMap[y][x - 1], heightMap[y][x + 1], heightMap[y + 1][x - 1], heightMap[y + 1][x], heightMap[y + 1][x + 1]);
 		//Left Border
 		for (y = 1; y < heightmapLength - 1; y++)
-			smoothedMap[y][0] = smooth9HeightmapBorderAware(limit, 0, y);
+			smoothedMap[y][0] = ((1f-strength) * heightMap[0][y]) + (strength * smooth9HeightmapBorderAware(0, y));
 		//Right Border
 		for (y = 1; y < heightmapLength - 1; y++)
-			smoothedMap[y][heightMapWidth - 1] = smooth9HeightmapBorderAware(limit, heightMapWidth - 1, y);
+			smoothedMap[y][heightMapWidth - 1] = ((1f-strength) * heightMap[heightMapWidth - 1][y]) + (strength * smooth9HeightmapBorderAware(heightMapWidth - 1, y));
 		//Upper Border
 		for (x = 0; x < heightMapWidth; x++)
-			smoothedMap[0][x] = smooth9HeightmapBorderAware(limit, x, 0);
+			smoothedMap[0][x] = ((1f - strength) * heightMap[x][0]) + (strength * smooth9HeightmapBorderAware(x, 0));
 		//Lower Border
 		for (x = 0; x < heightMapWidth; x++)
-			smoothedMap[heightmapLength - 1][x] = smooth9HeightmapBorderAware(limit, x, heightmapLength - 1);
+			smoothedMap[heightmapLength - 1][x] = ((1f - strength) * heightMap[x][heightmapLength - 1]) + (strength * smooth9HeightmapBorderAware(x, heightmapLength - 1));
 		//Copy Back
 		for (y = 0; y < heightmapLength; y++)
 			System.arraycopy(smoothedMap[y], 0, heightMap[y], 0, heightMapWidth);
@@ -697,75 +699,59 @@ public class Heightmap extends AbstractMap {
 			return 0;
 	}
 	
-	private float smooth9HeightmapBorderAware(float limit, int x, int y)
+	private float smooth9HeightmapBorderAware(int x, int y)
 	{
 		float value = heightMap[y][x];
 		int pointsUsed = 1;
 		
 		if (y > 0) //Upper Border
 		{
-			if (limit < Math.abs(heightMap[y][x] - heightMap[y - 1][x]))
-				return 0;
 			value += heightMap[y - 1][x];
 			pointsUsed++;
 		}
 		if (y < (heightmapLength - 1)) //Lower Border
 		{
-			if (limit < Math.abs(heightMap[y][x] - heightMap[y + 1][x])) 
-				return 0;
 			value += heightMap[y + 1][x];
 			pointsUsed++;
 		}
 		if (x > 0) //Left Border
 		{
-			if (limit < Math.abs(heightMap[y][x] - heightMap[y][x - 1]))
-				return 0;
 			value += heightMap[y][x - 1];
 			pointsUsed++;
 			
 			if (y > 0)
 			{
-				if (limit < Math.abs(heightMap[y][x] - heightMap[y - 1][x-1]))
-					return 0;
 				value += heightMap[y - 1][x - 1];
 				pointsUsed++;
 			}
 			if (y < (heightmapLength - 1))
 			{
-				if (limit < Math.abs(heightMap[y][x] - heightMap[y + 1][x - 1]))
-					return 0;
 				value += heightMap[y + 1][x - 1];
 				pointsUsed++;
 			}
 		}
 		if (x < (heightMapWidth - 1)) //Right Border
 		{
-			if (limit < Math.abs(heightMap[y][x] - heightMap[y][x + 1]))
-				return heightMap[y][x];
 			value += heightMap[y][x + 1];
 			pointsUsed++;
 			
 			if (y > 0)
 			{
-				if (limit < Math.abs(heightMap[y][x] - heightMap[y - 1][x + 1]))
-					return 0;
 				value += heightMap[y - 1][x + 1];
 				pointsUsed++;
 			}
 			if (y < (heightmapLength - 1))
 			{
-				if (limit < Math.abs(heightMap[y][x] - heightMap[y + 1][x + 1]))
-					return 0;
 				value += heightMap[y + 1][x + 1];
 				pointsUsed++;
 			}
 		}
-		return (value / pointsUsed) - heightMap[y][x];
+		return (value / pointsUsed) /*- heightMap[y][x]*/;
 	}
 	
 	private float smooth9(float limit, float center, float v2, float v3, float v4, float v5, float v6, float v7, float v8, float v9)
 	{
-		if (limit < Math.abs(center - v2))
+		/*if (limit < Math.abs(center - v2))
 			return center;
 		if (limit < Math.abs(center - v3))
 			return center;
@@ -780,8 +766,8 @@ public class Heightmap extends AbstractMap {
 		if (limit < Math.abs(center - v8))
 			return center;
 		if (limit < Math.abs(center - v9))
-			return center;
-		return (center + v2 + v3 + v4 + v5 + v6 + v7 + v8 + v9) / 9;
+			return center;*/
+		return ((1f - limit) * center) + (limit * ((center + v2 + v3 + v4 + v5 + v6 + v7 + v8 + v9) / 9));
 	}
 	
 	public float getSmoothedSteepness(int x, int y, float fractX, float fractY)

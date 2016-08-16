@@ -62,7 +62,7 @@ public class HeightBrush extends Brush
 		strength[HeightMode.Raise.ordinal()] = 0.01f;
 		strength[HeightMode.Stamp.ordinal()] = 0.1f;
 		strength[HeightMode.Set.ordinal()] = 0.5f;
-		strength[HeightMode.Smooth.ordinal()] = 0.5f;
+		strength[HeightMode.Smooth.ordinal()] = 0.25f;
 
 		moduloMode = new boolean[count];
 		moduloMode[HeightMode.Raise.ordinal()] = false;
@@ -144,7 +144,7 @@ public class HeightBrush extends Brush
 		case 2:
 			this.strength[brushMode] = Math.min(newStrength / (float) sme.map.maxHeight, 1f); break;
 		case 3:
-			this.strength[brushMode] = newStrength / 100f; break;
+			this.strength[brushMode] = Math.min(newStrength / 100f, 1f); break;
 		}
 	}
 	
