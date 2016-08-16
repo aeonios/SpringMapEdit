@@ -280,31 +280,73 @@ public class SpringMapEditDialog
 			}
 		});
 		
-		hg = addRadioGroup(shell, "Heightmode", sme.mes.getHeightBrush().brushMode, 3, 5,
-				new String[] { "Raise/Lower", "Smooth", "Set", "Erode", "Randomize", "Copy/Paste" }, new SelectionAdapter[] {
-			new SelectionAdapter()
-			{
-				public void widgetSelected(SelectionEvent e)
-				{
-					Command newCmd = new Command(new Object[] { ((Button)e.widget).getSelection(), new Command(null) {
-						public void execute(Object[] data2)
-						{
-							if ((Boolean)data2[0])
+		hg = addRadioGroup(shell, "Heightmode", sme.mes.getHeightBrush().brushMode, 3, 4,
+				new String[] { "Raise/Lower", "Stamp", "Set", "Smooth" }, new SelectionAdapter[] {
+						new SelectionAdapter() {
+							public void widgetSelected(SelectionEvent e) {
+								Command newCmd = new Command(new Object[] { ((Button)e.widget).getSelection(), new Command(null) {
+									public void execute(Object[] data2) {
+										if ((Boolean)data2[0])
+										{
+											sme.mes.getHeightBrush().brushMode = HeightMode.Raise.ordinal();
+											updateWidgets();
+										}
+									}},
+								})
 							{
-								sme.mes.getHeightBrush().brushMode = HeightMode.Raise.ordinal();
-							}
-						}},
-					})
-					{
-						public void execute(Object[] data2)
+								public void execute(Object[] data2)
 						{
 							((Command) data[1]).execute(new Object[] { data[0] });
 						}
-					};
-					smeGUI.messageQueue.offer(newCmd);
-					updateWidgets();
-				}
-			},
+								};
+								smeGUI.messageQueue.offer(newCmd);
+							}
+				},
+						new SelectionAdapter() {
+							public void widgetSelected(SelectionEvent e)
+							{
+								Command newCmd = new Command(new Object[] { ((Button)e.widget).getSelection(), new Command(null) {
+									public void execute(Object[] data2)
+									{
+										if ((Boolean)data2[0])
+										{
+											sme.mes.getHeightBrush().brushMode = HeightMode.Stamp.ordinal();
+											updateWidgets();
+										}
+									}},
+								})
+								{
+									public void execute(Object[] data2)
+									{
+										((Command) data[1]).execute(new Object[] { data[0] });
+									}
+								};
+								smeGUI.messageQueue.offer(newCmd);
+							}
+						},
+						new SelectionAdapter()
+						{
+							public void widgetSelected(SelectionEvent e)
+							{
+								Command newCmd = new Command(new Object[] { ((Button)e.widget).getSelection(), new Command(null) {
+									public void execute(Object[] data2)
+									{
+										if ((Boolean)data2[0])
+										{
+											sme.mes.getHeightBrush().brushMode = HeightMode.Set.ordinal();
+											updateWidgets();
+										}
+									}},
+								})
+								{
+									public void execute(Object[] data2)
+									{
+										((Command) data[1]).execute(new Object[] { data[0] });
+									}
+								};
+								smeGUI.messageQueue.offer(newCmd);
+							}
+						},
 			new SelectionAdapter()
 			{
 				public void widgetSelected(SelectionEvent e)
@@ -315,125 +357,6 @@ public class SpringMapEditDialog
 							if ((Boolean)data2[0])
 							{
 								sme.mes.getHeightBrush().brushMode = HeightMode.Smooth.ordinal();
-							}
-						}},
-					})
-					{
-						public void execute(Object[] data2)
-						{
-							((Command) data[1]).execute(new Object[] { data[0] });
-						}
-					};
-					smeGUI.messageQueue.offer(newCmd);
-					updateWidgets();
-				}
-			},
-			new SelectionAdapter()
-			{
-				public void widgetSelected(SelectionEvent e)
-				{
-					Command newCmd = new Command(new Object[] { ((Button)e.widget).getSelection(), new Command(null) {
-						public void execute(Object[] data2)
-							{
-								if ((Boolean)data2[0])
-								{
-									sme.mes.getHeightBrush().brushMode = HeightMode.Set.ordinal();
-								}
-							}},
-						})
-						{
-							public void execute(Object[] data2)
-							{
-								((Command) data[1]).execute(new Object[] { data[0] });
-							}
-						};
-						smeGUI.messageQueue.offer(newCmd);
-						updateWidgets();
-				}
-			},
-			new SelectionAdapter()
-			{
-				public void widgetSelected(SelectionEvent e)
-				{
-					Command newCmd = new Command(new Object[] { ((Button)e.widget).getSelection(), new Command(null) {
-						public void execute(Object[] data2)
-							{
-								if ((Boolean)data2[0])
-								{
-									sme.mes.getHeightBrush().brushMode = HeightMode.Erode.ordinal();
-								}
-							}},
-						})
-						{
-							public void execute(Object[] data2)
-							{
-								((Command) data[1]).execute(new Object[] { data[0] });
-							}
-						};
-						smeGUI.messageQueue.offer(newCmd);
-						updateWidgets();
-				}
-			},
-			new SelectionAdapter()
-			{
-				public void widgetSelected(SelectionEvent e)
-				{
-					Command newCmd = new Command(new Object[] { ((Button)e.widget).getSelection(), new Command(null) {
-						public void execute(Object[] data2)
-						{
-								if ((Boolean)data2[0])
-								{
-									sme.mes.getHeightBrush().brushMode = HeightMode.Randomize.ordinal();
-								}
-						}},
-					})
-					{
-						public void execute(Object[] data2)
-						{
-							((Command) data[1]).execute(new Object[] { data[0] });
-						}
-					};	
-					smeGUI.messageQueue.offer(newCmd);
-					updateWidgets();
-				}
-			},
-			new SelectionAdapter()
-			{		
-				public void widgetSelected(SelectionEvent e)
-				{
-					Command newCmd = new Command(new Object[] { ((Button)e.widget).getSelection(), new Command(null) {
-						public void execute(Object[] data2)
-						{
-							if ((Boolean)data2[0])
-							{
-								//sme.mes.getHeightBrush().brushMode = HeightMode.CopyPaste.ordinal();
-							}
-						}},
-					})
-					{
-						public void execute(Object[] data2)
-						{
-							((Command) data[1]).execute(new Object[] { data[0] });
-						}
-					};
-					smeGUI.messageQueue.offer(newCmd);
-					updateWidgets();
-				}
-			},
-		});
-		
-		tg = addRadioGroup(shell, "Texturemode", sme.mes.getTextureBrush().brushMode, 4, 5,
-				new String[] { "Set", "Add", "Blend", "Stamp", "TexGen" }, new SelectionAdapter[] {
-			new SelectionAdapter()
-			{
-				public void widgetSelected(SelectionEvent e)
-				{
-					Command newCmd = new Command(new Object[] { ((Button)e.widget).getSelection(), new Command(null) {
-						public void execute(Object[] data2)
-						{
-							if ((Boolean)data2[0])
-							{
-								sme.mes.getTextureBrush().brushMode = TextureMode.Set.ordinal();
 								updateWidgets();
 							}
 						}},
@@ -447,6 +370,33 @@ public class SpringMapEditDialog
 					smeGUI.messageQueue.offer(newCmd);
 				}
 			},
+		});
+		
+		tg = addRadioGroup(shell, "Texturemode", sme.mes.getTextureBrush().brushMode, 4, 4,
+				new String[] { "Blend", "Add", "Multiply", "Stamp" }, new SelectionAdapter[] {
+						new SelectionAdapter()
+						{
+							public void widgetSelected(SelectionEvent e)
+							{
+								Command newCmd = new Command(new Object[] { ((Button)e.widget).getSelection(), new Command(null) {
+									public void execute(Object[] data2)
+									{
+										if ((Boolean)data2[0])
+										{
+											sme.mes.getTextureBrush().brushMode = TextureMode.Blend.ordinal();
+											updateWidgets();
+										}
+									}},
+								})
+								{
+									public void execute(Object[] data2)
+									{
+										((Command) data[1]).execute(new Object[] { data[0] });
+									}
+								};
+								smeGUI.messageQueue.offer(newCmd);
+							}
+						},
 			new SelectionAdapter()
 			{
 				public void widgetSelected(SelectionEvent e)
@@ -470,29 +420,29 @@ public class SpringMapEditDialog
 					smeGUI.messageQueue.offer(newCmd);
 				}
 			},
-			new SelectionAdapter()
-			{
-				public void widgetSelected(SelectionEvent e)
-				{
-					Command newCmd = new Command(new Object[] { ((Button)e.widget).getSelection(), new Command(null) {
-						public void execute(Object[] data2)
+						new SelectionAdapter()
 						{
-							if ((Boolean)data2[0])
+							public void widgetSelected(SelectionEvent e)
 							{
-								sme.mes.getTextureBrush().brushMode = TextureMode.Blend.ordinal();
-								updateWidgets();
+								Command newCmd = new Command(new Object[] { ((Button)e.widget).getSelection(), new Command(null) {
+									public void execute(Object[] data2)
+									{
+										if ((Boolean)data2[0])
+										{
+											sme.mes.getTextureBrush().brushMode = TextureMode.Multiply.ordinal();
+											updateWidgets();
+										}
+									}},
+								})
+								{
+									public void execute(Object[] data2)
+									{
+										((Command) data[1]).execute(new Object[] { data[0] });
+									}
+								};
+								smeGUI.messageQueue.offer(newCmd);
 							}
-						}},
-					})
-					{
-						public void execute(Object[] data2)
-						{
-							((Command) data[1]).execute(new Object[] { data[0] });
-						}
-					};
-					smeGUI.messageQueue.offer(newCmd);
-				}
-			},
+						},
 			new SelectionAdapter()
 			{
 				public void widgetSelected(SelectionEvent e)
@@ -516,29 +466,6 @@ public class SpringMapEditDialog
 					smeGUI.messageQueue.offer(newCmd);
 				}
 			},
-			new SelectionAdapter()
-			{
-				public void widgetSelected(SelectionEvent e)
-				{
-					Command newCmd = new Command(new Object[] { ((Button)e.widget).getSelection(), new Command(null) {
-						public void execute(Object[] data2)
-						{
-							if ((Boolean)data2[0])
-							{
-								sme.mes.getTextureBrush().brushMode = TextureMode.TexGen.ordinal();
-								updateWidgets();
-							}
-						}},
-					})
-					{
-						public void execute(Object[] data2)
-						{
-							((Command) data[1]).execute(new Object[] { data[0] });
-						}
-					};
-					smeGUI.messageQueue.offer(newCmd);
-		}
-	},
 		});
 		
 		b = new Button(tg, SWT.PUSH);

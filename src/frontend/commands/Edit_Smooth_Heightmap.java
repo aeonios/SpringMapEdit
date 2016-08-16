@@ -38,7 +38,7 @@ public class Edit_Smooth_Heightmap extends SpringMapEditGUICommand
 	public void execute(Object[] data2)
 	{
 		int hm = smeGUI.sme.mes.getHeightBrush().brushMode;
-		smeGUI.sme.mes.getHeightBrush().brushMode = 1;//HeightMode.Smooth;
+		smeGUI.sme.mes.getHeightBrush().brushMode = 3;//HeightMode.Smooth;
 		float strength = smeGUI.sme.mes.getHeightBrush().getStrength();
 		smeGUI.sme.mes.getHeightBrush().brushMode = hm;
 		smeGUI.sme.map.heightmap.smoothMap(strength);

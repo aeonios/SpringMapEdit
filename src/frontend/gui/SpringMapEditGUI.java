@@ -620,14 +620,14 @@ public class SpringMapEditGUI
 							public void execute(Object[] data2)
 							{
 								sme.mes.getHeightBrush().applyBrush(sme.mes.brushPos, false);
+								renderer.invalidateBlocksByBrush(sme.mes.brushPos.x(), sme.mes.brushPos.y(), sme.mes.getHeightBrush(), true, false, false);
 							}
 						});
 						if (false)
 							insertUndo(new UndoRedo(sme.mes.brushPos, sme.mes.getHeightBrush().getHeight(), sme.mes.getHeightBrush().getWidth(), sme.map.heightmap.getHeightMap(), sme));
-						if (sme.mes.getHeightBrush().brushMode == 3) {
+						if (sme.mes.getHeightBrush().brushMode == 1) { // Height stamp mode should not continue placing after click
 							holdableKeys[HoldableKeys.MOUSE_1.ordinal()] = false;
 						}
-						renderer.invalidateBlocksByBrush(sme.mes.brushPos.x(), sme.mes.brushPos.y(), sme.mes.getHeightBrush(), true, false, false);
 						break;
 					case Texture:
 						messageQueue.offer(new Command(null)
@@ -635,13 +635,12 @@ public class SpringMapEditGUI
 							public void execute(Object[] data2)
 							{
 								sme.mes.getTextureBrush().applyBrush(sme.mes.brushPos, sme.mes.getTextureBrush(), false);
+								renderer.invalidateBlocksByBrush(sme.mes.brushPos.x(), sme.mes.brushPos.y(), sme.mes.getTextureBrush(), false, true, false);
 							}
 						});
 						if (sme.mes.getTextureBrush().brushMode == 3) {
 							holdableKeys[HoldableKeys.MOUSE_1.ordinal()] = false;
-							renderer.invalidateAllBlocks(false, true, false);
 						}
-						renderer.invalidateBlocksByBrush(sme.mes.brushPos.x(), sme.mes.brushPos.y(), sme.mes.getTextureBrush(), false, true, false);
 						break;
 					case Metal:
 						messageQueue.offer(new Command(null)
@@ -649,9 +648,9 @@ public class SpringMapEditGUI
 							public void execute(Object[] data2)
 							{
 								sme.mes.getMetalBrush().applyBrush(sme.mes.brushPos, false);
+								renderer.invalidateBlocksByBrush(sme.mes.brushPos.x(), sme.mes.brushPos.y(), sme.mes.getMetalBrush(), false, true, false);
 							}
 						});
-						renderer.invalidateBlocksByBrush(sme.mes.brushPos.x(), sme.mes.brushPos.y(), sme.mes.getMetalBrush(), false, true, false);
 						break;
 					case Type:
 						messageQueue.offer(new Command(null)
@@ -659,9 +658,9 @@ public class SpringMapEditGUI
 							public void execute(Object[] data2)
 							{
 								sme.map.setToTypemap(sme.mes.brushPos.x(), sme.mes.brushPos.y(), sme.mes.getTypeBrush(), false);
+								renderer.invalidateBlocksByBrush(sme.mes.brushPos.x(), sme.mes.brushPos.y(), sme.mes.getTypeBrush(), false, true, false);
 							}
 						});
-						renderer.invalidateBlocksByBrush(sme.mes.brushPos.x(), sme.mes.brushPos.y(), sme.mes.getTypeBrush(), false, true, false);
 						break;
 					case Vegetation:
 						messageQueue.offer(new Command(null)
@@ -669,9 +668,9 @@ public class SpringMapEditGUI
 							public void execute(Object[] data2)
 							{
 								sme.map.setToVegetationmap(sme.mes.brushPos.x(), sme.mes.brushPos.y(), sme.mes.getVegetationBrush(), false);
+								renderer.invalidateBlocksByBrush(sme.mes.brushPos.x(), sme.mes.brushPos.y(), sme.mes.getVegetationBrush(), false, true, false);
 							}
 						});
-						renderer.invalidateBlocksByBrush(sme.mes.brushPos.x(), sme.mes.brushPos.y(), sme.mes.getVegetationBrush(), false, true, false);
 						break;
 					case Feature:
 						messageQueue.offer(new Command(null)
@@ -679,9 +678,9 @@ public class SpringMapEditGUI
 							public void execute(Object[] data2)
 							{
 								sme.mes.getFeatureBrush().applyBrush(sme.mes.brushPos, sme.mes.getFeatureBrush(), false);
+								renderer.invalidateBlocksByBrush(sme.mes.brushPos.x(), sme.mes.brushPos.y(), sme.mes.getFeatureBrush(), false, false, true);
 							}
 						});
-						renderer.invalidateBlocksByBrush(sme.mes.brushPos.x(), sme.mes.brushPos.y(), sme.mes.getFeatureBrush(), false, false, true);
 						//holdableKeys[HoldableKeys.MOUSE_1.ordinal()] = false;
 						break;	
 					case Prefab:
@@ -690,10 +689,10 @@ public class SpringMapEditGUI
 							public void execute(Object[] data2)
 							{
 								sme.mes.getPrefabBrush().applybrush(sme.mes.brushPos.x(), sme.mes.brushPos.y(), sme.mes.getPrefabBrush(), false);
+								renderer.invalidateBlocksByBrush(sme.mes.brushPos.x(), sme.mes.brushPos.y(), sme.mes.getPrefabBrush(), true, true, false);
 							}
 						});
 						holdableKeys[HoldableKeys.MOUSE_1.ordinal()] = false;
-						renderer.invalidateBlocksByBrush(sme.mes.brushPos.x(), sme.mes.brushPos.y(), sme.mes.getPrefabBrush(), true, true, false);
 						break;
 					case Copypaste:
 						messageQueue.offer(new Command(null)
@@ -701,10 +700,10 @@ public class SpringMapEditGUI
 							public void execute(Object[] data2)
 							{
 								sme.mes.getCopypasteBrush().paste(sme.mes.brushPos.x(), sme.mes.brushPos.y(), sme.mes.getPrefabBrush());
+								renderer.invalidateBlocksByBrush(sme.mes.brushPos.x(), sme.mes.brushPos.y(), sme.mes.getCopypasteBrush(), true, true, false);
 							}
 						});
 						holdableKeys[HoldableKeys.MOUSE_1.ordinal()] = false;
-						renderer.invalidateBlocksByBrush(sme.mes.brushPos.x(), sme.mes.brushPos.y(), sme.mes.getCopypasteBrush(), true, true, false);
 						break;
 					}
 				}
@@ -718,11 +717,11 @@ public class SpringMapEditGUI
 							public void execute(Object[] data2)
 							{
 								sme.mes.getHeightBrush().applyBrush(sme.mes.brushPos, true);
+								renderer.invalidateBlocksByBrush(sme.mes.brushPos.x(), sme.mes.brushPos.y(), sme.mes.getHeightBrush(), true, false, false);
 							}
 						});
-						if (sme.mes.getHeightBrush().brushMode == 3)//sme.mes.getHeightBrush().HeightMode.Erode.ordinal()) 
+						if (sme.mes.getHeightBrush().brushMode == 1) // Height stamp mode should not continue placing after click
 							holdableKeys[HoldableKeys.MOUSE_3.ordinal()] = false;
-						renderer.invalidateBlocksByBrush(sme.mes.brushPos.x(), sme.mes.brushPos.y(), sme.mes.getHeightBrush(), true, false, false);
 						break;
 					case Texture:
 						messageQueue.offer(new Command(null)
@@ -730,11 +729,11 @@ public class SpringMapEditGUI
 							public void execute(Object[] data2)
 							{
 								sme.mes.getTextureBrush().applyBrush(sme.mes.brushPos, sme.mes.getTextureBrush(), true);
+								renderer.invalidateBlocksByBrush(sme.mes.brushPos.x(), sme.mes.brushPos.y(), sme.mes.getTextureBrush(), false, true, false);
 							}
 						});
 						if (sme.mes.getTextureBrush().brushMode == 3)//sme.mes.getTextureBrush().TexturetMode.Stamp.ordinal()) 
 							holdableKeys[HoldableKeys.MOUSE_1.ordinal()] = false;
-						renderer.invalidateBlocksByBrush(sme.mes.brushPos.x(), sme.mes.brushPos.y(), sme.mes.getTextureBrush(), false, true, false);
 						break;
 					case Metal:
 						messageQueue.offer(new Command(null)
@@ -742,9 +741,9 @@ public class SpringMapEditGUI
 							public void execute(Object[] data2)
 							{
 								sme.mes.getMetalBrush().applyBrush(sme.mes.brushPos, true);
+								renderer.invalidateBlocksByBrush(sme.mes.brushPos.x(), sme.mes.brushPos.y(), sme.mes.getMetalBrush(), false, true, false);
 							}
 						});
-						renderer.invalidateBlocksByBrush(sme.mes.brushPos.x(), sme.mes.brushPos.y(), sme.mes.getMetalBrush(), false, true, false);
 						break;
 					case Type:
 						messageQueue.offer(new Command(null)
@@ -752,9 +751,9 @@ public class SpringMapEditGUI
 							public void execute(Object[] data2)
 							{
 								sme.map.setToTypemap(sme.mes.brushPos.x(), sme.mes.brushPos.y(), sme.mes.getTypeBrush(), true);
+								renderer.invalidateBlocksByBrush(sme.mes.brushPos.x(), sme.mes.brushPos.y(), sme.mes.getTypeBrush(), false, true, false);
 							}
 						});
-						renderer.invalidateBlocksByBrush(sme.mes.brushPos.x(), sme.mes.brushPos.y(), sme.mes.getTypeBrush(), false, true, false);
 						break;
 					case Vegetation:
 						messageQueue.offer(new Command(null)
@@ -762,9 +761,9 @@ public class SpringMapEditGUI
 							public void execute(Object[] data2)
 							{
 								sme.map.setToVegetationmap(sme.mes.brushPos.x(), sme.mes.brushPos.y(), sme.mes.getVegetationBrush(), true);
+								renderer.invalidateBlocksByBrush(sme.mes.brushPos.x(), sme.mes.brushPos.y(), sme.mes.getVegetationBrush(), false, true, false);
 							}
 						});
-						renderer.invalidateBlocksByBrush(sme.mes.brushPos.x(), sme.mes.brushPos.y(), sme.mes.getVegetationBrush(), false, true, false);
 						break;
 					case Feature:
 						messageQueue.offer(new Command(null)
@@ -772,9 +771,9 @@ public class SpringMapEditGUI
 							public void execute(Object[] data2)
 							{
 								sme.mes.getFeatureBrush().applyBrush(sme.mes.brushPos, sme.mes.getFeatureBrush(), true);
+								renderer.invalidateBlocksByBrush(sme.mes.brushPos.x(), sme.mes.brushPos.y(), sme.mes.getFeatureBrush(), false, false, true);
 							}
 						});
-						renderer.invalidateBlocksByBrush(sme.mes.brushPos.x(), sme.mes.brushPos.y(), sme.mes.getFeatureBrush(), false, false, true);
 						break;
 					case Prefab:
 						messageQueue.offer(new Command(null)
@@ -782,10 +781,10 @@ public class SpringMapEditGUI
 							public void execute(Object[] data2)
 							{
 								sme.mes.getPrefabBrush().applybrush(sme.mes.brushPos.x(), sme.mes.brushPos.y(), sme.mes.getPrefabBrush(), true);
+								renderer.invalidateBlocksByBrush(sme.mes.brushPos.x(), sme.mes.brushPos.y(), sme.mes.getPrefabBrush(), true, true, false);
 							}
 						});
 						holdableKeys[HoldableKeys.MOUSE_3.ordinal()] = false;
-						renderer.invalidateBlocksByBrush(sme.mes.brushPos.x(), sme.mes.brushPos.y(), sme.mes.getPrefabBrush(), true, true, false);
 						break;
 					case Copypaste:
 						messageQueue.offer(new Command(null) {

@@ -452,7 +452,6 @@ public class Heightmap extends AbstractMap {
 			newPattern = new float[width][height];
 			for (int x = 0; x < width; x++)
 				System.arraycopy(pattern[x], -py - 1, newPattern[x], 0, height);
-			pattern = newPattern;
 			py = 0;
 		}
 		if (height + py >= heightmapLength)
@@ -472,11 +471,11 @@ public class Heightmap extends AbstractMap {
 			}
 	}
 	
-	public void setHeight(int px, int py, HeightBrush brush, float setHeight, boolean invert)
+	public void setHeight(int px, int py, HeightBrush brush)
 	{
-		//float amount = brush.getStrength();
+		float amount = Math.min(1f, brush.getStrength());
 		float[][] pattern = brush.getPattern().getPattern();
-		float[][] newPattern;
+		float[][] newPattern = pattern;
 		int height = brush.getHeight();
 		int width = brush.getWidth();
 		if (px >= heightMapWidth || py >= heightmapLength)
@@ -499,7 +498,6 @@ public class Heightmap extends AbstractMap {
 			newPattern = new float[width][height];
 			for (int x = 0; x < width; x++)
 				System.arraycopy(pattern[x], -py - 1, newPattern[x], 0, height);
-			pattern = newPattern;
 			py = 0;
 		}
 		if (height + py >= heightmapLength)
@@ -510,13 +508,11 @@ public class Heightmap extends AbstractMap {
 			return;
 		for (int y = py; y < py + height; y++)
 			for (int x = px; x < px + width; x++)
-				{
-					heightMap[y][x] = heightMap[y][x] + (setHeight - heightMap[y][x]) * pattern[x - px][y - py];
-					if (heightMap[y][x] > 1)
-						heightMap[y][x] = 1;
-					else if (heightMap[y][x] < 0)
-						heightMap[y][x] = 0;
+			{
+				if (newPattern[x - px][y - py] > 0) {
+					heightMap[y][x] = amount;
 				}
+			}
 	}
 	
 	public void addHeightToMap(float setHeight)

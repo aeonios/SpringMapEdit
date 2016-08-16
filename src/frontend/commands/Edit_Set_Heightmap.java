@@ -41,7 +41,7 @@ public class Edit_Set_Heightmap extends SpringMapEditGUICommand
 		int hm = smeGUI.sme.mes.getHeightBrush().brushMode;
 		
 		//Change to setMode, retrieve value, and restore mode
-		smeGUI.sme.mes.getHeightBrush().brushMode = 0;//HeightMode.Set;
+		smeGUI.sme.mes.getHeightBrush().brushMode = 2;//HeightMode.Set;
 		float strength = smeGUI.sme.mes.getHeightBrush().getStrength();
 		smeGUI.sme.mes.getHeightBrush().brushMode = hm;
 		

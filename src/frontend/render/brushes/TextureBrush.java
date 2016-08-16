@@ -31,11 +31,10 @@ public class TextureBrush extends Brush
 {
 	public enum TextureMode
 	{
-		Set,
-		Add,
 		Blend,
-		Stamp,
-		TexGen
+		Add,
+		Multiply,
+		Stamp
 	}
 	//Brush Manager
 	private BrushDataManager<BrushTexture> brushTextureManager;
@@ -65,40 +64,35 @@ public class TextureBrush extends Brush
 		int count = TextureMode.values().length;
 		
 		width = new int[count];
-		width[TextureMode.Set.ordinal()] = newWidth;
-		width[TextureMode.Add.ordinal()] = newWidth;
 		width[TextureMode.Blend.ordinal()] = newWidth;
+		width[TextureMode.Add.ordinal()] = newWidth;
+		width[TextureMode.Multiply.ordinal()] = newWidth;
 		width[TextureMode.Stamp.ordinal()] = newWidth;
-		width[TextureMode.TexGen.ordinal()] = newWidth;
 		
 		height = new int[count];
-		height[TextureMode.Set.ordinal()] = newHeight;
-		height[TextureMode.Add.ordinal()] = newHeight;
 		height[TextureMode.Blend.ordinal()] = newHeight;
+		height[TextureMode.Add.ordinal()] = newHeight;
+		height[TextureMode.Multiply.ordinal()] = newHeight;
 		height[TextureMode.Stamp.ordinal()] = newHeight;
-		height[TextureMode.TexGen.ordinal()] = newHeight;
 		
 		moduloMode = new boolean[count];
-		moduloMode[TextureMode.Set.ordinal()] = false;
-		moduloMode[TextureMode.Add.ordinal()] = false;
 		moduloMode[TextureMode.Blend.ordinal()] = false;
+		moduloMode[TextureMode.Add.ordinal()] = false;
+		moduloMode[TextureMode.Multiply.ordinal()] = false;
 		moduloMode[TextureMode.Stamp.ordinal()] = false;
-		moduloMode[TextureMode.TexGen.ordinal()] = false;
 		
 		strength = new float[count];
-		strength[TextureMode.Set.ordinal()] = 1f;
-		strength[TextureMode.Add.ordinal()] = 0.1f;
-		strength[TextureMode.Blend.ordinal()] = 1f;
+		strength[TextureMode.Blend.ordinal()] = 0.2f;
+		strength[TextureMode.Add.ordinal()] = 0.01f;
+		strength[TextureMode.Multiply.ordinal()] = 0.01f;
 		strength[TextureMode.Stamp.ordinal()] = 1f;
-		strength[TextureMode.TexGen.ordinal()] = 1f;
 		
 		//Set up pattern and texture
 		pattern = new BrushPattern[count];
-		pattern[TextureMode.Set.ordinal()] = brushPatternManager.getScaledBrushData(patternID, newWidth, newHeight, true);
-		pattern[TextureMode.Add.ordinal()] = brushPatternManager.getScaledBrushData(patternID, newWidth, newHeight, true);
 		pattern[TextureMode.Blend.ordinal()] = brushPatternManager.getScaledBrushData(patternID, newWidth, newHeight, true);
+		pattern[TextureMode.Add.ordinal()] = brushPatternManager.getScaledBrushData(patternID, newWidth, newHeight, true);
+		pattern[TextureMode.Multiply.ordinal()] = brushPatternManager.getScaledBrushData(patternID, newWidth, newHeight, true);
 		pattern[TextureMode.Stamp.ordinal()] = brushPatternManager.getScaledBrushData(patternID, newWidth, newHeight, true);
-		pattern[TextureMode.TexGen.ordinal()] = brushPatternManager.getScaledBrushData(patternID, newWidth, newHeight, true);
 
 		texture = brushTextureManager.getScaledBrushData(textureID, textureWidth, textureHeight, true);
 		secondaryTexture = brushTextureManager.getScaledBrushData(textureID, textureWidth, textureHeight, true);
@@ -140,7 +134,7 @@ public class TextureBrush extends Brush
 	
 	public int getStrengthInt()
 	{
-		return (int)strength[brushMode] * 1000;
+		return (int)(strength[brushMode] * 1000f);
 	}
 
 	public void setStrengthInt(int strength)
@@ -225,11 +219,10 @@ public class TextureBrush extends Brush
 	{
 		switch (sme.mes.getTextureBrush().brushMode)
 		{
-		case 0: sme.map.textureMap.setColorToTexture(position.x(), position.y(), this); break;
-		case 1: sme.map.textureMap.addColorToTexture(position.x(), position.y(), this); break;
-		case 2: sme.map.textureMap.blendColorToTexture(position.x(), position.y(), this); break;
-		case 3: sme.map.textureMap.stampColorToTexture(position.x(), position.y(), this); break;
-		case 4: sme.genColorsByHeight(position.x(), position.y(), this); break;
+			case 0: sme.map.textureMap.blendColorToTexture(position.x(), position.y(), this); break;
+			case 1: sme.map.textureMap.addColorToTexture(position.x(), position.y(), this); break;
+			case 2: sme.map.textureMap.multiplyColorToTexture(position.x(), position.y(), this); break;
+			case 3: sme.map.textureMap.stampColorToTexture(position.x(), position.y(), this); break;
 		}
 	}
 }

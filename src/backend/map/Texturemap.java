@@ -403,6 +403,7 @@ public class Texturemap {
 		byte[][] textureR = brush.texture.getTextureR();
 		byte[][] textureG = brush.texture.getTextureG();
 		byte[][] textureB = brush.texture.getTextureB();
+		byte[][] textureA = brush.texture.getTextureA();
 		px *= heightmapSizeTextureFactor;
 		py *= heightmapSizeTextureFactor;
 		int r, g, b;
@@ -410,13 +411,44 @@ public class Texturemap {
 			for (int x = px; x < px + (brush.getWidth() * heightmapSizeTextureFactor); x++)
 				if ((x >= 0) && (x < textureMapWidth) && (y >= 0) && (y < texturemapLength))
 				{
-					r = FastMath.round((textureMap[y][(x * 3) + 0] & 0xFF) + (amount * pattern[((x - px) / heightmapSizeTextureFactor)][((y - py) / heightmapSizeTextureFactor)] 
-							* (textureR[x % brush.texture.width][y % brush.texture.height] & 0xFF)));
-					g = FastMath.round((textureMap[y][(x * 3) + 1] & 0xFF) + (amount * pattern[((x - px) / heightmapSizeTextureFactor)][((y - py) / heightmapSizeTextureFactor)] 
-							* (textureG[x % brush.texture.width][y % brush.texture.height] & 0xFF)));
-					b = FastMath.round((textureMap[y][(x * 3) + 2] & 0xFF) + (amount * pattern[((x - px) / heightmapSizeTextureFactor)][((y - py) / heightmapSizeTextureFactor)] 
-							* (textureB[x % brush.texture.width][y % brush.texture.height] & 0xFF)));
+					float alpha = amount * ((textureA[x % brush.texture.width][y % brush.texture.height] & 0xFF) / (float) 0xFF)
+							* pattern[((x - px) / heightmapSizeTextureFactor)][((y - py) / heightmapSizeTextureFactor)];
+					r = FastMath.round((textureMap[y][(x * 3) + 0] & 0xFF) + (alpha * (textureR[x % brush.texture.width][y % brush.texture.height] & 0xFF)));
+					g = FastMath.round((textureMap[y][(x * 3) + 1] & 0xFF) + (alpha * (textureG[x % brush.texture.width][y % brush.texture.height] & 0xFF)));
+					b = FastMath.round((textureMap[y][(x * 3) + 2] & 0xFF) + (alpha * (textureB[x % brush.texture.width][y % brush.texture.height] & 0xFF)));
 					
+					textureMap[y][(x * 3) + 0] = (byte)Math.min(Math.max(r, 0), 255);
+					textureMap[y][(x * 3) + 1] = (byte)Math.min(Math.max(g, 0), 255);
+					textureMap[y][(x * 3) + 2] = (byte)Math.min(Math.max(b, 0), 255);
+				}
+	}
+
+	public void multiplyColorToTexture(int px, int py, TextureBrush brush)
+	{
+		float amount = brush.getStrength();
+		float[][] pattern = brush.getPattern().getPattern();
+		byte[][] textureR = brush.texture.getTextureR();
+		byte[][] textureG = brush.texture.getTextureG();
+		byte[][] textureB = brush.texture.getTextureB();
+		byte[][] textureA = brush.texture.getTextureA();
+		px *= heightmapSizeTextureFactor;
+		py *= heightmapSizeTextureFactor;
+		int r, g, b;
+		int destr, destg, destb;
+		for (int y = py; y < py + (brush.getHeight() * heightmapSizeTextureFactor); y++)
+			for (int x = px; x < px + (brush.getWidth() * heightmapSizeTextureFactor); x++)
+				if ((x >= 0) && (x < textureMapWidth) && (y >= 0) && (y < texturemapLength))
+				{
+					destr = (textureMap[y][(x * 3) + 0] & 0xFF);
+					destg = (textureMap[y][(x * 3) + 1] & 0xFF);
+					destb = (textureMap[y][(x * 3) + 2] & 0xFF);
+
+					float alpha = amount * ((textureA[x % brush.texture.width][y % brush.texture.height] & 0xFF) / (float) 0xFF)
+							* pattern[((x - px) / heightmapSizeTextureFactor)][((y - py) / heightmapSizeTextureFactor)];
+					r = FastMath.round(((1f - alpha) * destr) + (alpha * (destr/255f) * (textureR[x % brush.texture.width][y % brush.texture.height] & 0xFF)));
+					g = FastMath.round(((1f - alpha) * destg) + (alpha * (destg/255f) * (textureG[x % brush.texture.width][y % brush.texture.height] & 0xFF)));
+					b = FastMath.round(((1f - alpha) * destb) + (alpha * (destb/255f) * (textureB[x % brush.texture.width][y % brush.texture.height] & 0xFF)));
+
 					textureMap[y][(x * 3) + 0] = (byte)Math.min(Math.max(r, 0), 255);
 					textureMap[y][(x * 3) + 1] = (byte)Math.min(Math.max(g, 0), 255);
 					textureMap[y][(x * 3) + 2] = (byte)Math.min(Math.max(b, 0), 255);

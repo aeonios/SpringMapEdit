@@ -32,11 +32,9 @@ public class HeightBrush extends Brush
 	public enum HeightMode
 	{
 		Raise,
-		Smooth,
+		Stamp,
 		Set,
-		Erode,
-		Randomize,
-		CopyPaste
+		Smooth
 	}
 	
 	public BrushPattern[] pattern = new BrushPattern[1];
@@ -61,45 +59,35 @@ public class HeightBrush extends Brush
 		int count = HeightMode.values().length;
 
 		strength = new float[count];
-		strength[HeightMode.Raise.ordinal()] = 0.001f;
-		strength[HeightMode.Smooth.ordinal()] = 0.1f;
-		strength[HeightMode.Set.ordinal()] = 10f;
-		strength[HeightMode.Erode.ordinal()] = 100f;
-		strength[HeightMode.Randomize.ordinal()] = 0.003f;
-		strength[HeightMode.CopyPaste.ordinal()] = 1f;
+		strength[HeightMode.Raise.ordinal()] = 0.01f;
+		strength[HeightMode.Stamp.ordinal()] = 0.1f;
+		strength[HeightMode.Set.ordinal()] = 0.5f;
+		strength[HeightMode.Smooth.ordinal()] = 0.5f;
 
 		moduloMode = new boolean[count];
 		moduloMode[HeightMode.Raise.ordinal()] = false;
-		moduloMode[HeightMode.Smooth.ordinal()] = false;
+		moduloMode[HeightMode.Stamp.ordinal()] = false;
 		moduloMode[HeightMode.Set.ordinal()] = false;
-		moduloMode[HeightMode.Erode.ordinal()] = false;
-		moduloMode[HeightMode.Randomize.ordinal()] = false;
-		moduloMode[HeightMode.CopyPaste.ordinal()] = false;  
+		moduloMode[HeightMode.Smooth.ordinal()] = false;
 		
 		//Set up pattern and texture
 		pattern = new BrushPattern[count];
 		pattern[HeightMode.Raise.ordinal()] = brushPatternManager.getScaledBrushData(patternID, newWidth, newHeight, true);
-		pattern[HeightMode.Smooth.ordinal()] = brushPatternManager.getScaledBrushData(patternID, newWidth, newHeight, true);
+		pattern[HeightMode.Stamp.ordinal()] = brushPatternManager.getScaledBrushData(patternID, newWidth, newHeight, true);
 		pattern[HeightMode.Set.ordinal()] = brushPatternManager.getScaledBrushData(patternID, newWidth, newHeight, true);
-		pattern[HeightMode.Erode.ordinal()] = brushPatternManager.getScaledBrushData(patternID, newWidth, newHeight, true);
-		pattern[HeightMode.Randomize.ordinal()] = brushPatternManager.getScaledBrushData(patternID, newWidth, newHeight, true);
-		pattern[HeightMode.CopyPaste.ordinal()] = brushPatternManager.getScaledBrushData(patternID, newWidth, newHeight, true);  
+		pattern[HeightMode.Smooth.ordinal()] = brushPatternManager.getScaledBrushData(patternID, newWidth, newHeight, true);
 		
 		width = new int[count];
 		width[HeightMode.Raise.ordinal()] = newWidth;
-		width[HeightMode.Smooth.ordinal()] = newWidth;
+		width[HeightMode.Stamp.ordinal()] = newWidth;
 		width[HeightMode.Set.ordinal()] = newWidth;
-		width[HeightMode.Erode.ordinal()] = newWidth;
-		width[HeightMode.Randomize.ordinal()] = newWidth;
-		width[HeightMode.CopyPaste.ordinal()] = newWidth;
+		width[HeightMode.Smooth.ordinal()] = newWidth;
 		
 		height = new int[count];
 		height[HeightMode.Raise.ordinal()] = newHeight;
-		height[HeightMode.Smooth.ordinal()] = newHeight;
+		height[HeightMode.Stamp.ordinal()] = newHeight;
 		height[HeightMode.Set.ordinal()] = newHeight;
-		height[HeightMode.Erode.ordinal()] = newHeight;
-		height[HeightMode.Randomize.ordinal()] = newHeight;
-		height[HeightMode.CopyPaste.ordinal()] = newHeight;
+		height[HeightMode.Smooth.ordinal()] = newHeight;
 		
 		//Set size
 		if (pattern[brushMode] != null)
@@ -137,12 +125,10 @@ public class HeightBrush extends Brush
 		int result = 0;
 		switch (brushMode)
 		{
-		case 0: result = (int)strength[brushMode] * 10000 + 1; break;
-		case 1: result = (int)strength[brushMode] * 10000 + 1; break;
-		case 2: result = (int)strength[brushMode] * 6; break;
-		case 3: result = (int)strength[brushMode]; break;
-		case 4: result = (int)strength[brushMode] * 10000 + 1; break;
-		case 5: result = (int)strength[brushMode]; break;
+			case 0: result = (int)(strength[brushMode] * 10000f); break;
+			case 1: result = (int)(strength[brushMode] * 1000f); break;
+			case 2: result = (int)(strength[brushMode] * (float) sme.map.maxHeight); break;
+			case 3: result = (int)(strength[brushMode] * 100f); break;
 		}
 		return result;
 	}
@@ -152,17 +138,13 @@ public class HeightBrush extends Brush
 		switch (brushMode)
 		{
 		case 0:
-			this.strength[brushMode] = (newStrength + 1) / 10000f; break;
+			this.strength[brushMode] = newStrength / 10000f; break;
 		case 1:
-			this.strength[brushMode] = (newStrength + 1) / 10000f; break;
+			this.strength[brushMode] = newStrength / 1000f; break;
 		case 2:
-			this.strength[brushMode] = newStrength / 6f; break;
+			this.strength[brushMode] = Math.min(newStrength / (float) sme.map.maxHeight, 1f); break;
 		case 3:
-			this.strength[brushMode] = newStrength; break;
-		case 4:
-			this.strength[brushMode] = (newStrength + 1) / 10000f; break;
-		case 5:
-			this.strength[brushMode] = newStrength; break;
+			this.strength[brushMode] = newStrength / 100f; break;
 		}
 	}
 	
@@ -210,20 +192,10 @@ public class HeightBrush extends Brush
 		Heightmap heightMap = sme.map.heightmap;
 		switch (brushMode)
 		{
-		case 0: heightMap.modifyHeight(position.x(), position.y(), this, invert); break;
-		case 1: heightMap.smoothHeight(position.x(), position.y(), this, getStrength()); break;
-		case 2: heightMap.setHeight(position.x(), position.y(), this, getStrength() / sme.map.maxHeight, invert); break;
-		case 3: heightMap.erodeMapWet(position.x(), position.y(), getWidth(), getHeight(), sme.mes.getErosionSetup()); break;
-		case 4: heightMap.randomizeHeight(position.x(), position.y(), this, getStrength()); break;
-		case 5: // This is disabled in the editor dialog
-		{
-			if (invert)
-				heightMap.paste(position.x(), position.y(), this);
-			else
-				heightMap.copy(position.x(), position.y(), getWidth(), getHeight());
-			break;
-		}
-		default:;
+			case 0: heightMap.modifyHeight(position.x(), position.y(), this, invert); break;
+			case 1: heightMap.modifyHeight(position.x(), position.y(), this, invert); break;
+			case 2: heightMap.setHeight(position.x(), position.y(), this); break;
+			case 3: heightMap.smoothHeight(position.x(), position.y(), this, getStrength()); break;
 		}
 	}
 }
