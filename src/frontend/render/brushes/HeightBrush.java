@@ -59,7 +59,7 @@ public class HeightBrush extends Brush
 		int count = HeightMode.values().length;
 
 		strength = new float[count];
-		strength[HeightMode.Raise.ordinal()] = 0.1f;
+		strength[HeightMode.Raise.ordinal()] = 0.05f;
 		strength[HeightMode.Stamp.ordinal()] = 0.1f;
 		strength[HeightMode.Set.ordinal()] = 0.5f;
 		strength[HeightMode.Smooth.ordinal()] = 0.25f;

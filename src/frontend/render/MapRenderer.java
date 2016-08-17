@@ -548,14 +548,19 @@ public class MapRenderer
 	    if (rs.compressTextures && (rs.mapMode == MapMode.TextureMap))
 			try {
 				gl.glTexImage2D(GL.GL_TEXTURE_2D, 0, GL.GL_COMPRESSED_RGB_S3TC_DXT1_EXT, size, size, 0, GL.GL_RGB, GL.GL_UNSIGNED_BYTE, textureData);
+				texturesCreatedThisFrame++;
+				isTextureCached[index] = true;
 			} catch (IndexOutOfBoundsException e) {
 				 // TODO Temporary hack for a problem that should not happen
 			}
 	    else
-			gl.glTexImage2D(GL.GL_TEXTURE_2D, 0, GL.GL_RGB8, size, size, 0, GL.GL_RGB, GL.GL_UNSIGNED_BYTE, textureData);
-	    
-		texturesCreatedThisFrame++;
-		isTextureCached[index] = true;
+			try {
+				gl.glTexImage2D(GL.GL_TEXTURE_2D, 0, GL.GL_RGB8, size, size, 0, GL.GL_RGB, GL.GL_UNSIGNED_BYTE, textureData);
+				texturesCreatedThisFrame++;
+				isTextureCached[index] = true;
+			} catch (IndexOutOfBoundsException e) {
+
+			}
 		
 		if (rs.outputPerfDebug)
 			System.out.println("Done creating Texture Block ( " + ((System.nanoTime() - start) / 1000000) + " ms )");
