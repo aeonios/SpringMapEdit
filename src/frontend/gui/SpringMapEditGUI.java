@@ -156,7 +156,7 @@ public class SpringMapEditGUI
 		mousePos = new Point(as.displayWidth / 2, as.displayHeight / 2);
 		this.keyMap = new KeyMapper(this);
 		keyMap.loadFromFile(new File("config/keys.cfg"));
-		shell.setText("Spring Map Editor - New Map");
+		shell.setText("Spring Map Edit 1.4.0 - New Map");
 		
 		shell.addShellListener(new ShellAdapter() 
 		{

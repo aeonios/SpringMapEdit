@@ -79,7 +79,7 @@ public class SpringMapEditMenuBar {
 				{
 					new NewMapDialog(shell, smeGUI).open();
 					sme.CurrentMap = "";
-					shell.setText("Spring Map Editor - New Map");
+					shell.setText("Spring Map Edit 1.4.0 - New Map");
 				}
 			}
 		});
@@ -141,7 +141,7 @@ public class SpringMapEditMenuBar {
 						};
 						smeGUI.messageQueue.offer(cmd);*/
 						renderer.setSpringMapEdit(sme);
-						shell.setText("Spring Map Editor - " + sme.CurrentMap);
+						shell.setText("Spring Map Edit 1.4.0 - " + sme.CurrentMap);
 					}
 				}
 			}
@@ -168,7 +168,7 @@ public class SpringMapEditMenuBar {
 						{
 							sme.saveSM2Map((File) data[0], (MapRenderer) data[1]);
 							sme.CurrentMap = data[0].toString();
-							shell.setText("Spring Map Editor - " + sme.CurrentMap);
+							shell.setText("Spring Map Edit 1.4.0 - " + sme.CurrentMap);
 						}
 						catch (Exception e)
 						{
