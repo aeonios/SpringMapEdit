@@ -1142,27 +1142,14 @@ public class SpringMapEditMenuBar {
 			}
 		});
 		
-		menuItem = new MenuItem(menu, SWT.SEPARATOR);
-		
 		menuItem = new MenuItem(menu, SWT.PUSH);
-		menuItem.setText("Wet erode whole map");
+		menuItem.setText("Erode whole map");
 		menuItem.addSelectionListener(new SelectionAdapter() 
 		{
 			public void widgetSelected(SelectionEvent e)
 			{
-				smeGUI.messageQueue.offer(new Edit_Erode_Heightmap_Wet(smeGUI));
-				new ProcessingDialog(shell).close();
-			}
-		});
-		
-		menuItem = new MenuItem(menu, SWT.PUSH);
-		menuItem.setText("Dry erode whole map");
-		menuItem.addSelectionListener(new SelectionAdapter() 
-		{
-			public void widgetSelected(SelectionEvent e)
-			{
-				smeGUI.messageQueue.offer(new Edit_Erode_Heightmap_Dry(smeGUI));
-				new ProcessingDialog(shell).close();
+				new ErodeMapDialog(shell, smeGUI).open();
+				//smeGUI.messageQueue.offer(new Edit_Erode_Heightmap_Dry(smeGUI));
 			}
 		});
 		
@@ -1344,24 +1331,6 @@ public class SpringMapEditMenuBar {
 					public void execute(Object[] data2)
 					{
 						rs.quitWithoutAsking = (Boolean) data[0];
-					}
-				};
-				smeGUI.messageQueue.offer(cmd);
-			}
-		});
-		
-		menuItem = new MenuItem(menu, SWT.CHECK);
-		menuItem.setSelection(rs.dialogAlwaysOnTop);
-		menuItem.setText("Dialog always on top (requires restart)");
-		menuItem.addSelectionListener(new SelectionAdapter()
-		{
-			public void widgetSelected(SelectionEvent e)
-			{
-				Command cmd = new Command(new Object[] { ((MenuItem)e.widget).getSelection() }) 
-				{
-					public void execute(Object[] data2)
-					{
-						rs.dialogAlwaysOnTop = (Boolean) data[0];
 					}
 				};
 				smeGUI.messageQueue.offer(cmd);

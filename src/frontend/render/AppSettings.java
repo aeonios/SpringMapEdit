@@ -119,9 +119,7 @@ public class AppSettings
 	public boolean quicksave_typemap = true;
 	public boolean quicksave_vegetationmap = true;
 	public boolean quicksave_featuremap = true;
-	
-	//Always on Top
-	public boolean dialogAlwaysOnTop = false;
+
 	public boolean quitWithoutAsking = false;
 	public boolean quietExit = false; //Prevents quit message dialog
 	
@@ -186,7 +184,6 @@ public class AppSettings
 			else if (propertyName.equals("quicksave_vegetationmap")) quicksave_vegetationmap = Boolean.parseBoolean(values[0]);
 			else if (propertyName.equals("quicksave_featuremap")) quicksave_featuremap = Boolean.parseBoolean(values[0]);
 			else if (propertyName.equals("quicksave_compress")) quicksave_compress = Boolean.parseBoolean(values[0]);
-			else if (propertyName.equals("dialogAlwaysOnTop")) dialogAlwaysOnTop = Boolean.parseBoolean(values[0]);
 			else if (propertyName.equals("quitWithoutAsking")) quitWithoutAsking = Boolean.parseBoolean(values[0]);
 			
 			//Float props
@@ -282,8 +279,7 @@ public class AppSettings
 			bw.write("quicksave_metalmap" + "\t" + quicksave_metalmap + "\n");
 			bw.write("quicksave_typemap" + "\t" + quicksave_typemap + "\n");
 			bw.write("quicksave_vegetationmap" + "\t" + quicksave_vegetationmap + "\n");
-			bw.write("quicksave_featuremap" + "\t" + quicksave_featuremap + "\n");	
-			bw.write("dialogAlwaysOnTop" + "\t" + dialogAlwaysOnTop + "\n");
+			bw.write("quicksave_featuremap" + "\t" + quicksave_featuremap + "\n");
 			bw.write("quitWithoutAsking" + "\t" + quitWithoutAsking + "\n");
 			bw.write("lodDist" + "\t" + lodDist + "\n");
 

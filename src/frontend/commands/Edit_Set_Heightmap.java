@@ -45,7 +45,7 @@ public class Edit_Set_Heightmap extends SpringMapEditGUICommand
 		float strength = smeGUI.sme.mes.getHeightBrush().getStrength();
 		smeGUI.sme.mes.getHeightBrush().brushMode = hm;
 		
-		smeGUI.sme.map.heightmap.setHeightToMap(strength / smeGUI.sme.map.maxHeight);
+		smeGUI.sme.map.heightmap.setHeightToMap(strength);
 		smeGUI.renderer.invalidateAllBlocks(true, false, false);
 	}
 }

@@ -213,7 +213,7 @@ public class PrefabBrush extends Brush
 	{
 		if (heightmap != null)
 		{
-			heightmap.rotate(counterClockWise);
+			heightmap.rotate(!counterClockWise);
 			width = heightmap.width;
 			height = heightmap.height;
 		}

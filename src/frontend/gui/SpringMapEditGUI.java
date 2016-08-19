@@ -39,12 +39,11 @@ import javax.media.opengl.GLDrawableFactory;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.Cursor;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.opengl.GLCanvas;
 import org.eclipse.swt.opengl.GLData;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Listener;
-import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.*;
 
 import backend.SpringMapEdit;
 import backend.UndoRedo;
@@ -116,6 +115,7 @@ public class SpringMapEditGUI
 		this.as = settings;
 		this.display = new Display();
 		this.shell = new Shell(display);
+		shell.setLayout(new GridLayout(2, false));
 		undoQueue = new ConcurrentLinkedDeque<UndoRedo>();
 		//Show Logo Dialog
 		try
@@ -127,10 +127,21 @@ public class SpringMapEditGUI
 			//ignore...
 		}
 		ErrorHandler errorHandler = new ErrorHandler(shell);
-		GLData data = new GLData ();
+
+		Group dialogpanel = new Group(shell, SWT.SHADOW_NONE);
+		dialogpanel.setLayout(new GridLayout(1, false));
+		GridData gd = new GridData(GridData.FILL, GridData.FILL, false, true, 1, 1);
+		gd.widthHint = 375;
+		dialogpanel.setLayoutData(gd);
+
+		GLData data = new GLData();
 		data.doubleBuffer = true;
+
 		glCanvas = new GLCanvas(shell, SWT.NO_BACKGROUND, data);
-		glCanvas.setSize(as.displayWidth, as.displayHeight);
+		gd = new GridData(GridData.FILL, GridData.FILL, true, true, 1, 1);
+		//gd.widthHint = as.displayWidth;
+		//gd.heightHint = as.displayHeight;
+		glCanvas.setLayoutData(gd);
 		
 		cursorDefault = new Cursor(display, SWT.CURSOR_ARROW);
 		cursorCross = new Cursor(display, SWT.CURSOR_CROSS);
@@ -178,8 +189,8 @@ public class SpringMapEditGUI
 			public void handleEvent(Event event)
 			{
 				setMouseCenter();
-				if (glCanvas != null)
-					glCanvas.setSize(shell.getClientArea().width, shell.getClientArea().height);
+				//if (glCanvas != null)
+				//	glCanvas.setSize(shell.getClientArea().width, shell.getClientArea().height);
 			}
 		});
 		
@@ -319,7 +330,8 @@ public class SpringMapEditGUI
 
 		shell.setLocation(0, 0);
 		shell.setSize(Toolkit.getDefaultToolkit().getScreenSize().width, Toolkit.getDefaultToolkit().getScreenSize().height);
-		shell.pack();
+		shell.setMaximized(true);
+		shell.open();
 		Thread.setDefaultUncaughtExceptionHandler(errorHandler);
 		worker = new Thread(new Runnable()
 		{
@@ -349,9 +361,9 @@ public class SpringMapEditGUI
 		worker.start();
 		new SpringMapEditMenuBar(this);
 		
-		this.setupDialog = new SpringMapEditDialog(this);
+		this.setupDialog = new SpringMapEditDialog(this, dialogpanel);
 		
-		new Console(this);
+		//new Console(this);
 	}
 		
 	public void toggleMouseLook()
@@ -457,6 +469,7 @@ public class SpringMapEditGUI
 		
 		//Get Focus into this window
 		shell.forceActive();
+		glCanvas.forceFocus();
 		
 		final FPSMeter fps = new FPSMeter();
 		int ticksSinceLastRender = 0;
@@ -816,7 +829,7 @@ public class SpringMapEditGUI
 					//Render
 					renderer.display(glContext.getGL());
 					glCanvas.swapBuffers();
-					
+
 					//Animate some GUI components
 					if (as.animateGUI && (ticksSinceLastRender > 0))
 						setupDialog.animate();
@@ -868,9 +881,6 @@ public class SpringMapEditGUI
 		
 		//Dispose Display
 		display.dispose();
-		
-		//Close Dialog too
-		setupDialog.dispose();
 	}
 	
 }

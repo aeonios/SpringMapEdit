@@ -34,15 +34,8 @@ import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.layout.FormAttachment;
-import org.eclipse.swt.layout.FormData;
-import org.eclipse.swt.layout.FormLayout;
-import org.eclipse.swt.layout.RowLayout;
-import org.eclipse.swt.widgets.Combo;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.ScrollBar;
-import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.layout.*;
+import org.eclipse.swt.widgets.*;
 
 import frontend.render.brushes.BrushPattern;
 import frontend.render.brushes.BrushTexture;
@@ -58,7 +51,6 @@ public class PrefabSelectionDialog implements Observer
 	private ImageSelectButton selectedButton;
 	private int currentPrefabID;
 	private String currentCategoryName;
-	public Shell shell;
 	
 	private long lastAnimationFrame;
 	private byte[] animationBuffer;
@@ -67,40 +59,15 @@ public class PrefabSelectionDialog implements Observer
 	private BrushTexture texturemap;
 	
 	private Composite buttonPane;
+	private Group widget;
 	
-	public PrefabSelectionDialog(SpringMapEditGUI smeGUI, SpringMapEditDialog smed)
+	public PrefabSelectionDialog(SpringMapEditGUI smeGUI, SpringMapEditDialog smed, Composite parent)
 	{
 		this.smeGUI = smeGUI;
 		this.smed = smed;
 		currentPrefabID = -1;
 		currentCategoryName = "";
-	}
-	
-	public void open()
-	{
-		if (shell == null)
-		{
-			shell = new Shell(smed.shell, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.NO_BACKGROUND);
-			shell.setText("Prefab Selector");
-			
-			shell.setSize(370, 350);
-			
-			shell.addDisposeListener(new DisposeListener()
-			{
-				public void widgetDisposed(DisposeEvent e)
-				{
-					shell = null;
-				}
-			});
-			
-			createDialogArea();
-		}
-		
-		//Show it
-		shell.setLocation(smed.shell.getLocation().x, smed.shell.getLocation().y + smed.shell.getSize().y);
-		shell.layout();
-		shell.setVisible(true);
-		shell.forceActive();
+		createDialogArea(parent);
 	}
 	
 	private void setHeightTexturemap(int prefabID)
@@ -129,17 +96,15 @@ public class PrefabSelectionDialog implements Observer
 		}
 	}
 	
-	private void createDialogArea()
+	private void createDialogArea(Composite parent)
 	{
-		shell.setLayout(new FormLayout());
+		final Group group = new Group(parent, SWT.SHADOW_NONE);
+		group.setLayout(new GridLayout(1, false));
+		group.setText("Select Prefab:");
 		
 		//Add Category SelectBox
-		final Combo categoryCombo = new Combo(shell, SWT.DROP_DOWN | SWT.READ_ONLY);
-		FormData fd = new FormData();
-		fd.top = new FormAttachment(0);
-		fd.left = new FormAttachment(0);
-		fd.right = new FormAttachment(100);
-		categoryCombo.setLayoutData(fd);
+		final Combo categoryCombo = new Combo(group, SWT.DROP_DOWN | SWT.READ_ONLY);
+		categoryCombo.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, false, 1, 1));
 		String[] categoryNames = smeGUI.sme.mes.prefabManager.getCategoryNameSet().toArray(new String[0]);
 		categoryCombo.setItems(categoryNames);
 		currentCategoryName = categoryNames.length > 0 ? categoryNames[0] : "";
@@ -156,13 +121,8 @@ public class PrefabSelectionDialog implements Observer
 		});
 		
 		//Add scrollcomposite
-		final ScrolledComposite sc = new ScrolledComposite(shell, SWT.V_SCROLL | SWT.BORDER);
-		fd = new FormData();
-		fd.top = new FormAttachment(categoryCombo);
-		fd.left = new FormAttachment(0);
-		fd.right = new FormAttachment(100);
-		fd.bottom = new FormAttachment(100);
-		sc.setLayoutData(fd);
+		final ScrolledComposite sc = new ScrolledComposite(group, SWT.V_SCROLL | SWT.BORDER);
+		sc.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true, 1, 1));
 		sc.setExpandHorizontal(true);
 		sc.setExpandVertical(true);
 				
@@ -186,6 +146,7 @@ public class PrefabSelectionDialog implements Observer
 				if (sb != null) sb.setIncrement(smeGUI.as.featureTexSize / 8);
 			}
 		});
+		widget = group;
 		
 		categoryChanged();
 	}
@@ -227,7 +188,6 @@ public class PrefabSelectionDialog implements Observer
 			{
 				selectedButton = fsc;
 			}
-			fsc.forceFocus();
 			
 			//Fetch ImageData
 			cmd = new Command(new Object[] { fsc }) 
@@ -269,24 +229,24 @@ public class PrefabSelectionDialog implements Observer
 	 */
 	public void animate()
 	{
-		if (shell != null)
-		{
-			if (selectedButton != null)
-			{
-				if (animationBuffer == null)
-					animationBuffer = new byte[selectedButton.getWidth() * selectedButton.getHeight() * 3];
-				ImageSelectButton selectedButton = this.selectedButton;
+		if (selectedButton != null) {
+			if (animationBuffer == null)
+				animationBuffer = new byte[selectedButton.getWidth() * selectedButton.getHeight() * 3];
+			ImageSelectButton selectedButton = this.selectedButton;
 				
-				//Update heightmap/texturemap
-				setHeightTexturemap(selectedButton.getObjectID());
+			//Update heightmap/texturemap
+			setHeightTexturemap(selectedButton.getObjectID());
 				
-				selectedButton.currentAnimationFrame = selectedButton.currentAnimationFrame + (smeGUI.as.gameFrame - lastAnimationFrame);
-				smeGUI.renderer.getPrefabImageData(animationBuffer, heightmap, texturemap, selectedButton.currentAnimationFrame, smeGUI.sme.mes.prefabManager.getPrefabData(selectedButton.getObjectID()).heightZ * smeGUI.sme.mes.prefabManager.getScaleFactorHeightmap(selectedButton.getObjectID(), (heightmap != null) ? heightmap.width : 1));
-				selectedButton.setImageData(animationBuffer);
+			selectedButton.currentAnimationFrame = selectedButton.currentAnimationFrame + (smeGUI.as.gameFrame - lastAnimationFrame);
+			smeGUI.renderer.getPrefabImageData(animationBuffer, heightmap, texturemap, selectedButton.currentAnimationFrame, smeGUI.sme.mes.prefabManager.getPrefabData(selectedButton.getObjectID()).heightZ * smeGUI.sme.mes.prefabManager.getScaleFactorHeightmap(selectedButton.getObjectID(), (heightmap != null) ? heightmap.width : 1));
+			selectedButton.setImageData(animationBuffer);
 				
-				lastAnimationFrame = smeGUI.as.gameFrame;
-			}
+			lastAnimationFrame = smeGUI.as.gameFrame;
 		}
+	}
+
+	public Group getWidget(){
+		return widget;
 	}
 	
 	@Override
