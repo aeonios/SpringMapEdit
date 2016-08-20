@@ -103,7 +103,7 @@ public class AppSettings
 	//Controls
 	public boolean mouseLook = false;
 	public boolean invertY = true;
-	public float sensitivity = 5;
+	public float sensitivity = 2f;
 	public float slowSpeed = 8;
 	public float normalSpeed = 16;
 	public float fastSpeed = 32;
