@@ -348,16 +348,14 @@ public class SM2File
 			outStream.writeInt(texelPerSquare);
 			outStream.writeInt(tileSize);
 			
-			float heightFactor = (squareSize / SpringMapEdit.tileSize);
-			
 			//If water is disabled, offset it quite high, to disable water in Spring
-			float heightOffset = (sme.map.waterHeight >= 0) ? 0 : 50;
+			float heightOffset = (sme.map.waterHeight >= 0) ? 0 : 500;
 			
 			//minHeight
-			outStream.writeFloat(0 - (sme.map.waterHeight * heightFactor) + heightOffset);
+			outStream.writeFloat(0 - (sme.map.waterHeight) + heightOffset);
 			
 			//maxHeight
-			outStream.writeFloat((sme.map.maxHeight * heightFactor) - (sme.map.waterHeight * heightFactor) + heightOffset);
+			outStream.writeFloat((sme.map.maxHeight) - (sme.map.waterHeight) + heightOffset);
 			
 			//Map Pointers... (will be set later, store location)
 			heightmapPtr = outStream.getFilePointer();
@@ -927,11 +925,10 @@ public class SM2File
 			if (_tileSize != tileSize)
 				throw new IOException("tileSize wrong inside .smf: not " + tileSize + " Was: " + _tileSize);
 			
-			float minHeight = inStream.readFloat(); //0 - (sme.waterHeight * heightFactor) + heightOffset);
-			float maxHeight = inStream.readFloat(); //((sme.maxHeight * heightFactor) - (sme.waterHeight * heightFactor) + heightOffset);
-			
-			float heightFactor = (squareSize / SpringMapEdit.tileSize);
-			sme.map.maxHeight = FastMath.round((maxHeight - minHeight) / heightFactor);
+			float minHeight = inStream.readFloat();
+			float maxHeight = inStream.readFloat();
+
+			sme.map.maxHeight = FastMath.round((maxHeight - minHeight));
 			
 			float waterHeight = -1;
 			if (minHeight <= 0)

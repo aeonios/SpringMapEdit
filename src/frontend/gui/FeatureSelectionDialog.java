@@ -64,7 +64,7 @@ public class FeatureSelectionDialog implements Observer
 	{
 		if (shell == null)
 		{
-			shell = new Shell(smed.shell, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.NO_BACKGROUND);
+			//shell = new Shell(smed.shell, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.NO_BACKGROUND);
 			shell.setText("Feature Selector");
 			
 			shell.setSize(370, 350);

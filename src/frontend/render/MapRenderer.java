@@ -603,7 +603,7 @@ public class MapRenderer
     				if ((feature.x >= minX) && (feature.z >= minY) && (feature.x < maxX) && (feature.z < maxY))
     				{
     					//Set Height appropriate to heightmap
-    					feature.y = sme.map.heightmap.getHeightMap()[FastMath.round(feature.z / rs.quadSize)][FastMath.round(feature.x / rs.quadSize)] * sme.map.maxHeight;
+    					feature.y = sme.map.heightmap.getHeightMap()[FastMath.round(feature.z / rs.quadSize)][FastMath.round(feature.x / rs.quadSize)] * sme.map.maxHeight/4f;
     					featureList[index].add(feature);
     				}
     			}
@@ -624,7 +624,7 @@ public class MapRenderer
 		while (it.hasNext())
 		{
 			cont = it.next();
-			cont.y = heightMap[FastMath.round(cont.z / rs.quadSize)][FastMath.round(cont.x / rs.quadSize)] * sme.map.maxHeight;
+			cont.y = heightMap[FastMath.round(cont.z / rs.quadSize)][FastMath.round(cont.x / rs.quadSize)] * sme.map.maxHeight/4f;
 		}
 	}
 	
@@ -635,7 +635,7 @@ public class MapRenderer
 		Vector3 v1, v2, v3, v4, vN1, vN2;
 		int lodSkip = 2;
 		int lodNegativeExtendTileSize = (lodSkip-1) * rs.quadSize;
-		int maxHeight = sme.map.maxHeight; //
+		float maxHeight = sme.map.maxHeight/4f; //
 		long start = System.nanoTime();
 			    	
 		int xStart = ((index % mapWidthInBlocks) * blockSizeinTiles) + lodSkip;
@@ -681,7 +681,7 @@ public class MapRenderer
 		int x, xStart, yStart;
 		int width = sme.map.heightmap.getHeightmapWidth();
 		int height = sme.map.heightmap.getHeightmapLength();
-		float maxHeight = sme.map.maxHeight;
+		float maxHeight = sme.map.maxHeight/4f;
 
 		for (int lodLevel = 0; lodLevel < 4; lodLevel++) {
 			int lodSkip = FastMath.pow(2, lodLevel);
@@ -823,6 +823,7 @@ public class MapRenderer
 		
 	private Vector3 getSmoothedNormal(float map[][], int x, int y, int width, int height, Vector3 baseVector, int lodSkip, int lodSkipTileSize, float maxHeight)
 	{
+		maxHeight *= 4f;
 		if (!rs.smoothNormals)
 			return baseVector;
 		
@@ -940,7 +941,7 @@ public class MapRenderer
 	
 	private void renderWater(GL gl)
 	{
-		float currentWaterlevel = sme.map.waterHeight;
+		float currentWaterlevel = sme.map.waterHeight/4f;
 		int width = sme.map.heightmap.getHeightmapWidth();
 		int length = sme.map.heightmap.getHeightmapLength();
 		if (rs.fancyWater) {
@@ -1049,7 +1050,7 @@ public class MapRenderer
 		float[][] map = sme.map.heightmap.getHeightMap();
 		int width = sme.map.heightmap.getHeightmapWidth();
 		int length = sme.map.heightmap.getHeightmapLength();
-		int maxHeight = sme.map.maxHeight; //
+		float maxHeight = sme.map.maxHeight/4f; //
 		int xStart, yStart, brushWidth, brushHeight;
     	if (sme.mes.activeBrush.isVertexOriented())
     	{
@@ -1855,10 +1856,6 @@ public class MapRenderer
 		gl.glTranslatef(-cameraPosition.camX, -cameraPosition.camY, -cameraPosition.camZ);
 	}
 	
-	/**
-	 * @param glCanvas
-	 * @param glContext
-	 */
 	public void reshape(int width, int height)
 	{
 		staticGl.glViewport(0, 0, width, height);
@@ -2291,7 +2288,7 @@ public class MapRenderer
 		int triangleCount = ((hmWidth - 1) * (hmHeight - 1) * 2) + ((hmHeight - 1) * 2);
 		int vertexCount = triangleCount + (2 * (hmHeight - 1));
 		FloatBuffer vbo = FloatBuffer.allocate(vertexCount * 8); //3Vertex 3Normal 2TexCoord
-		createVBOData(vbo, heightmapData, 1, 1, hmWidth, hmHeight, scaleHeight * sme.map.maxHeight);
+		createVBOData(vbo, heightmapData, 1, 1, hmWidth, hmHeight, scaleHeight * sme.map.maxHeight/4f);
 		
 		int[] tmp = new int[1];
 		staticGl.glGenBuffers(1, tmp, 0);

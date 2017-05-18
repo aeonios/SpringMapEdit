@@ -59,12 +59,12 @@ public class TypeBrush extends Brush
 	@Override
 	public int getStrengthInt()
 	{
-		return typeID + 1;
+		return typeID;
 	}
 
 	@Override
 	public void setStrengthInt(int strength)
 	{
-		typeID = strength - 1;
+		typeID = strength;
 	}
 }

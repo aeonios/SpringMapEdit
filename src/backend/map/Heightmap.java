@@ -159,13 +159,6 @@ public class Heightmap extends AbstractMap {
 		heightmapLength = NewHeight;
 	}
 	
-	/**
-	 * Move portion of heightmap from start to length by amount either vertically or horizontally
-	 * @param Start of the move
-	 * @param Length from start to which movement happens
-	 * @param The amount by which the values are moved
-	 * @param vertically
-	 */
 	public void moveMap(int start, int length, int amount, boolean vertically)
 	{
 		float[][] t;
@@ -669,19 +662,18 @@ public class Heightmap extends AbstractMap {
 						heightMap[y][x - 1], heightMap[y][x + 1], heightMap[y + 1][x - 1], heightMap[y + 1][x], heightMap[y + 1][x + 1]);
 		//Left Border
 		for (y = 1; y < heightmapLength - 1; y++)
-			smoothedMap[y][0] = ((1f-strength) * heightMap[0][y]) + (strength * smooth9HeightmapBorderAware(0, y));
+			smoothedMap[y][0] = ((1f-strength) * heightMap[y][0]) + (strength * smooth9HeightmapBorderAware(0, y));
 		//Right Border
 		for (y = 1; y < heightmapLength - 1; y++)
-			smoothedMap[y][heightMapWidth - 1] = ((1f-strength) * heightMap[heightMapWidth - 1][y]) + (strength * smooth9HeightmapBorderAware(heightMapWidth - 1, y));
+			smoothedMap[y][heightMapWidth - 1] = ((1f-strength) * heightMap[y][heightMapWidth - 1]) + (strength * smooth9HeightmapBorderAware(heightMapWidth - 1, y));
 		//Upper Border
 		for (x = 0; x < heightMapWidth; x++)
-			smoothedMap[0][x] = ((1f - strength) * heightMap[x][0]) + (strength * smooth9HeightmapBorderAware(x, 0));
+			smoothedMap[0][x] = ((1f - strength) * heightMap[0][x]) + (strength * smooth9HeightmapBorderAware(x, 0));
 		//Lower Border
 		for (x = 0; x < heightMapWidth; x++)
-			smoothedMap[heightmapLength - 1][x] = ((1f - strength) * heightMap[x][heightmapLength - 1]) + (strength * smooth9HeightmapBorderAware(x, heightmapLength - 1));
-		//Copy Back
-		for (y = 0; y < heightmapLength; y++)
-			System.arraycopy(smoothedMap[y], 0, heightMap[y], 0, heightMapWidth);
+			smoothedMap[heightmapLength - 1][x] = ((1f - strength) * heightMap[heightmapLength - 1][x]) + (strength * smooth9HeightmapBorderAware(x, heightmapLength - 1));
+		
+		heightMap = smoothedMap;
 		System.out.println("Done smoothing heightMap ( " + ((System.nanoTime() - start) / 1000000) + " ms )");
 	}
 	
@@ -820,14 +812,7 @@ public class Heightmap extends AbstractMap {
 		
 		return ((1 - fractX) * steepYLeft) + (fractX * steepYRight);
 	}
-
-	/**
-	 * @param brush if null, whole map will be eroded
-	 * @param px x pos of brush
-	 * @param py y pos of brush
-	 * @param dropletHeight waterheight of a single droplet
-	 * @param evaporateAmount amount of water which evaporates at max each tick
-	 */
+	
 	public void erodeMapWet(int px, int py, int width, int height, ErosionSetup setup)
 	{
 		if (setup == null)
@@ -1007,15 +992,6 @@ public class Heightmap extends AbstractMap {
 		System.out.println(" Done eroding heightmap ( " + ((System.nanoTime() - start) / 1000000) + " ms )");
 	}
 	
-	/**
-	 * Potentially faster erosion implementation
-	 * @param brush if null, whole map will be eroded
-	 * @param px x pos of brush
-	 * @param py y pos of brush
-	 * @param iterations number of loops
-	 * @param breakHeight height difference which leads to erosion
-	 * @param hydroErosion set to true for hydraulic erosion, set to false for thermic erosion
-	 */
 	public void erodeMapDryWet(int px, int py, int width, int height, boolean hydroErosion, ErosionSetup setup)
 	{
 		if (setup == null)

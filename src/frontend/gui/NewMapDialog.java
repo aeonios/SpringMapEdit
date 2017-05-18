@@ -105,8 +105,8 @@ public class NewMapDialog extends Dialog
 		l.setLayoutData(gd);
 		
 		Combo c = new Combo(shell, SWT.DROP_DOWN | SWT.READ_ONLY);
-		c.setItems(new String[] { "2", "4", "6", "8", "10", "12", "14", "16", "18", "20", "22", "24", "26", "28", "30", "32", "34", "36", "38", "40", "42", "44", "46", "48", "50", "52", "54", "56", "58", "60", "62", "64" });
-		c.setVisibleItemCount(20);
+		c.setItems(new String[] { "2", "4", "6", "8", "10", "12", "14", "16", "18", "20", "22", "24", "26", "28", "30"});
+		c.setVisibleItemCount(15);
 		c.setText(Integer.toString(newWidth));
 		gd = new GridData(GridData.FILL, GridData.CENTER, true, false, 1, 1);
 		gd.widthHint = 100;
@@ -126,8 +126,8 @@ public class NewMapDialog extends Dialog
 		l.setLayoutData(gd);
 		
 		c = new Combo(shell, SWT.DROP_DOWN | SWT.READ_ONLY);
-		c.setItems(new String[] { "2", "4", "6", "8", "10", "12", "14", "16", "18", "20", "22", "24", "26", "28", "30", "32", "34", "36", "38", "40", "42", "44", "46", "48", "50", "52", "54", "56", "58", "60", "62", "64" });
-		c.setVisibleItemCount(20);
+		c.setItems(new String[] { "2", "4", "6", "8", "10", "12", "14", "16", "18", "20", "22", "24", "26", "28", "30"});
+		c.setVisibleItemCount(15);
 		c.setText(Integer.toString(newHeight));
 		gd = new GridData(GridData.FILL, GridData.CENTER, true, false, 1, 1);
 		gd.widthHint = 100;
@@ -241,7 +241,7 @@ public class NewMapDialog extends Dialog
 			public void widgetSelected(SelectionEvent e)
 			{
 				new ProcessingDialog(shell);
-				sme.newMap(newHeight, newWidth, startHeight, random);
+				sme.newMap(newWidth, newHeight, startHeight, random);
 				sme.map.waterHeight = waterHeigth;
 				sme.map.maxHeight = maxHeight;
 				smeGUI.renderer.setSpringMapEdit(sme);

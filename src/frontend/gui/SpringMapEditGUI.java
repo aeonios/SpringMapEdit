@@ -156,7 +156,7 @@ public class SpringMapEditGUI
 		mousePos = new Point(as.displayWidth / 2, as.displayHeight / 2);
 		this.keyMap = new KeyMapper(this);
 		keyMap.loadFromFile(new File("config/keys.cfg"));
-		shell.setText("Spring Map Edit 1.4.0 - New Map");
+		shell.setText("Spring Map Edit 1.4.3 - New Map");
 		
 		shell.addShellListener(new ShellAdapter() 
 		{
@@ -300,7 +300,7 @@ public class SpringMapEditGUI
 		
 		//Setup initial position
 		as.cameraPosition.camX = as.initialMapWidth*64;//-50;
-		as.cameraPosition.camY = (float) Math.sqrt((as.initialMapHeight * 128 * as.initialMapHeight * 128) + (as.initialMapWidth * 128 * as.initialMapWidth * 128));
+		as.cameraPosition.camY = sme.diag;
 		as.cameraPosition.camZ = as.initialMapHeight*128;//-50;
 		as.cameraPosition.camRotX = -70;
 		as.cameraPosition.camRotY = 0;
@@ -582,7 +582,7 @@ public class SpringMapEditGUI
 						Vector3 viewVector = Vector3Math.rotateZ(Vector3Math.rotateY(Vector3Math.rotateX(new Vector3(0, 0, 1),
 								as.cameraPosition.camRotX * Math.PI / 180), as.cameraPosition.camRotY * Math.PI / 180),
 								as.cameraPosition.camRotZ * Math.PI / 180);
-						Vector3 intersectPoint = Vector3Math.planeIntersectPoint(new Vector3(0, sme.map.maxHeight / 2, 0),
+						Vector3 intersectPoint = Vector3Math.planeIntersectPoint(new Vector3(0, (sme.map.maxHeight / 8) - (sme.diag - as.cameraPosition.camY), 0),
 								new Vector3(0, 1, 0),
 								new Vector3(as.cameraPosition.camX, as.cameraPosition.camY, as.cameraPosition.camZ), viewVector);
 						if (intersectPoint != null)

@@ -79,7 +79,7 @@ public class SpringMapEditMenuBar {
 				{
 					new NewMapDialog(shell, smeGUI).open();
 					sme.CurrentMap = "";
-					shell.setText("Spring Map Edit 1.4.0 - New Map");
+					shell.setText("Spring Map Edit 1.4.3 - New Map");
 				}
 			}
 		});
@@ -141,7 +141,7 @@ public class SpringMapEditMenuBar {
 						};
 						smeGUI.messageQueue.offer(cmd);*/
 						renderer.setSpringMapEdit(sme);
-						shell.setText("Spring Map Edit 1.4.0 - " + sme.CurrentMap);
+						shell.setText("Spring Map Edit 1.4.3 - " + sme.CurrentMap);
 					}
 				}
 			}
@@ -168,7 +168,7 @@ public class SpringMapEditMenuBar {
 						{
 							sme.saveSM2Map((File) data[0], (MapRenderer) data[1]);
 							sme.CurrentMap = data[0].toString();
-							shell.setText("Spring Map Edit 1.4.0 - " + sme.CurrentMap);
+							shell.setText("Spring Map Edit 1.4.3 - " + sme.CurrentMap);
 						}
 						catch (Exception e)
 						{
@@ -217,7 +217,7 @@ public class SpringMapEditMenuBar {
 						File file = new File(fd.getFilterPath(), fd.getFileNames()[0]);
 						sme.saveSM2Map(file, renderer); //(File) data[0], (MapRenderer) data[1]);
 						sme.CurrentMap = file.toString(); //data[0].toString();
-						shell.setText("Spring Map Editor - " + sme.CurrentMap);
+						shell.setText("Spring Map Edit 1.4.3 - " + sme.CurrentMap);
 					}
 					catch (Exception e)
 					{
@@ -344,7 +344,7 @@ public class SpringMapEditMenuBar {
 						}
 					};
 					smeGUI.messageQueue.offer(cmd);
-					renderer.invalidateAllBlocks(false, true, false);//renderer.setSpringMapEdit(sme);
+					renderer.invalidateAllBlocks(true, false, false);
 				}
 			}
 		});
@@ -987,6 +987,42 @@ public class SpringMapEditMenuBar {
 					public void execute(Object[] data2)
 					{
 						rs.blendTextureMap = (Boolean) data[0];
+						renderer.invalidateAllBlocks(false, true, false);
+					}
+				};
+				smeGUI.messageQueue.offer(cmd);
+			}
+		});
+		
+		menuItem = new MenuItem(menu, SWT.PUSH);
+		menuItem.setText("Show Texturemap");
+		menuItem.addSelectionListener(new SelectionAdapter()
+		{
+			public void widgetSelected(SelectionEvent e)
+			{
+				Command cmd = new Command(new Object[] { ((MenuItem)e.widget).getSelection() })
+				{
+					public void execute(Object[] data2)
+					{
+						rs.mapMode = MapRenderer.MapMode.TextureMap;
+						renderer.invalidateAllBlocks(false, true, false);
+					}
+				};
+				smeGUI.messageQueue.offer(cmd);
+			}
+		});
+		
+		menuItem = new MenuItem(menu, SWT.PUSH);
+		menuItem.setText("Show Metalmap");
+		menuItem.addSelectionListener(new SelectionAdapter()
+		{
+			public void widgetSelected(SelectionEvent e)
+			{
+				Command cmd = new Command(new Object[] { ((MenuItem)e.widget).getSelection() })
+				{
+					public void execute(Object[] data2)
+					{
+						rs.mapMode = MapRenderer.MapMode.MetalMap;
 						renderer.invalidateAllBlocks(false, true, false);
 					}
 				};

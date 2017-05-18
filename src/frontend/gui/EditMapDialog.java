@@ -96,13 +96,13 @@ public class EditMapDialog extends Dialog
 		
 		Label l = new Label(shell, SWT.HORIZONTAL);
 		l.setText("Width: " + sme.width + "\t Length: " + sme.height);
-		GridData gd = new GridData(GridData.BEGINNING, GridData.BEGINNING, false, false, 1, 1);
-		gd.widthHint = 100;
+		GridData gd = new GridData(GridData.FILL, GridData.FILL, true, true, 2, 1);
+		//gd.widthHint = 100;
 		l.setLayoutData(gd);
 
 		//SPACER
-		Button b = new Button(shell, SWT.NONE);
-		b.setVisible(false);
+		Button b;
+		//b.setVisible(false);
 		
 		/*final Combo cw = new Combo(shell, SWT.DROP_DOWN | SWT.READ_ONLY);
 		cw.setItems(new String[] { "2", "4", "6", "8", "10", "12", "14", "16", "18", "20", "22", "24", "26", "28", "30", "32", "34", "36", "38", "40", "42", "44", "46", "48", "50", "52", "54", "56", "58", "60", "62", "64" });

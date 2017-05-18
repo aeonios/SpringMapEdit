@@ -67,8 +67,6 @@ public class AppSettings
 	//Level of Detail
 	public boolean batchMode = false;
 	public boolean smoothNormals = true;
-	public int maxBlocksPerFrame = 16;
-	public int maxTexturesPerFrame = 16;
 	public int maxFeatureBlocksPerFrame = 16;
 	public int maxFeaturesPerFrame = 32;
 	public boolean fancyWater = false;
@@ -88,7 +86,7 @@ public class AppSettings
 	
 	public int renderFeatureLOD = 3;
 	public boolean useLOD = true;
-	public float lodDist = 160f;
+	public float lodDist = 1000f;
 	public int blockSize = 64;
 	
 	//Frame statistics
@@ -103,7 +101,7 @@ public class AppSettings
 	//Controls
 	public boolean mouseLook = false;
 	public boolean invertY = true;
-	public float sensitivity = 2f;
+	public float sensitivity = 1.5f;
 	public float slowSpeed = 8;
 	public float normalSpeed = 16;
 	public float fastSpeed = 32;

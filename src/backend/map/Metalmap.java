@@ -35,8 +35,7 @@ public class Metalmap extends AbstractMap {
 	
 	public void saveMetalMap(File metalmapFile, boolean use24Bit)
 	{
-		//new Bitmap(use24Bit ? FileFormat.Bitmap24Bit : FileFormat.Bitmap8Bit).saveDataFromMetalmap(metalmapFile, map, mapWidth, mapLength);
-		super.saveMap(metalmapFile, use24Bit ? FileFormat.Bitmap24Bit : FileFormat.Bitmap8Bit);
+		new Bitmap(use24Bit ? FileFormat.Bitmap24Bit : FileFormat.Bitmap8Bit).saveDataFromMetalmap(metalmapFile, map, mapWidth, mapLength);
 	}
 	
 	public void loadDataIntoMap(File metalmapFile)
