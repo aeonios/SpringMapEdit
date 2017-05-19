@@ -58,7 +58,7 @@ Supported Platforms:
 all which support Java, SWT, and JOGL, this includes, but is not limited to:
 -Windows (windows 10 might need tweaks in the startup script)
 -Linux
--OSX     (needs testing. someone could supply some startup script?)
+-OSX     (borked)
 
 Hardware:
 -OpenGL 2.0 capable Graphics Card (Geforce5 and up)
@@ -80,9 +80,9 @@ and check some dependencies SWT and JOGL have. (Especially on OSX (GTK?))
 Just extract contents of this archive into any directory.
 Then start the appropriate script.
 
-Windows: one of the "start_win32/64.bat" files.
-Linux:   one of the "start_linux_x86/64.sh" files.
-OSX:     someone needs to supply me those files. (Basically it should be similar commandline as for linux)
+Windows: double click "start_win64.bat".
+Linux:   cd to the SME directory and type "chmod +x start_linux_x64.sh" to make the script executable, then type "./start_linux_x64.sh" to run it.
+OSX:     does not work, library issues. :(
 
 If you get crashes when editing large maps, or it does not start at all,
 try editing the startup file.

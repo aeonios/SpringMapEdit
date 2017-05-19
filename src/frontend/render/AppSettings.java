@@ -77,7 +77,7 @@ public class AppSettings
 	public boolean onlyOutlineBrush = true;
 	public boolean filterTextures = true;
 	public MapMode mapMode = MapMode.TextureMap;
-	public boolean blendTextureMap = false;
+	public boolean blendTextureMap = true;
 	public boolean compressTextures = true;
 	public boolean fastNormals = false;
 	public int maxFeaturesToDisplay = 10240;
